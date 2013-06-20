@@ -6,6 +6,11 @@ list_sessions() {
 	tmux ls | grep '^[a-z-]\+:' | cut -f 1 -d " " | sed 's/:$//'
 }
 
-chosen=`list_sessions | dmenu`
-$term -e sh -c "tmux at -t $chosen" &
+main() {
+	chosen=`list_sessions | dmenu`
+	[ -z $chosen ] && return 0
 
+	$term -e sh -c "tmux at -t $chosen" &
+}
+
+main $@
