@@ -3,7 +3,7 @@
 . $HOME/.config/tmux-picker/config
 
 list_sessions() {
-	tmux ls | grep '^[a-z-]\+:' | cut -f 1 -d " " | sed 's/:$//'
+	tmux ls | grep '^[a-z0-9-]\+:' | cut -f 1 -d " " | sed 's/:$//'
 }
 
 main() {
