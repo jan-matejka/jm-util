@@ -7,10 +7,16 @@ list_sessions() {
 }
 
 main() {
-	chosen=`list_sessions | dmenu`
+	IFS=""
+	sessions=`list_sessions`
+	chosen=`echo $sessions | dmenu`
 	[ -z $chosen ] && return 0
 
-	$term -e sh -c "tmux at -t $chosen" &
+	if echo $sessions | grep -E "^$chosen$"; then
+		$term -e sh -c "tmux at -t $chosen" &
+	else
+		$term -e sh -c "tmux new -s $chosen" &
+	fi
 }
 
 main $@
