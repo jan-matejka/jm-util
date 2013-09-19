@@ -2,13 +2,19 @@
 
 . $HOME/.config/tmux-picker/config
 
+filter_attached() {
+	grep -v '(attached)'
+}
+
 list_sessions() {
-	tmux ls | grep '^[a-z0-9-]\+:' | cut -f 1 -d " " | sed 's/:$//'
+	local f1=cat
+	[ "${1:-}" = "--no-attached" ] && f1=filter_attached
+	tmux ls | $f1 | grep '^[a-z0-9-]\+:' | cut -f 1 -d " " | sed 's/:$//'
 }
 
 main() {
 	IFS=""
-	sessions=`list_sessions`
+	sessions=`list_sessions $@`
 	chosen=`echo $sessions | dmenu`
 	[ -z $chosen ] && return 0
 
