@@ -9,7 +9,7 @@ filter_attached() {
 list_sessions() {
 	local f1=cat
 	[ "${1:-}" = "--no-attached" ] && f1=filter_attached
-	tmux ls | $f1 | grep '^[a-z0-9-]\+:' | cut -f 1 -d " " | sed 's/:$//'
+	tmux ls | $f1 | grep '^[A-Za-z0-9-]\+:' | cut -f 1 -d " " | sed 's/:$//'
 }
 
 main() {
