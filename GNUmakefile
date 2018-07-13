@@ -29,8 +29,9 @@ version   = 0.2.0
 name      = jm-util
 sources   = GNUmakefile $(src_dir) README.rst
 
-cmds      = $(patsubst $(src_dir)/%.zsh,%,$(wildcard $(src_dir)/*.zsh))
-cmds     += $(patsubst $(src_dir)/%,%,$(wildcard $(src_dir)/*.py))
+cmds_zsh  = $(patsubst $(src_dir)/%.zsh,%,$(wildcard $(src_dir)/*.zsh))
+cmds_py   = $(patsubst $(src_dir)/%.py,%,$(wildcard $(src_dir)/*.py))
+cmds      = $(cmds_zsh) $(cmds_py)
 mans      = $(patsubst Documentation/man1/%.rst,%.1,$(wildcard Documentation/man1/*.rst))
 
 dirs      =
@@ -71,7 +72,7 @@ install-home:
 	$(MAKE) install PREFIX=$(HOME)/.local
 
 
-# build binaries
+# build binaries zsh
 $(b_bin_dir)/%: $(src_dir)/%.zsh
 
 	$(install_bin) $< $@
@@ -79,6 +80,12 @@ $(b_bin_dir)/%: $(src_dir)/%.zsh
 $(b_bin_dir)/%.py: $(src_dir)/%.py
 
 	$(install_bin) $< $@
+
+# build binaries python
+$(b_bin_dir)/%: $(src_dir)/%.py
+
+	$(install_bin) $< $@
+
 
 # build man pages
 $(b_man_dir)/%.1: Documentation/man1/%.rst
