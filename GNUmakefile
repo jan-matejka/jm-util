@@ -124,7 +124,9 @@ sdist:
 
 # tests
 .PHONY: check
-check:
+check: build
+
+	PATH=$$PWD/build/bin:$$PATH dram -s zsh -t rst dram/*
 
 
 # clean build/tests artefacts
