@@ -5,16 +5,22 @@ SELF="${0##*/}"
 
 # opts
 o_edit=false
+o_wip=false
 
 # parse args
 declare -a pargs
-zparseopts -K -D -a pargs e
+zparseopts -K -D -a pargs e w
 (( ${pargs[(I)-e]} )) && o_edit=true
+(( ${pargs[(I)-w]} )) && o_wip=true
 
 git_path=${1:?}
 file=${2:?}
 
-msg="$file"
+# message is prefixed with "wip: " if -w was used, otherwise no prefix
+$o_wip && msg="wip: " || msg=""
+
+# add the file into message
+msg+="$file"
 
 $o_edit && {
   t=$(mktemp)

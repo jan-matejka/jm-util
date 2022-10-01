@@ -51,3 +51,9 @@ Finally, check the messages of created commits:
   setup
   a
   setup
+
+git-cif -w creates wip commits:
+  $ echo bar > bar/b
+  $ git cif -w
+  \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
+   1 file changed, 1 insertion(+), 2 deletions(-)
