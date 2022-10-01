@@ -11,7 +11,7 @@
   $ echo x >> a
 
   $ git cif
-  \[master [0-9a-f]{7}\] wip: a (re)
+  \[master [0-9a-f]{7}\] a (re)
    1 file changed, 1 insertion(+)
 
 
@@ -27,13 +27,13 @@
   $ touch d
 
   $ cd foo && git cif
-  \[master [0-9a-f]{7}\] wip: c (re)
+  \[master [0-9a-f]{7}\] c (re)
    1 file changed, 1 insertion(+)
-  \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
+  \[master [0-9a-f]{7}\] foo/bar/b (re)
    1 file changed, 1 insertion(+)
 
 
   $ git log --format="%s" -3
-  wip: foo/bar/b
-  wip: c
+  foo/bar/b
+  c
   setup
