@@ -1,19 +1,25 @@
+git-cif prints error if it can not find work dir root:
 
   $ git cif
   fatal: not a git repository (or any of the parent directories): .git
   git-cif: fatal: failed to find work dir
   [1]
 
+initialize a repository with a root commit:
+
   $ git init -q ./
   $ touch a
   $ git add a
   $ git commit -qam 'setup'
-  $ echo x >> a
 
+git-cif commits changed files:
+
+  $ echo x >> a
   $ git cif
   \[master [0-9a-f]{7}\] a (re)
    1 file changed, 1 insertion(+)
 
+initialize subdirs in the git repository:
 
   $ mkdir -p foo/bar
   $ echo x >> foo/bar/b
@@ -22,9 +28,10 @@
   $ git add foo/bar/b c
   $ git commit -qam 'setup'
 
+git-cif commits changed files in subdirs:
+
   $ echo x >> foo/bar/b
   $ echo x >> c
-  $ touch d
 
   $ cd foo && git cif
   \[master [0-9a-f]{7}\] c (re)
@@ -32,8 +39,15 @@
   \[master [0-9a-f]{7}\] foo/bar/b (re)
    1 file changed, 1 insertion(+)
 
+git-cif does not add untracked files by default:
+  $ touch d
+  $ git cif
 
-  $ git log --format="%s" -3
+Finally, check the messages of created commits:
+
+  $ git log --format="%s" -5
   foo/bar/b
   c
+  setup
+  a
   setup
