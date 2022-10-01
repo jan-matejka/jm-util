@@ -3,8 +3,10 @@
 SELF="${0##*/}"
 . yt_prelude
 
+# opts
 o_edit=false
 
+# parse args
 declare -a pargs
 zparseopts -K -D -a pargs e
 (( ${pargs[(I)-e]} )) && o_edit=true
@@ -12,7 +14,7 @@ zparseopts -K -D -a pargs e
 git_path=${1:?}
 file=${2:?}
 
-msg="wip: $file"
+msg="$file"
 
 $o_edit && {
   t=$(mktemp)
@@ -23,6 +25,7 @@ $o_edit && {
   g_args=( "-m" $msg )
 }
 
+# override EDITOR to start it with cursor placed at the end of the commit message subject
 EDITOR='vim -c "normal A"' git -C $git_path commit $g_args $file </dev/tty
 (( $? > 0 )) && exit 255
 exit 0
