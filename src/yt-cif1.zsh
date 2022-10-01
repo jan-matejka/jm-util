@@ -13,11 +13,17 @@ zparseopts -K -D -a pargs e w
 (( ${pargs[(I)-e]} )) && o_edit=true
 (( ${pargs[(I)-w]} )) && o_wip=true
 
+# operands
+# file_status is the XY field of `git status --porcelain=v2`, see git-cif implementation
 git_path=${1:?}
-file=${2:?}
+file_status=${2:?}
+file=${3:?}
 
-# message is prefixed with "wip: " if -w was used, otherwise no prefix
+# prefix message with "wip: " if -w was used, otherwise no prefix
 $o_wip && msg="wip: " || msg=""
+
+# prefix message with "add " if file_status indicates
+test ${file_status:0:1} = A && msg+="add "
 
 # add the file into message
 msg+="$file"

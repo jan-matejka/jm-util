@@ -57,3 +57,12 @@ git-cif -w creates wip commits:
   $ git cif -w
   \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
    1 file changed, 1 insertion(+), 2 deletions(-)
+
+git-cif prefixes the file with "add: " if a file becomes tracked
+  $ ! test -e c
+  $ echo x > c
+  $ git add c
+  $ git cif
+  \[master [0-9a-f]{7}\] add foo/c (re)
+   1 file changed, 1 insertion(+)
+   create mode 100644 foo/c
