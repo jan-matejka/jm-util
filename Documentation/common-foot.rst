@@ -6,7 +6,7 @@ The utility exits 0 on success, and >0 if an error occurs.
 LICENSE
 =======
 
-MIT https://github.com/yaccz/yacs-tools/blob/master/LICENSE
+MIT https://github.com/jan-matejka/jm-util/blob/master/LICENSE
 
 BUGS
 ====
@@ -14,4 +14,4 @@ BUGS
 No doubt plentiful.
 
 Please report them at
-https://github.com/yaccz/yacs-tools/issues
+https://github.com/jan-matejka/jm-util/issues

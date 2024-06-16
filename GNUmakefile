@@ -26,7 +26,7 @@ zsh_comp_dir  = $(DESTDIR)$(PREFIX)/share/zsh/vendor-completions
 
 # common program specific definitions
 version   = 0.2.0
-name      = yac-tools
+name      = jm-util
 sources   = GNUmakefile $(src_dir) README.rst
 
 cmds      = $(patsubst $(src_dir)/%.zsh,%,$(wildcard $(src_dir)/*.zsh))

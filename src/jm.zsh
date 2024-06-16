@@ -11,4 +11,4 @@ zparseopts -K -D -a pargs -Apaargs x
   export JM_XTRACE=true
 }
 
-xdgenv-exec JM yac-tools -- jm_dispatch $SELF "$@"
+xdgenv-exec JM jm-util -- jm_dispatch $SELF "$@"
