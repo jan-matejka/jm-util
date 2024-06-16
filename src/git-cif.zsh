@@ -1,7 +1,7 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
 root=$(git rev-parse --show-toplevel) || fatal "failed to find work dir"
 
@@ -9,4 +9,4 @@ root=$(git rev-parse --show-toplevel) || fatal "failed to find work dir"
 # the git-status(1)
 git -C $root status --porcelain=v2 | \
   awk '/^1/ { print $2 " " $9; }' | \
-  xargs -n2 -r yt cif1 $@ $root
+  xargs -n2 -r jm cif1 $@ $root

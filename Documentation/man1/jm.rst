@@ -1,4 +1,4 @@
-yt
+jm
 ##
 
 yac-tools
@@ -12,18 +12,18 @@ yac-tools
 SYNOPSIS
 ========
 
-yt <command> [<args>]
+jm <command> [<args>]
 
 COMMANDS
 ========
 
-* ``man 1 yt-keymap``
+* ``man 1 jm-keymap``
 
-* ``man 1 yt-offending``
+* ``man 1 jm-offending``
 
-* ``man 1 yt-backlight``
+* ``man 1 jm-backlight``
 
-* ``man 1 yt-certinfo``
+* ``man 1 jm-certinfo``
 
 DESCRIPTION
 ===========

@@ -1,7 +1,7 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
 # opts
 o_edit=false

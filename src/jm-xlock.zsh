@@ -1,7 +1,7 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
 log_dir=$HOME/.local/share
 

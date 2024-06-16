@@ -1,7 +1,7 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
 check-arg "self" ${1:-}
 check-arg "command" ${2:-}

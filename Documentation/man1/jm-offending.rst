@@ -1,4 +1,4 @@
-yt-offending
+jm-offending
 ############
 
 Drop offending line from known_hosts
@@ -12,6 +12,6 @@ Drop offending line from known_hosts
 SYNOPSIS
 ========
 
-yt offending <lineno>
+jm offending <lineno>
 
 .. include:: ../common-foot.rst

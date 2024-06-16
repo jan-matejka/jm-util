@@ -1,4 +1,4 @@
-yt-xlock
+jm-xlock
 ###########
 
 lock screen
@@ -12,7 +12,7 @@ lock screen
 SYNOPSIS
 ========
 
-  yt xlock
+  jm xlock
 
 DESCRIPTION
 ===========

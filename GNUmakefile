@@ -52,8 +52,8 @@ i_deps   += $(i_man_dir)
 i_deps   += $(bash_comp_dir) $(zsh_comp_dir)
 i_deps   += $(addprefix $(i_bin_dir)/,$(cmds))
 i_deps   += $(addprefix $(i_man_dir)/,$(mans))
-i_deps   += $(bash_comp_dir)/yt
-i_deps   += $(zsh_comp_dir)/_yt
+i_deps   += $(bash_comp_dir)/jm
+i_deps   += $(zsh_comp_dir)/_jm
 
 
 # build
@@ -98,11 +98,11 @@ $(i_man_dir)/%: $(b_man_dir)/%
 	$(install_data) $< $@
 
 # install completions
-$(bash_comp_dir)/yt: completion/yt.bash
+$(bash_comp_dir)/jm: completion/jm.bash
 
 	$(install_data) $< $@
 
-$(zsh_comp_dir)/_yt: completion/yt.bash
+$(zsh_comp_dir)/_jm: completion/jm.bash
 
 	$(install_data) $< $@
 

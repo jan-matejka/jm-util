@@ -1,4 +1,4 @@
-yt-backlight
+jm-backlight
 ############
 
 Backlight control
@@ -14,8 +14,8 @@ SYNOPSIS
 
 ::
 
-  yt backlight [--max]
-  yt backlight <new>
+  jm backlight [--max]
+  jm backlight <new>
 
 DESCRIPTION
 ===========

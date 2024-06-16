@@ -1,4 +1,4 @@
-yt-keymap
+jm-keymap
 #########
 
 X keymap toggle
@@ -14,8 +14,8 @@ SYNOPSIS
 
 ::
 
-  yt keymap toggle
-  yt keymap set <name>
+  jm keymap toggle
+  jm keymap set <name>
 
 CONFIGURATION
 =============

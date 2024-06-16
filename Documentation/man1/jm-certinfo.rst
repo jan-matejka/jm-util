@@ -1,4 +1,4 @@
-yt-certinfo
+jm-certinfo
 ###########
 
 Print certificate information
@@ -12,7 +12,7 @@ Print certificate information
 SYNOPSIS
 ========
 
-  yt certinfo [-h <hostname>] [-p <port>] <protocol> <host>
+  jm certinfo [-h <hostname>] [-p <port>] <protocol> <host>
 
   <protocol> = www | imap | imaps | smtp | smtps | smtp-msa | file
 
