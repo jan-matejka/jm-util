@@ -1,4 +1,4 @@
-yt-offending
+jm-offending
 ############
 
 Drop offending line from known_hosts
@@ -7,11 +7,11 @@ Drop offending line from known_hosts
 :Manual section: 1
 :Date: 2018-06-16
 :Author: Jan Matějka jan@matejka.ninja
-:Manual group: yac tools manual
+:Manual group: jm-util manual
 
 SYNOPSIS
 ========
 
-yt offending <lineno>
+jm offending <lineno>
 
 .. include:: ../common-foot.rst

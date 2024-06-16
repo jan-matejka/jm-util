@@ -1,14 +1,14 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
 declare -a pargs
 declare -A paargs
 zparseopts -K -D -a pargs -Apaargs x
 (( ${pargs[(I)-x]} )) && {
   set -x
-  export YT_XTRACE=true
+  export JM_XTRACE=true
 }
 
-xdgenv-exec YT yac-tools -- yt_dispatch $SELF "$@"
+xdgenv-exec JM jm-util -- jm_dispatch $SELF "$@"

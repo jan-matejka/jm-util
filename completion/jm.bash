@@ -1,12 +1,12 @@
-#compdef yt
+#compdef jm
 
 [[ -n ${ZSH_VERSION} ]] && autoload bashcompinit
 
-_yt_cmds=( backlight certinfo keymap offending xlock )
-function _yt_completion {
+_jm_cmds=( backlight certinfo keymap offending xlock )
+function _jm_completion {
   case $COMP_CWORD in
   1)
-    COMPREPLY=($(compgen -W "${_yt_cmds[*]}" "${COMP_WORDS[1]}"))
+    COMPREPLY=($(compgen -W "${_jm_cmds[*]}" "${COMP_WORDS[1]}"))
     ;;
   2)
     if [[ ${COMP_WORDS[1]} == "keymap" ]]; then
@@ -18,4 +18,4 @@ function _yt_completion {
   esac
 }
 
-complete -F _yt_completion yt
+complete -F _jm_completion jm

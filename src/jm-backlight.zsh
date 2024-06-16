@@ -1,7 +1,7 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
 dir="/sys/class/backlight/intel_backlight"
 

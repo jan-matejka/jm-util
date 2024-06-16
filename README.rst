@@ -1,1 +1,1 @@
-Documentation/man1/yt.rst
+Documentation/man1/jm.rst

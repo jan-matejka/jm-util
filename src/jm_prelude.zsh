@@ -62,4 +62,4 @@ function redir {
   "$@" <&${args[-0]} 1>&${args[-1]} 2>&${args[-2]}
 }
 
-${YT_XTRACE:-false} && set -x
+${JM_XTRACE:-false} && set -x

@@ -1,10 +1,10 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
-venv=~/.venv/yt/bin/activate
+venv=~/.venv/jm/bin/activate
 [[ -e $venv ]] || fatal "%s does not exist" $venv
 
 source $venv
-python3 `which yt_urltitle.py` $@
+pjmhon3 `which jm_urltitle.py` $@

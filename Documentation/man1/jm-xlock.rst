@@ -1,4 +1,4 @@
-yt-xlock
+jm-xlock
 ###########
 
 lock screen
@@ -7,12 +7,12 @@ lock screen
 :Manual section: 1
 :Date: 2018-06-17
 :Author: Jan Matějka jan@matejka.ninja
-:Manual group: yac tools manual
+:Manual group: jm-util manual
 
 SYNOPSIS
 ========
 
-  yt xlock
+  jm xlock
 
 DESCRIPTION
 ===========

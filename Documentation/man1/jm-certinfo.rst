@@ -1,4 +1,4 @@
-yt-certinfo
+jm-certinfo
 ###########
 
 Print certificate information
@@ -7,12 +7,12 @@ Print certificate information
 :Manual section: 1
 :Date: 2018-06-17
 :Author: Jan Matějka jan@matejka.ninja
-:Manual group: yac tools manual
+:Manual group: jm-util manual
 
 SYNOPSIS
 ========
 
-  yt certinfo [-h <hostname>] [-p <port>] <protocol> <host>
+  jm certinfo [-h <hostname>] [-p <port>] <protocol> <host>
 
   <protocol> = www | imap | imaps | smtp | smtps | smtp-msa | file
 

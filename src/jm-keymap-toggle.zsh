@@ -1,9 +1,9 @@
 #! /usr/bin/env zsh
 
 SELF="${0##*/}"
-. yt_prelude
+. jm_prelude
 
-names=($(zargs -n1 -- $YT_CONFIG_HOME/keymap/* -- basename))
+names=($(zargs -n1 -- $JM_CONFIG_HOME/keymap/* -- basename))
 
 current=$(setxkbmap -query | grep layout: | sed 's/ \+/ /g' | cut -f2 -d" ")
 
@@ -16,4 +16,4 @@ idx=${names[(I)$current]}
 # - increment comes after modulo since zsh arrays start at 1.
 idx=$(( (( $idx % ${#names} )) + 1 ))
 
-exec yt-keymap-set ${names[$idx]}
+exec jm-keymap-set ${names[$idx]}
