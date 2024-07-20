@@ -6,11 +6,20 @@ SELF="${0##*/}"
 check-arg "name" ${1:-}
 name=$1
 
-args=($(cat $JM_CONFIG_HOME/keymap/$name)) || fatal "Unknown %s" $name
-notifier=(dzen2 -sa c -xs 1 -p 1)
+lines=(${(@f)"$(<$JM_CONFIG_HOME/keymap/$name)"}) || exit 1
+: ${NOTIFY=dzen2 -sa c -xs 1 -p 1}
+NOTIFY=(${(ps: :)NOTIFY})
 
-if setxkbmap $args ; then
-  echo "keymap: $name" | $notifier
-else
-  echo "failed to set keymap $name" | $notifier
-fi
+rc=0
+for line in ${lines}; do
+  setxkbmap ${(ps: :)line}
+  rc=$(( $rc + $? ))
+  # setxkbmap -print
+done
+
+(( $rc > 0 )) && {
+  printf "%s: failed to set keymap $name" $0 | $NOTIFY
+  exit 1
+}
+
+echo "keymap: $name" | $NOTIFY

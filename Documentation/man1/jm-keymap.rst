@@ -12,22 +12,21 @@ X keymap toggle
 SYNOPSIS
 ========
 
+Executes each line of the <name> config file as argv to ``man 1 setxkbmap``.
+
 ::
 
-  jm keymap toggle
   jm keymap set <name>
 
 CONFIGURATION
 =============
 
-<name> is identified by file names in $XDG_CONFIG_HOME/jm-util/keymap/ directory.
-Contents of the filename are arguments for ``man 1 setxkbmap`` to use when the <name> is set.
-
-For toggle to work, the <name> must be same as layout printed by ``setxkbmap -query``.
+<name> is file name in the $XDG_CONFIG_HOME/jm-util/keymap/ directory.
 
 SEE ALSO
 ========
 
+* ``man 1 jm-keymap-toggle``
 * ``man 1 setxkbmap``
 
 .. include:: ../common-foot.rst
