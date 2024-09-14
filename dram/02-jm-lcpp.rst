@@ -27,3 +27,10 @@ test::
   > foo/bar/quyd
   > EOF
   foo/bar
+
+  $ jm-lcpp <<EOF
+  > foo/q/1
+  > foo/a/1
+  > foo/q/4
+  > EOF
+  foo
