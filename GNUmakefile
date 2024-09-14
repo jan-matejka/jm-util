@@ -29,8 +29,11 @@ version   = 0.2.0
 name      = jm-util
 sources   = GNUmakefile $(src_dir) README.rst
 
+rs_cmds   = $(patsubst $(src_dir)/%.rs,%,$(wildcard $(src_dir)/*.rs))
+rs_native_build = target/debug/$(rs_cmds)
+
 cmds      = $(patsubst $(src_dir)/%.zsh,%,$(wildcard $(src_dir)/*.zsh))
-cmds     += $(patsubst $(src_dir)/%,%,$(wildcard $(src_dir)/*.py))
+cmds     += $(rs_cmds)
 mans      = $(patsubst Documentation/man1/%.rst,%.1,$(wildcard Documentation/man1/*.rst))
 
 dirs      =
@@ -60,6 +63,10 @@ i_deps   += $(zsh_comp_dir)/_jm
 .PHONY: build
 build: $(b_deps)
 
+.cargo_build: src/*.rs
+
+	cargo build
+	touch .cargo_build
 
 # install
 .PHONY: install
@@ -76,9 +83,11 @@ $(b_bin_dir)/%: $(src_dir)/%.zsh
 
 	$(install_bin) $< $@
 
-$(b_bin_dir)/%.py: $(src_dir)/%.py
+$(b_bin_dir)/$(rs_cmds): $(rs_native_build)
 
-	$(install_bin) $< $@
+	install target/debug/$(shell basename $@) $@
+
+$(rs_native_build): $(src_dir)/*.rs .cargo_build
 
 # build man pages
 $(b_man_dir)/%.1: Documentation/man1/%.rst
