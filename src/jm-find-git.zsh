@@ -11,4 +11,20 @@ rs=( $(find $HOME/git -type d -path $dir) )
   exit 0
 }
 
+git=
+for x in $rs; do
+  test -e $x/.git && {
+    [[ -z $git ]] && {
+      git=$x
+    } || {
+      exit 2
+    }
+  }
+done
+
+[[ -n $git ]] && {
+  printf "%s\n" $git
+  exit 0
+}
+
 exit 1
