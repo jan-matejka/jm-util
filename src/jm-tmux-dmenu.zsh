@@ -21,7 +21,10 @@ main() {
   if echo $sessions | grep -E "^$chosen$"; then
     $term -e sh -c "tmux at -t $chosen" &
   else
-    $term -e sh -c "tmux new -s $chosen" &
+    git_dir=$(jm find-git "$chosen")
+    cmd="tmux new -s $chosen"
+    [ $? = 0 ] && cmd="$cmd -c $git_dir"
+    $term -e sh -c "$cmd" &
   fi
 }
 
