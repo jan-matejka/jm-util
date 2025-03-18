@@ -1,8 +1,13 @@
 #! /usr/bin/env zsh
 # Project LiSt Unfinished Past Iteration
-#
+
 SELF="${0##*/}"
 . jm_prelude
+
+set -e
+
+gh-project-id p_id p_no _argv $@
+set -- $_argv
 
 fmt="%3v %v %10v %5v %v %11v %v"
 
@@ -32,7 +37,7 @@ gh_args=( \
   # just json.
   --template $tpl
   --limit 1000
-  $@
+  $p_no
 )
 
 # Note: fields after .status not addressable because status contains whitespace
