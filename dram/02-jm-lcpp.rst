@@ -34,3 +34,9 @@ test::
   > foo/q/4
   > EOF
   foo
+
+  $ jm-lcpp <<EOF
+  > a
+  > a/b/c
+  > b/a
+  > EOF
