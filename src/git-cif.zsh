@@ -6,20 +6,20 @@ SELF="${0##*/}"
 root=$(git rev-parse --show-toplevel) || fatal "failed to find work dir"
 
 # opts
-o_all=false
+o_one_commit=false
 o_edit=false
 
 # parse args
 declare -a pargs
-zparseopts -K -D -a pargs a e
-(( ${pargs[(I)-a]} )) && o_all=true
+zparseopts -K -D -a pargs 1 e
+(( ${pargs[(I)-1]} )) && o_one_commit=true
 (( ${pargs[(I)-e]} )) && o_edit=true
 
 status() {
   git -C $root status --porcelain=v2
 }
 
-$o_all && {
+$o_one_commit && {
   lcpp=$(status | \
     awk 'NF==9 { print $9; }' | jm-lcpp)
   lcpp+=": "

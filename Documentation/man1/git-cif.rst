@@ -5,14 +5,14 @@ Commit Files
 ------------
 
 :Manual section: 1
-:Date: 2024-09-14
+:Date: 2025-07-29
 :Author: Jan Matějka jan@matejka.ninja
 :Manual group: jm-util manual
 
 SYNOPSIS
 ========
 
-git cif [-aew]
+git cif [-1ew]
 
 DESCRIPTION
 ===========
@@ -27,6 +27,6 @@ OPTIONS
 
 -w      Add a "WIP" marker to the commit message.
 
--a      Commit the files in single commit using longest common path prefix as commit message.
+-1      Commit the files in single commit using longest common path prefix as commit message.
 
 .. include:: ../common-foot.rst

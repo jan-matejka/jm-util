@@ -101,9 +101,9 @@ But the -C flag handles it as well, regardless of relativePaths::
   foo/bar/a
   foo/qux/b
 
-git-cif -a::
+git-cif -1::
 
-  $ git cif -a
+  $ git cif -1
   \[master [0-9a-f]{7}\] foo: (re)
    2 files changed, 0 insertions(+), 0 deletions(-)
    create mode 100644 foo/bar/a
