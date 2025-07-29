@@ -15,8 +15,12 @@ zparseopts -K -D -a pargs a e
 (( ${pargs[(I)-a]} )) && o_all=true
 (( ${pargs[(I)-e]} )) && o_edit=true
 
+status() {
+  git -C $root status --porcelain=v2
+}
+
 $o_all && {
-  lcpp=$(git -C $root status --porcelain=v2 | \
+  lcpp=$(status | \
     awk 'NF==9 { print $9; }' | jm-lcpp)
   lcpp+=": "
   git -C $root commit -a -m "$lcpp" </dev/tty
@@ -28,7 +32,7 @@ $o_all && {
   $o_edit && e_arg=-e || e_arg=""
   # For the output of status porcelain refer to dram/99-ref-git-status-porcelain-v2.rst in addition to
   # the git-status(1)
-  git -C $root status --porcelain=v2 | \
+  status | \
     awk '/^1/ { print $2 " " $9; }' | \
     xargs -n2 -r jm cif1 $e_arg $@ $root
 }
