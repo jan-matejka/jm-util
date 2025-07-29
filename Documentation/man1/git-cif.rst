@@ -17,8 +17,8 @@ git cif [-aew]
 DESCRIPTION
 ===========
 
-Commit all tracked files with a generated commit message. Each file is committed separately (unless
--a is given) with the file path as commit message.
+Commit all tracked files with a generated commit message. Each file is
+committed separately (unless -a is given) with the file path as commit message.
 
 OPTIONS
 =======
