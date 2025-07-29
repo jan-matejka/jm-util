@@ -15,10 +15,22 @@ initialize a repository with a root commit::
   $ git add a
   $ git commit -qam 'setup'
 
-git-cif commits changed files::
+git-cif commits does nothing ::
 
   $ echo x >> a
   $ git cif
+
+git cif commits changes in index::
+
+  $ git add a
+  $ git cif
+  \[master [0-9a-f]{7}\] a (re)
+   1 file changed, 1 insertion(+)
+
+git cif -a commits all changes::
+
+  $ echo x >> a
+  $ git cif -a
   \[master [0-9a-f]{7}\] a (re)
    1 file changed, 1 insertion(+)
 
@@ -36,7 +48,7 @@ git-cif commits changed files in subdirs::
   $ echo x >> foo/bar/b
   $ echo x >> c
 
-  $ cd foo && git cif
+  $ cd foo && git cif -a
   \[master [0-9a-f]{7}\] c (re)
    1 file changed, 1 insertion(+)
   \[master [0-9a-f]{7}\] foo/bar/b (re)
@@ -49,16 +61,18 @@ git-cif does not add untracked files by default::
 
 Finally, check the messages of created commits::
 
-  $ git log --format="%s" -5
+  $ git log --format="%s" -6
   foo/bar/b
   c
   setup
+  a
   a
   setup
 
 git-cif -w creates wip commits::
 
   $ echo bar > bar/b
+  $ git add bar/b
   $ git cif -w
   \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
    1 file changed, 1 insertion(+), 2 deletions(-)

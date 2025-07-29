@@ -18,10 +18,12 @@ DESCRIPTION
 ===========
 
 Commit all tracked files with a generated commit message. Each file is
-committed separately (unless -a is given) with the file path as commit message.
+committed separately (unless -1 is given) with the file path as commit message.
 
 OPTIONS
 =======
+
+-a      Commit all changes to tracked files. Not just the index.
 
 -e      Open vim to edit the commit generated message.
 
