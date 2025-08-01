@@ -19,12 +19,20 @@ git-cif commits does nothing ::
 
   $ echo x >> a
   $ git cif
+  On branch master
+  Changes not staged for commit:
+    (use "git add <file>..." to update what will be committed)
+    (use "git restore <file>..." to discard changes in working directory)
+  \tmodified:   a (re)
+  
+  no changes added to commit (use "git add" and/or "git commit -a")
+  [255]
 
 git cif commits changes in index::
 
   $ git add a
   $ git cif
-  \[master [0-9a-f]{7}\] a (re)
+  \[master [0-9a-f]{7}\] : (re)
    1 file changed, 1 insertion(+)
 
 git cif -a commits all changes::
@@ -54,10 +62,10 @@ git-cif commits changed files in subdirs::
   \[master [0-9a-f]{7}\] foo/bar/b (re)
    1 file changed, 1 insertion(+)
 
-git-cif does not add untracked files by default::
+git-cif -a does not add untracked files by default::
 
   $ touch d
-  $ git cif
+  $ git cif -a
 
 Finally, check the messages of created commits::
 
@@ -66,14 +74,14 @@ Finally, check the messages of created commits::
   c
   setup
   a
-  a
+  :
   setup
 
-git-cif -w creates wip commits::
+git-cif -aw creates wip commits::
 
   $ echo bar > bar/b
   $ git add bar/b
-  $ git cif -w
+  $ git cif -a -w
   \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
    1 file changed, 1 insertion(+), 2 deletions(-)
 
@@ -83,7 +91,7 @@ git-cif prefixes the file with "add: " if a file becomes tracked::
   $ echo x > c
   $ git add c
   $ git cif
-  \[master [0-9a-f]{7}\] add foo/c (re)
+  \[master [0-9a-f]{7}\] foo: (re)
    1 file changed, 1 insertion(+)
    create mode 100644 foo/c
 
@@ -122,3 +130,14 @@ git-cif -1::
    2 files changed, 0 insertions(+), 0 deletions(-)
    create mode 100644 foo/bar/a
    create mode 100644 foo/qux/b
+
+git-cif on staged changes::
+
+  $ echo a >> bar/a
+  $ echo a >> bar/c
+  $ echo b >> bar/b
+  $ git add bar/a bar/c
+  $ git cif
+  \[master [0-9a-f]{7}\] foo/bar: (re)
+   2 files changed, 2 insertions(+)
+   create mode 100644 foo/bar/c

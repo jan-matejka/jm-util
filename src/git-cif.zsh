@@ -29,6 +29,7 @@ $o_all && {
   # match any change in index
   filter='$1 ~ "1|2" && $2 ~ "[^.]."'
   commit_opts=( )
+  o_one_commit=true
 }
 
 $o_one_commit && {
