@@ -29,6 +29,16 @@ OPTIONS
 
 -w      Add a "WIP" marker to the commit message.
 
--1      Commit the files in single commit using longest common path prefix as commit message.
+-1      Commit the files in single commit using longest common path prefix as
+        commit message.
+
+        Defaults to off but is implied by not using -a.
+
+        Practically meaning -1 is implied if you have staged changes because:
+        1. If you have staged, you probably don't want to use -a.
+        2. If you do use -a you probably don't have staged changes or don't
+           care about them (consistent with git-commit -a).
+
+        This allows to commit index with partially staged files.
 
 .. include:: ../common-foot.rst
