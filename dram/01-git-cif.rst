@@ -122,3 +122,16 @@ git-cif -1::
    2 files changed, 0 insertions(+), 0 deletions(-)
    create mode 100644 foo/bar/a
    create mode 100644 foo/qux/b
+
+git-cif on staged changes::
+
+  $ echo a >> bar/a
+  $ echo a >> bar/c
+  $ echo b >> bar/b
+  $ git add bar/a bar/c
+  $ git cif
+  \[master [0-9a-f]{7}\] foo/bar/a (re)
+   1 file changed, 1 insertion(+)
+  \[master [0-9a-f]{7}\] add foo/bar/c (re)
+   1 file changed, 1 insertion(+)
+   create mode 100644 foo/bar/c
