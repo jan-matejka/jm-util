@@ -1,0 +1,9 @@
+services:
+  jm-util:
+    build:
+      dockerfile: oci/Containerfile
+    volumes:
+      - ./:/home/user/src
+
+    x-podman.uidmaps:
+      - +1000:@1000

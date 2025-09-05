@@ -1,0 +1,24 @@
+ARG registry=localhost
+ARG tag=latest
+FROM docker.io/library/debian:trixie-slim
+
+RUN printf "APT::Install-Recommends \"0\";" \
+  >/etc/apt/apt.conf.d/no-install-recommends
+RUN apt-get update
+
+RUN apt-get install -y \
+  make zsh cargo python3-docutils curl gpg ca-certificates git
+
+COPY oci/jma-ppa.sh /root/
+RUN sh /root/jma-ppa.sh
+
+RUN apt-get install -y dram xdgenv
+
+RUN useradd -m -s /bin/zsh user
+USER user
+RUN touch /home/user/.zshrc
+
+COPY --chown=user:user ../ /home/user/src
+
+WORKDIR /home/user/src
+RUN make
