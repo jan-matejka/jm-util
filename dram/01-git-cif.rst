@@ -11,6 +11,8 @@ git-cif prints error if it can not find work dir root::
 initialize a repository with a root commit::
 
   $ git init -q ./
+  $ git config --local user.name "John"
+  $ git config --local user.email "john@example.com"
   $ touch a
   $ git add a
   $ git commit -qam 'setup'

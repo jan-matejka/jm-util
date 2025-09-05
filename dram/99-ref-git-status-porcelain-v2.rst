@@ -9,6 +9,8 @@ Example reference for the output of git status --porcelain=v2
 Initialize a repository with a root commit:
 
   $ git init -q ./
+  $ git config --local user.name "John"
+  $ git config --local user.email "john@example.com"
   $ touch modified-tracked
   $ git add modified-tracked
   $ git commit -qam 'setup'
