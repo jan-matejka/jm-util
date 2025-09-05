@@ -9,7 +9,7 @@ PREFIX       ?= /usr/local
 
 sdist         = $(name).$(version)
 
-check_files  ?= dram/*
+tc  ?= dram/*
 
 ## installation targets
 i_bin_dir     = $(DESTDIR)$(PREFIX)/bin
@@ -137,7 +137,7 @@ sdist:
 .PHONY: check
 check: build
 
-	PATH=$$PWD/build/bin:$$PATH dram -s zsh -t rst $(check_files)
+	PATH=$$PWD/build/bin:$$PATH dram -s zsh -t rst $(tc)
 
 
 # clean build/tests artefacts
