@@ -34,7 +34,7 @@ git cif commits changes in index::
 
   $ git add a
   $ git cif
-  \[master [0-9a-f]{7}\] : (re)
+  \[master [0-9a-f]{7}\] a: (re)
    1 file changed, 1 insertion(+)
 
 git cif -a commits all changes::
@@ -76,7 +76,7 @@ Finally, check the messages of created commits::
   c
   setup
   a
-  :
+  a:
   setup
 
 git-cif -aw creates wip commits::
@@ -93,7 +93,7 @@ git-cif prefixes the file with "add: " if a file becomes tracked::
   $ echo x > c
   $ git add c
   $ git cif
-  \[master [0-9a-f]{7}\] foo: (re)
+  \[master [0-9a-f]{7}\] foo/c: (re)
    1 file changed, 1 insertion(+)
    create mode 100644 foo/c
 

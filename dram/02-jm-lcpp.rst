@@ -1,5 +1,10 @@
 test::
 
+  $ jm-lcpp <<EOF
+  > foo/bar
+  > EOF
+  foo/bar
+
   $ jm-lcpp
   $ jm-lcpp <<EOF
   > foo/bar
@@ -18,6 +23,12 @@ test::
   > foo/baz
   > fo
   > EOF
+
+  $ jm-lcpp <<EOF
+  > foo
+  > foo
+  > EOF
+  foo
 
   $ jm-lcpp <<EOF
   > foo/bar/q/1

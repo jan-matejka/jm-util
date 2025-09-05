@@ -9,34 +9,43 @@ fn lcp(mut lines: Lines<StdinLock<'_>>) -> Option<String> {
     let prefix_rs = prefix_o.unwrap();
     let mut prefix = prefix_rs.unwrap();
 
+    let mut more_than_one = false;
+
     for ln in lines {
         let lns = ln.unwrap();
+        if lns == prefix {
+            // do not count duplicate lines as `more_than_one`.
+            continue;
+        }
         while !lns.starts_with(&prefix) {
             prefix.pop();
             if prefix.is_empty()
                 { return None; }
         }
+
+        more_than_one = true;
     }
+    if ! more_than_one {
+        return Some(prefix);
+    }
+
+    if !prefix.contains("/") {
+        return None;
+    }
+
+    while !prefix.ends_with("/") {
+        prefix.pop();
+    }
+    prefix.pop();
     return Some(prefix);
-}
-
-fn drop_trailing_basename(s: &mut String) {
-    if !s.contains("/")
-        { s.truncate(0); return; }
-
-    while !s.ends_with("/")
-        { s.pop(); }
-    s.pop();
 }
 
 fn main() {
     let lcp = lcp(stdin().lines());
     if lcp.is_none() {
-        // println!("none");
         return;
     }
-    let mut lcp = lcp.unwrap();
-    drop_trailing_basename(&mut lcp);
+    let lcp = lcp.unwrap();
     if !lcp.is_empty()
         { println!("{}", lcp); }
 }
