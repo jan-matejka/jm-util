@@ -41,4 +41,4 @@ OPTIONS
 
         This allows to commit index with partially staged files.
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst

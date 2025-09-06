@@ -14,4 +14,4 @@ SYNOPSIS
 
 jm random <size>
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst

@@ -36,7 +36,7 @@ rs_native_build = target/debug/$(rs_cmds)
 
 cmds      = $(patsubst $(src_dir)/%.zsh,%,$(wildcard $(src_dir)/*.zsh))
 cmds     += $(rs_cmds)
-mans      = $(patsubst Documentation/man1/%.rst,%.1,$(wildcard Documentation/man1/*.rst))
+mans      = $(patsubst $(src_dir)/%.1.rst,%.1,$(wildcard $(src_dir)/*.1.rst))
 
 dirs      =
 dirs     += $(b_bin_dir) $(i_bin_dir)
@@ -92,7 +92,7 @@ $(b_bin_dir)/$(rs_cmds): $(rs_native_build)
 $(rs_native_build): $(src_dir)/*.rs .cargo_build
 
 # build man pages
-$(b_man_dir)/%.1: Documentation/man1/%.rst
+$(b_man_dir)/%.1: core/%.1.rst
 
 	rst2man $< $@
 

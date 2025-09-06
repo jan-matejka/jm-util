@@ -14,4 +14,4 @@ SYNOPSIS
 
 jm offending <lineno>
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst

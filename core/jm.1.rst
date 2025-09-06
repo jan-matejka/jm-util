@@ -30,4 +30,4 @@ DESCRIPTION
 
 Collection of small utility programs to support myself in common, relatively arduous tasks.
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst
