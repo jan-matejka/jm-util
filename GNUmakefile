@@ -5,15 +5,15 @@ build_dir     = build
 dist_dir      = dist
 src_dir       = src
 
-PREFIX       ?= /usr/local
+prefix       ?= /usr/local
 
 sdist         = $(name).$(version)
 
 tc  ?= dram/*
 
 ## installation targets
-i_bin_dir     = $(DESTDIR)$(PREFIX)/bin
-i_man_dir     = $(DESTDIR)$(PREFIX)/man/man1
+i_bin_dir     = $(DESTDIR)$(prefix)/bin
+i_man_dir     = $(DESTDIR)$(prefix)/man/man1
 
 ## build targets
 b_bin_dir     = $(build_dir)/bin
@@ -23,8 +23,8 @@ b_man_dir     = $(build_dir)/man/man1
 install_bin   = install -m755
 install_data  = install -m644
 
-bash_comp_dir = $(DESTDIR)$(PREFIX)/share/bash-completion/completions
-zsh_comp_dir  = $(DESTDIR)$(PREFIX)/share/zsh/vendor-completions
+bash_comp_dir = $(DESTDIR)$(prefix)/share/bash-completion/completions
+zsh_comp_dir  = $(DESTDIR)$(prefix)/share/zsh/vendor-completions
 
 # common program specific definitions
 version   = 0.2.0
@@ -77,7 +77,7 @@ install: $(i_deps)
 .PHONY: install-home
 install-home:
 
-	$(MAKE) install PREFIX=$(HOME)/.local
+	$(MAKE) install prefix=$(HOME)/.local
 
 
 # build binaries
