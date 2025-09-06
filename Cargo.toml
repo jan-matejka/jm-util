@@ -9,4 +9,4 @@ edition = "2021"
 
 [[bin]]
 name = 'jm-lcpp'
-path = 'src/jm-lcpp.rs'
+path = 'core/jm-lcpp.rs'

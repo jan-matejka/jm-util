@@ -3,7 +3,7 @@
 # common definitions
 build_dir     = build
 dist_dir      = dist
-src_dir       = src
+src_dir       = core
 
 prefix       ?= /usr/local
 
@@ -65,7 +65,7 @@ i_deps   += $(zsh_comp_dir)/_jm
 .PHONY: build
 build: $(b_deps)
 
-.cargo_build: src/*.rs
+.cargo_build: core/*.rs
 
 	cargo build
 	touch .cargo_build
