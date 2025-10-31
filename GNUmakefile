@@ -1,4 +1,5 @@
 .DEFAULT_GOAL := build
+MAKEFLAGS:=-r
 
 # common definitions
 build_dir     = build
