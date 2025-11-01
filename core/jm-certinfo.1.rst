@@ -38,4 +38,4 @@ SEE ALSO
 
 * ``man 1 openssl``
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst

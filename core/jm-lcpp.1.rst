@@ -24,4 +24,4 @@ OPTIONS
 
 None
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst

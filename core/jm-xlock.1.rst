@@ -24,4 +24,4 @@ SEE ALSO
 
 * ``man 1 xscreensaver``
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst

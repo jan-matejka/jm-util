@@ -29,4 +29,4 @@ SEE ALSO
 * ``man 1 jm-keymap-toggle``
 * ``man 1 setxkbmap``
 
-.. include:: ../common-foot.rst
+.. include:: common-foot.rst
