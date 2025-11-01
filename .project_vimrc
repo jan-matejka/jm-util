@@ -1,0 +1,1 @@
+let g:ale_cpp_cc_options='-g -c -std=c++26 -Wall'

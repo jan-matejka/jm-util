@@ -7,7 +7,8 @@ RUN printf "APT::Install-Recommends \"0\";" \
 RUN apt-get update
 
 RUN apt-get install -y \
-  make zsh cargo python3-docutils curl gpg ca-certificates git
+  make zsh cargo python3-docutils curl gpg ca-certificates git g++ libfmt-dev \
+  strace gdb
 
 COPY oci/jma-ppa.sh /root/
 RUN sh /root/jma-ppa.sh
