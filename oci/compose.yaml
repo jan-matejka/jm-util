@@ -1,9 +1,24 @@
+name: jm-util
+
 services:
-  jm-util:
+  dev:
     build:
       dockerfile: oci/Containerfile
     volumes:
       - ./:/home/user/src
-
     x-podman.uidmaps:
       - +1000:@1000
+
+  debuild:
+    extends:
+      service: dev
+    volumes:
+      - ${HOME}/.gnupg/pubring.gpg:/home/user/.gnupg/pubring.gpg:ro
+      - ${HOME}/.gnupg/pubring.kbx:/home/user/.gnupg/pubring.kbx:ro
+      - ${HOME}/.gnupg/secring.gpg:/home/user/.gnupg/secring.gpg:ro
+      - ${HOME}/.gnupg/private-keys-v1.d:/home/user/.gnupg/private-keys-v1.d:ro
+      - ${HOME}/git/jm/debian-ppa/wip/dists/trixie/main/binary-amd64:/out
+      # - /run/user/1000/gnupg/S.gpg-agent:/home/user/.gnupg/S.gpg-agent:Z
+    environment:
+      DEB_SIGN_KEYID: 2B524183A4D7D908
+    command: make debuild cp-packages

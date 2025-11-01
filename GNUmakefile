@@ -80,3 +80,18 @@ clean:
 image:
 
 	podman-compose build jm-util
+
+.PHONY: check-deb
+check-deb:
+
+	debuild -i -us -uc -b
+
+.PHONY: debuild
+debuild:
+
+	debuild -i -b
+
+.PHONY: cp-packages
+cp-packages:
+
+	cd .. && { cp *.deb *.buildinfo *.build *.changes /out; }

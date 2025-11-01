@@ -1,0 +1,11 @@
+Source: jm-util
+Maintainer: Jan Matějka <jan@matejka.ninja>
+Section: misc
+Priority: optional
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13), python3-docutils, g++, cargo, libfmt-dev
+
+Package: jm-util
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, zsh
+Description: jm-util

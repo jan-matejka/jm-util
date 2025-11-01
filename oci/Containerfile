@@ -8,7 +8,7 @@ RUN apt-get update
 
 RUN apt-get install -y \
   make zsh cargo python3-docutils curl gpg ca-certificates git g++ libfmt-dev \
-  strace gdb
+  strace gdb devscripts debhelper-compat build-essential gnupg
 
 COPY oci/jma-ppa.sh /root/
 RUN sh /root/jma-ppa.sh
@@ -18,6 +18,8 @@ RUN apt-get install -y dram xdgenv
 RUN useradd -m -s /bin/zsh user
 USER user
 RUN touch /home/user/.zshrc
+
+RUN mkdir /home/user/.gnupg && chmod 700 /home/user/.gnupg
 
 COPY --chown=user:user ../ /home/user/src
 

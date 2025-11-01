@@ -2,7 +2,11 @@ build/
 cram/*.t.err
 .cargo_build
 Cargo.lock
-
+debian/jm-util
+debian/*.substvars
+debian/.debhelper
+debian/debhelper-build-stamp
+debian/files
 
 # Added by cargo
 
