@@ -16,7 +16,6 @@
 using namespace std;
 
 map<string,tuple<string, vector<string>>> aliases{
-  {":q", {"exit", {}}},
   {"b",  {"buildah", {}}},
   {"g",  {"git", {}}},
   {"gr", {"grep", {}}},
