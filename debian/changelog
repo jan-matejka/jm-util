@@ -1,3 +1,10 @@
+jm-util (0.2.1-1) unstable; urgency=medium
+
+  [ Jan Matejka ]
+  * Fix dependencies, tests.
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Wed, 26 Nov 2025 15:43:31 +0100
+
 jm-util (0.2.0-1) unstable; urgency=medium
 
   [ Jan Matejka ]
