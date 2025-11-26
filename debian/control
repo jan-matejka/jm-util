@@ -7,5 +7,5 @@ Build-Depends: debhelper-compat (= 13), python3-docutils, g++, cargo, libfmt-dev
 
 Package: jm-util
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, zsh
+Depends: ${shlibs:Depends}, ${misc:Depends}, zsh, xdgenv
 Description: jm-util
