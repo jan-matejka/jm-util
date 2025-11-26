@@ -33,7 +33,6 @@ test additional argv::
 test alias list::
 
   $ jm-alias
-  :q
   b
   d
   dc
