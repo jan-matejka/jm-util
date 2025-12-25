@@ -69,7 +69,7 @@ sdist:
 .PHONY: check
 check: build
 
-	PATH=$$PWD/build/bin:$$PATH dram -s zsh -t t.rst $(tc)
+	$(call recurse,check)
 
 # clean build/tests artefacts
 .PHONY: clean

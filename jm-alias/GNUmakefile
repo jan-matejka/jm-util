@@ -17,3 +17,6 @@ i_aliases:
 	$(b_bin_dir)/jm-alias | xargs -I% ln -snf jm-alias $(i_bin_dir)/%
 
 install: i_aliases
+
+.PHONY: check
+check:
