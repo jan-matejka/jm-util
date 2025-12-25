@@ -26,12 +26,13 @@ i_deps   += $(zsh_comp_dir)/_jm
 i_deps   += install_mods
 
 mods = jm-alias core
+recurse = printf "%s\n" $(mods) | xargs -I% $(MAKE) -C % $(1)
 
 # build
 .PHONY: build
 build: .cargo_build
 
-	printf "%s\n" $(mods) | xargs -I% $(MAKE) -C % build
+	$(call recurse,build)
 
 .cargo_build: core/*.rs
 
@@ -68,7 +69,7 @@ sdist:
 .PHONY: check
 check: build
 
-	PATH=$$PWD/build/bin:$$PATH dram -s zsh -t t.rst $(tc)
+	$(call recurse,check)
 
 # clean build/tests artefacts
 .PHONY: clean
