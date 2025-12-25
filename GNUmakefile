@@ -25,7 +25,7 @@ i_deps   += $(bash_comp_dir)/jm
 i_deps   += $(zsh_comp_dir)/_jm
 i_deps   += install_mods
 
-mods = jm-alias core
+mods = jm-alias core git-cif
 recurse = printf "%s\n" $(mods) | xargs -I% $(MAKE) -C % $(1)
 
 # build

@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := build
 MAKEFLAGS:=-r
 PERCENT:=%
+tc  ?= *.t.rst
 
 # common definitions
 b_bin_dir     = $(b_dir)/bin
@@ -95,3 +96,8 @@ install-home:
 %/:
 
 	install -m755 -d $@
+
+.PHONY: dram_check
+dram_check:
+
+	PATH=$$PWD/../build/bin:$$PATH dram -s zsh -t .t.rst $(tc)
