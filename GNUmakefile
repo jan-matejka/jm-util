@@ -79,7 +79,7 @@ clean:
 .PHONY: image
 image:
 
-	podman-compose build jm-util
+	podman-compose build dev
 
 .PHONY: check-deb
 check-deb:
