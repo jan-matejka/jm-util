@@ -56,7 +56,7 @@ git-cif commits changed files in subdirs::
   $ echo x >> foo/bar/b
   $ echo x >> c
 
-  $ cd foo && git cif -qam ""
+  $ cd foo && git cif -dqam ""
   $ git lg -2
   foo/bar/b
   
@@ -69,7 +69,16 @@ git-cif commits changed files in subdirs::
 git-cif -a does not add untracked files by default::
 
   $ touch d
-  $ git cif -a -m ""
+  $ git cif -dam ""
+  $ git cif -am ""
+  On branch master
+  Untracked files:
+    (use "git add <file>..." to include in what will be committed)
+  	foo/d
+  
+  nothing added to commit but untracked files present (use "git add" to track)
+  [255]
+
 
 Finally, check the messages of created commits::
 
@@ -85,7 +94,7 @@ git-cif -aw creates wip commits::
 
   $ echo bar > bar/b
   $ git add bar/b
-  $ git cif -qam "" -w
+  $ git cif -dqam "" -w
   $ git lg -1
   wip: foo/bar/b
   
@@ -130,9 +139,9 @@ But the -C flag handles it as well, regardless of relativePaths::
   foo/bar/a
   foo/qux/b
 
-git-cif -1::
+git-cif::
 
-  $ git cif -1 -qm ""
+  $ git cif -qm ""
   $ git lg -1
   foo
   

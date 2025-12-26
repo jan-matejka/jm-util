@@ -7,17 +7,17 @@ root=$(git rev-parse --show-toplevel) || fatal "failed to find work dir"
 
 # opts
 o_all=false
-o_one_commit=false
 o_msg=""
 o_quiet=false
+o_discrete=false
 
 # parse args
 declare -a pargs
 declare -A paargs
 
-zparseopts -K -D -a pargs -A paargs 1 a m: q
-(( ${pargs[(I)-1]} )) && o_one_commit=true
+zparseopts -K -D -a pargs -A paargs a m: q d
 (( ${pargs[(I)-a]} )) && o_all=true
+(( ${pargs[(I)-d]} )) && o_discrete=true
 (( ${pargs[(I)-q]} )) && set -- -q $@
 (( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
 
@@ -33,10 +33,9 @@ $o_all && {
   # match any change in index
   filter='$1 ~ "1|2" && $2 ~ "[^.]."'
   commit_opts=( )
-  o_one_commit=true
 }
 
-$o_one_commit && {
+! $o_discrete && {
   lcpp=$(status | awk "$filter { print \$9 }" | jm-lcpp)
   [[ -n $o_msg ]] && lcpp+=": $o_msg"
   git -C $root commit $@ $commit_opts -m "$lcpp" </dev/tty
