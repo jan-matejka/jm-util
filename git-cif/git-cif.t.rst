@@ -6,6 +6,7 @@ initialize a repository with a root commit::
   $ git init -q ./
   $ git config --local user.name "John"
   $ git config --local user.email "john@example.com"
+  $ git config --local alias.lg "log '--pretty=format:%B' --name-status"
   $ touch a
   $ git add a
   $ git commit -qam 'setup'
@@ -26,16 +27,20 @@ git-cif commits does nothing ::
 git cif commits changes in index::
 
   $ git add a
-  $ git cif -m ""
-  \[master [0-9a-f]{7}\] a (re)
-   1 file changed, 1 insertion(+)
+  $ git cif -qm ""
+  $ git lg -1
+  a
+  
+  M	a
 
 git cif -a commits all changes::
 
   $ echo x >> a
-  $ git cif -a -m ""
-  \[master [0-9a-f]{7}\] a (re)
-   1 file changed, 1 insertion(+)
+  $ git cif -aqm ""
+  $ git lg -1
+  a
+  
+  M	a
 
 initialize subdirs in the git repository::
 
@@ -51,11 +56,15 @@ git-cif commits changed files in subdirs::
   $ echo x >> foo/bar/b
   $ echo x >> c
 
-  $ cd foo && git cif -a -m ""
-  \[master [0-9a-f]{7}\] c (re)
-   1 file changed, 1 insertion(+)
-  \[master [0-9a-f]{7}\] foo/bar/b (re)
-   1 file changed, 1 insertion(+)
+  $ cd foo && git cif -qam ""
+  $ git lg -2
+  foo/bar/b
+  
+  M	foo/bar/b
+  
+  c
+  
+  M	c
 
 git-cif -a does not add untracked files by default::
 
@@ -76,19 +85,22 @@ git-cif -aw creates wip commits::
 
   $ echo bar > bar/b
   $ git add bar/b
-  $ git cif -a -m "" -w
-  \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
-   1 file changed, 1 insertion(+), 2 deletions(-)
+  $ git cif -qam "" -w
+  $ git lg -1
+  wip: foo/bar/b
+  
+  M	foo/bar/b
 
 git-cif prefixes the file with "add: " if a file becomes tracked::
 
   $ ! test -e c
   $ echo x > c
   $ git add c
-  $ git cif -m ""
-  \[master [0-9a-f]{7}\] foo/c (re)
-   1 file changed, 1 insertion(+)
-   create mode 100644 foo/c
+  $ git cif -qm ""
+  $ git lg -1
+  foo/c
+  
+  A	foo/c
 
 setup for git cif::
 
@@ -120,11 +132,12 @@ But the -C flag handles it as well, regardless of relativePaths::
 
 git-cif -1::
 
-  $ git cif -1 -m ""
-  \[master [0-9a-f]{7}\] foo (re)
-   2 files changed, 0 insertions(+), 0 deletions(-)
-   create mode 100644 foo/bar/a
-   create mode 100644 foo/qux/b
+  $ git cif -1 -qm ""
+  $ git lg -1
+  foo
+  
+  A	foo/bar/a
+  A	foo/qux/b
 
 git-cif on staged changes::
 
@@ -132,10 +145,12 @@ git-cif on staged changes::
   $ echo a >> bar/c
   $ echo b >> bar/b
   $ git add bar/a bar/c
-  $ git cif -m ""
-  \[master [0-9a-f]{7}\] foo/bar (re)
-   2 files changed, 2 insertions(+)
-   create mode 100644 foo/bar/c
+  $ git cif -qm ""
+  $ git lg -1
+  foo/bar
+  
+  M	foo/bar/a
+  A	foo/bar/c
 
   $ git status -s
    M bar/b
@@ -147,6 +162,8 @@ git-cif -m::
 
   $ echo a >> bar/a
   $ git add bar
-  $ git cif -m "foom"
-  \[master [0-9a-f]{7}\] foo/bar/a: foom (re)
-   1 file changed, 1 insertion(+)
+  $ git cif -qm "foom"
+  $ git lg -1
+  foo/bar/a: foom
+  
+  M	foo/bar/a
