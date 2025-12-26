@@ -32,7 +32,7 @@ $o_edit && {
   t=$(mktemp)
   trap "rm $t" EXIT
   printf >$t -- "$msg: "
-  g_args=( -t $t )
+  g_args=( -e -F $t )
 } || {
   g_args=( "-m" $msg )
 }
