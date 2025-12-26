@@ -1,13 +1,6 @@
 .. Note: git status --porcelain=v2 output is shown in
    dram/99-ref-git-status-porcelain-v2.rst
 
-git-cif prints error if it can not find work dir root::
-
-  $ git cif
-  fatal: not a git repository (or any of the parent directories): .git
-  git-cif: fatal: failed to find work dir
-  [1]
-
 initialize a repository with a root commit::
 
   $ git init -q ./
