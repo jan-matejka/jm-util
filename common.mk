@@ -100,4 +100,4 @@ install-home:
 .PHONY: dram_check
 dram_check:
 
-	PATH=$$PWD/../build/bin:$$PATH dram -s zsh -t .t.rst $(tc)
+	PATH=$$PWD/../build/bin:$$PATH dram -f -s zsh -t .t.rst $(tc)

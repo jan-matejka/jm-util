@@ -4,14 +4,17 @@ SELF="${0##*/}"
 . jm_prelude
 
 # opts
-o_edit=false
 o_wip=false
+o_msg=""
+o_no_edit=false
 
 # parse args
 declare -a pargs
-zparseopts -K -D -a pargs e w
-(( ${pargs[(I)-e]} )) && o_edit=true
+declare -A paargs
+zparseopts -K -D -a pargs w m: -no-edit
 (( ${pargs[(I)-w]} )) && o_wip=true
+(( ${pargs[(I)--no-edit]} )) && o_no_edit=true
+(( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
 
 # operands
 # file_status is the XY field of `git status --porcelain=v2`, see git-cif implementation
@@ -22,18 +25,21 @@ file=${3:?}
 # prefix message with "wip: " if -w was used, otherwise no prefix
 $o_wip && msg="wip: " || msg=""
 
-# prefix message with "add " if file_status indicates
-test ${file_status:0:1} = A && msg+="add "
-
 # add the file into message
-msg+="$file"
 
-$o_edit && {
+{ [[ -z $o_msg ]] && ! $o_no_edit } && {
+  msg+="$file:"
+  [[ -n $o_msg ]] && msg+="$o_msg"
+
+  # prefix message with "add " if file_status indicates
+  test ${file_status:0:1} = A && o_msg+=":add"
+
   t=$(mktemp)
   trap "rm $t" EXIT
-  printf >$t -- "$msg: "
+  printf >$t -- "$msg"
   g_args=( -e -F $t )
 } || {
+  msg+="$file"
   g_args=( "-m" $msg )
 }
 

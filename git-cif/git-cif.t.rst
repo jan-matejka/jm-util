@@ -33,14 +33,14 @@ git-cif commits does nothing ::
 git cif commits changes in index::
 
   $ git add a
-  $ git cif
-  \[master [0-9a-f]{7}\] a: (re)
+  $ git cif -m ""
+  \[master [0-9a-f]{7}\] a (re)
    1 file changed, 1 insertion(+)
 
 git cif -a commits all changes::
 
   $ echo x >> a
-  $ git cif -a
+  $ git cif -a -m ""
   \[master [0-9a-f]{7}\] a (re)
    1 file changed, 1 insertion(+)
 
@@ -58,7 +58,7 @@ git-cif commits changed files in subdirs::
   $ echo x >> foo/bar/b
   $ echo x >> c
 
-  $ cd foo && git cif -a
+  $ cd foo && git cif -a -m ""
   \[master [0-9a-f]{7}\] c (re)
    1 file changed, 1 insertion(+)
   \[master [0-9a-f]{7}\] foo/bar/b (re)
@@ -67,7 +67,7 @@ git-cif commits changed files in subdirs::
 git-cif -a does not add untracked files by default::
 
   $ touch d
-  $ git cif -a
+  $ git cif -a -m ""
 
 Finally, check the messages of created commits::
 
@@ -76,14 +76,14 @@ Finally, check the messages of created commits::
   c
   setup
   a
-  a:
+  a
   setup
 
 git-cif -aw creates wip commits::
 
   $ echo bar > bar/b
   $ git add bar/b
-  $ git cif -a -w
+  $ git cif -a -m "" -w
   \[master [0-9a-f]{7}\] wip: foo/bar/b (re)
    1 file changed, 1 insertion(+), 2 deletions(-)
 
@@ -92,8 +92,8 @@ git-cif prefixes the file with "add: " if a file becomes tracked::
   $ ! test -e c
   $ echo x > c
   $ git add c
-  $ git cif
-  \[master [0-9a-f]{7}\] foo/c: (re)
+  $ git cif -m ""
+  \[master [0-9a-f]{7}\] foo/c (re)
    1 file changed, 1 insertion(+)
    create mode 100644 foo/c
 
@@ -127,8 +127,8 @@ But the -C flag handles it as well, regardless of relativePaths::
 
 git-cif -1::
 
-  $ git cif -1
-  \[master [0-9a-f]{7}\] foo: (re)
+  $ git cif -1 -m ""
+  \[master [0-9a-f]{7}\] foo (re)
    2 files changed, 0 insertions(+), 0 deletions(-)
    create mode 100644 foo/bar/a
    create mode 100644 foo/qux/b
@@ -139,7 +139,21 @@ git-cif on staged changes::
   $ echo a >> bar/c
   $ echo b >> bar/b
   $ git add bar/a bar/c
-  $ git cif
-  \[master [0-9a-f]{7}\] foo/bar: (re)
+  $ git cif -m ""
+  \[master [0-9a-f]{7}\] foo/bar (re)
    2 files changed, 2 insertions(+)
    create mode 100644 foo/bar/c
+
+  $ git status -s
+   M bar/b
+  ?? d
+  $ git clean -fdxq
+  $ git reset --hard -q
+
+git-cif -m::
+
+  $ echo a >> bar/a
+  $ git add bar
+  $ git cif -m "foom"
+  \[master [0-9a-f]{7}\] foo/bar/a: foom (re)
+   1 file changed, 1 insertion(+)

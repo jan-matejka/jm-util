@@ -12,7 +12,7 @@ Commit Files
 SYNOPSIS
 ========
 
-git cif [-1ew]
+git cif [-1w] [-m <msg>]
 
 DESCRIPTION
 ===========
@@ -25,9 +25,9 @@ OPTIONS
 
 -a      Commit all changes to tracked files. Not just the index.
 
--e      Open vim to edit the commit generated message.
-
 -w      Add a "WIP" marker to the commit message.
+
+-m      Use the given <msg> as the commit message.
 
 -1      Commit the files in single commit using longest common path prefix as
         commit message.
