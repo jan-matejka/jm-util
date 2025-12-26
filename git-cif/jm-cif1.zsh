@@ -7,13 +7,15 @@ SELF="${0##*/}"
 o_wip=false
 o_msg=""
 o_no_edit=false
+o_quiet=false
 
 # parse args
 declare -a pargs
 declare -A paargs
-zparseopts -K -D -a pargs w m: -no-edit
+zparseopts -K -D -a pargs w m: -no-edit q
 (( ${pargs[(I)-w]} )) && o_wip=true
 (( ${pargs[(I)--no-edit]} )) && o_no_edit=true
+(( ${pargs[(I)-q]} )) && o_quiet=true
 (( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
 
 # operands
@@ -42,6 +44,8 @@ $o_wip && msg="wip: " || msg=""
   msg+="$file"
   g_args=( "-m" $msg )
 }
+
+$o_quiet && g_args+=( -q )
 
 # override EDITOR to start it with cursor placed at the end of the commit message subject
 EDITOR='vim -c "normal A"' git -C $git_path commit $g_args $file </dev/tty

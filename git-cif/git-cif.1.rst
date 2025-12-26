@@ -29,6 +29,8 @@ OPTIONS
 
 -m      Use the given <msg> as the commit message.
 
+-q      Suppress commit summary message.
+
 -1      Commit the files in single commit using longest common path prefix as
         commit message.
 
