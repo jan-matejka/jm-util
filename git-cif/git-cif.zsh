@@ -2,6 +2,7 @@
 
 SELF="${0##*/}"
 . jm_prelude
+set -e
 
 root=$(git rev-parse --show-toplevel) || fatal "failed to find work dir"
 
@@ -38,10 +39,17 @@ $o_all && {
 ! $o_discrete && {
   lcpp=$(status | awk "$filter { print \$9 }" | jm-lcpp)
   [[ -n $o_msg ]] && lcpp+=": $o_msg"
-  git -C $root commit $@ $commit_opts -m "$lcpp" </dev/tty
-  (( $? > 0 )) && exit 255
+
+  # open EDITOR only if -m is not given
+  (( ${${(k)paargs}[(I)-m]} )) || commit_opts+=( --edit )
+
   # override EDITOR to start it with cursor placed at the end of the commit message subject
-  (( ${${(k)paargs}[(I)-m]} )) || EDITOR='vim -c "normal A"' git commit $@ --amend || exit 1
+  [[ ${${EDITOR:-}[1,3]} = "vim" ]] && export EDITOR='vim -c "normal A"'
+
+  # Passing the default message into git via stdin is messing with running
+  # editor so that is not an option.
+  git -C $root commit $@ $commit_opts -m "$lcpp"
+  (( $? > 0 )) && exit 255
   exit 0
 } || {
   # For the output of status porcelain refer to dram/99-ref-git-status-porcelain-v2.rst in addition to

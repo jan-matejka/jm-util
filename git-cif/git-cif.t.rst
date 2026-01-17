@@ -11,7 +11,7 @@ initialize a repository with a root commit::
   $ git add a
   $ git commit -qam 'setup'
 
-git-cif commits does nothing ::
+git-cif does nothing if there is no index::
 
   $ echo x >> a
   $ git cif
@@ -176,3 +176,76 @@ git-cif -m::
   foo/bar/a: foom
   
   M	foo/bar/a
+
+get back to GIT_WORK_TREE root::
+
+  $ cd ..
+
+git-cif aborts when there is no lcpp and no editor::
+
+  $ echo a >> a
+  $ echo a >> c
+  $ git add a c
+  $ git cif
+  error: Terminal is dumb, but EDITOR unset
+  Please supply the message using either -m or -F option.
+  [255]
+
+git-cif aborts when there is no lcpp and editor does not edit the message::
+
+  $ echo a >> a
+  $ echo a >> c
+  $ git add a c
+  $ EDITOR=cat git cif -q
+  
+  # Please enter the commit message for your changes. Lines starting
+  # with '#' will be ignored, and an empty message aborts the commit.
+  #
+  # On branch master
+  # Changes to be committed:
+  #\tmodified:   a (re)
+  #\tmodified:   c (re)
+  #
+  Aborting commit due to empty commit message.
+  [255]
+
+git commit -m but no value given::
+
+  $ git commit -m
+  error: switch `m' requires a value
+  [129]
+
+git cif -m but no value given::
+
+  $ git cif -m
+  */build/bin/git-cif:zparseopts:19: missing argument for option: -m (glob)
+  [1]
+
+  
+git-cif aborts when there is no lcpp and -m is given but empty::
+
+  $ echo a >> a
+  $ echo a >> c
+  $ git add a c
+  $ git cif -q -m ''
+  Aborting commit due to empty commit message.
+  [255]
+
+git-cif commits as usual when there is no lcpp but -m is given::
+
+  $ echo a >> a
+  $ echo a >> c
+  $ git add a c
+  $ EDITOR=cat git cif -q -m 'foo'
+  $ git log -1 --pretty=format:%s%n
+  : foo
+
+git-cif commits as usual when there is no lcpp and no -m but editor supplies
+the message::
+
+  $ echo a >> a
+  $ echo a >> c
+  $ git add a c
+  $ EDITOR='bash -c "echo bar >>$1" "echo"'  git cif -q
+  $ git log -1 --pretty=format:%s%n
+  bar
