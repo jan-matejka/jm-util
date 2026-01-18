@@ -29,18 +29,13 @@ $o_wip && msg="wip: " || msg=""
 
 # add the file into message
 
-{ [[ -z $o_msg ]] && ! $o_no_edit } && {
-  msg+="$file:"
-  [[ -n $o_msg ]] && msg+="$o_msg"
+msg+="$file:"
+[[ -n $o_msg ]] && msg+="$o_msg"
 
-  # prefix message with "add " if file_status indicates
-  test ${file_status:0:1} = A && o_msg+=":add"
+# prefix message with "add " if file_status indicates
+test ${file_status:0:1} = A && o_msg+=":add"
 
-  g_args=( -e -m $msg )
-} || {
-  msg+="$file"
-  g_args=( "-m" $msg )
-}
+g_args=( -m $msg )
 
 $o_quiet && g_args+=( -q )
 

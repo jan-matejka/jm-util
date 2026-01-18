@@ -58,11 +58,11 @@ git-cif commits changed files in subdirs::
 
   $ cd foo && git cif -dqam ""
   $ git lg -2
-  foo/bar/b
+  foo/bar/b:
   
   M	foo/bar/b
   
-  c
+  c:
   
   M	c
 
@@ -83,8 +83,8 @@ git-cif -a does not add untracked files by default::
 Finally, check the messages of created commits::
 
   $ git log --format="%s" -6
-  foo/bar/b
-  c
+  foo/bar/b:
+  c:
   setup
   a
   a
@@ -96,7 +96,7 @@ git-cif -aw creates wip commits::
   $ git add bar/b
   $ git cif -dqam "" -w
   $ git lg -1
-  wip: foo/bar/b
+  wip: foo/bar/b:
   
   M	foo/bar/b
 
@@ -249,3 +249,8 @@ the message::
   $ EDITOR='bash -c "echo bar >>$1" "echo"'  git cif -q
   $ git log -1 --pretty=format:%s%n
   bar
+
+git-cif -d does --no-edit by default::
+
+  $ echo a >> a
+  $ EDITOR=false git cif -adq
