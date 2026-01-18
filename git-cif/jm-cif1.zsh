@@ -45,6 +45,8 @@ $o_wip && msg="wip: " || msg=""
 $o_quiet && g_args+=( -q )
 
 # override EDITOR to start it with cursor placed at the end of the commit message subject
-EDITOR='vim -c "normal A"' git -C $git_path commit $g_args $file </dev/tty
+[[ ${${EDITOR:-}[1,3]} = "vim" ]] && export EDITOR='vim -c "normal A"'
+
+git -C $git_path commit $g_args $file </dev/tty
 (( $? > 0 )) && exit 255
 exit 0
