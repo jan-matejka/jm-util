@@ -36,10 +36,7 @@ $o_wip && msg="wip: " || msg=""
   # prefix message with "add " if file_status indicates
   test ${file_status:0:1} = A && o_msg+=":add"
 
-  t=$(mktemp)
-  trap "rm $t" EXIT
-  printf >$t -- "$msg"
-  g_args=( -e -F $t )
+  g_args=( -e -m $msg )
 } || {
   msg+="$file"
   g_args=( "-m" $msg )
