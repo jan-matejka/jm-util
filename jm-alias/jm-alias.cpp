@@ -23,7 +23,7 @@ map<string,tuple<string, vector<string>>> aliases{
   {"dc", {"docker-compose", {}}},
   {"l",  {"ls", {}}},
   {"ll", {"ls", {"-l"}}},
-  {"grr", {"grep", {"-r", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
+  {"grr", {"grep", {"-r", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
   {"p",  {"podman", {}}},
   {"pc", {"podman-compose", {}}},
   {"s",  {"systemctl", {}}},
