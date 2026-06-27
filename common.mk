@@ -43,6 +43,10 @@ i_deps += $(patsubst %,$(i_bin_dir)/%,$(mod_cmds))
 i_deps += $(patsubst %,$(i_man_dir)/%,$(mod_mans))
 endif
 
+$(zsh_comp_dir):
+
+	install -d $@
+
 rs_native_build = ../target/debug/
 
 .PHONY: help
