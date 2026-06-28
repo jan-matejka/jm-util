@@ -1,2 +1,4 @@
+name: jm-util
+
 include:
 - oci/compose.yaml

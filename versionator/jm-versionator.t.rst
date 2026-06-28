@@ -145,3 +145,7 @@
   ?? quux
   jm-versionator: release is dirty; abort
   [1]
+
+  $ jm versionator ""
+  .*: 1: Missing <version> argument (re)
+  [1]

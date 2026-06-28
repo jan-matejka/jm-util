@@ -1,13 +1,37 @@
-name: jm-util
-
 services:
-  dev:
+  dev-base:
     build:
-      dockerfile: oci/Containerfile
+      dockerfile: wip/oci/Containerfile
+      context: ../
+
+  dev:
+    image: ${COMPOSE_PROJECT_NAME}_dev-base
     volumes:
-      - ./:/home/user/src
+      - ./:/home/user/src:O
+      - ../master:/home/user/master:O
+      # Making these an overlay makes git work inside the container
+      # while keeping the .git files intact on the host.
+      #
+      # Unfortunately it also means we lose the build artefacts and can not
+      # modify the git history inside the container.
+      # The git history doesn't matter because we can run release versionator
+      # on the host (also bc git config user.name and email).
+      # And then build packages even in container even with -d and get the
+      # release package as long as there is no new commit and tree is not
+      # dirty.
+      #
+      # FIXME: find a way to make this work with real ./.git.
+      # Not just with this specific worktrees setup.
     x-podman.uidmaps:
       - +1000:@1000
+    command: bash
+    environment:
+      DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
+      NAME: ${NAME}
+      DEBEMAIL: ${DEBEMAIL}
+      DEBFULLNAME: ${DEBFULLNAME}
+      DEBSIGN_KEYID: ${DEBSIGN_KEYID}
+      DEBSIGN_MAINT: ${DEBSIGN_MAINT}
 
   debuild:
     extends:
@@ -19,6 +43,4 @@ services:
       - ${HOME}/.gnupg/private-keys-v1.d:/home/user/.gnupg/private-keys-v1.d:ro
       - ${HOME}/git/jm/debian-ppa/wip/dists/trixie/main/binary-amd64:/out
       # - /run/user/1000/gnupg/S.gpg-agent:/home/user/.gnupg/S.gpg-agent:Z
-    environment:
-      DEB_SIGN_KEYID: 2B524183A4D7D908
-    command: make debuild cp-packages
+    command: make version debuild cp-packages clean-changelog

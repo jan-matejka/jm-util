@@ -10,7 +10,9 @@ RUN apt-get install -y \
   make zsh cargo python3-docutils curl gpg ca-certificates git g++ libfmt-dev \
   strace gdb devscripts debhelper-compat build-essential gnupg
 
-COPY oci/jma-ppa.sh /root/
+RUN apt-get install -y git-buildpackage
+
+COPY wip/oci/jma-ppa.sh /root/
 RUN sh /root/jma-ppa.sh
 
 RUN apt-get install -y dram xdgenv
@@ -21,7 +23,11 @@ RUN touch /home/user/.zshrc
 
 RUN mkdir /home/user/.gnupg && chmod 700 /home/user/.gnupg
 
-COPY --chown=user:user ../ /home/user/src
+COPY --chown=user:user wip/ /home/user/src
+COPY --chown=user:user master/ /home/user/master
 
 WORKDIR /home/user/src
 RUN make
+
+COPY --chown=user:user --chmod=0755 wip/oci/entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

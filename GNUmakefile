@@ -73,14 +73,14 @@ check: build
 
 # clean build/tests artefacts
 .PHONY: clean
-clean:
+clean: clean-changelog
 
 	$(RM) -r $(build_dir) $(dist_dir)
 
 .PHONY: image
 image:
 
-	podman-compose build dev
+	podman-compose build dev-base
 
 .PHONY: check-deb
 check-deb:
@@ -95,4 +95,26 @@ debuild:
 .PHONY: cp-packages
 cp-packages:
 
-	cd .. && { cp *.deb *.buildinfo *.build *.changes /out; }
+	cd .. && { cp *.deb *.buildinfo *.build *.changes /out; ls -l /out/${name}*; }
+
+.PHONY: version
+version: # detect and write current version into sources
+
+	git status
+	zsh versionator/jm-versionator.zsh -dv --dch --output-shell core/jm_version.zsh
+
+.PHONY: clean-changelog
+clean-changelog:
+
+	git checkout debian/changelog
+
+.PHONY: build-pkg
+packages: # Build debian package
+
+	podman-compose run --rm debuild
+
+.PHONY: release
+release: # generate changelog, commit and tag it with ${version}
+
+	zsh versionator/jm-versionator.zsh \
+		-v --dch --output-shell core/jm_version.zsh ${version}
