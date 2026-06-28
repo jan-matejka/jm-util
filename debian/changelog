@@ -1,3 +1,25 @@
+jm-util (0.3.0-1) unstable; urgency=medium
+
+  [ Jan Matějka ]
+  * fix(build): make image
+  * fx: recurse make check
+  * rf: add git-cif module
+  * fx(git-cif): make git commit with un-edited template
+  * ft(git-cif): git-cif is a superset of git-commit
+  * fx(git-cif): handle case when lcpp is empty and run in single commit
+  * rf(git-cif/jm-cif1.zsh): use -m instead of -F
+  * fx(git-cif/jm-cif1.zsh): override EDITOR only if set to vim
+  * ft(git-cif): -d does not open EDITOR by default
+  * ft(jm-alias/jm-alias.cpp): grep exclude *.pyc
+  * ft(jm-alias/jm-alias.cpp): grep --color=auto
+  * fx(#build): dev build - key file name
+  * fx(#build): install zsh_comp_dir
+  * rf(#build): identify modules by file name .mod in the mod tree
+  * ft(versionator): initial implementation
+  * ft(#build): integrate versionator
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Sun, 28 Jun 2026 10:16:31 +0200
+
 jm-util (0.2.1-1) unstable; urgency=medium
 
   [ Jan Matejka ]
