@@ -19,4 +19,4 @@ i_aliases:
 install: i_aliases
 
 .PHONY: check
-check:
+check: dram_check
