@@ -15,7 +15,7 @@ RUN apt-get install -y git-buildpackage
 COPY wip/oci/jma-ppa.sh /root/
 RUN sh /root/jma-ppa.sh
 
-RUN apt-get install -y dram xdgenv
+RUN apt-get install -y dram xdgenv libargparse-dev
 
 RUN useradd -m -s /bin/zsh user
 USER user
