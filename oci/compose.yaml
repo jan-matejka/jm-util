@@ -7,21 +7,7 @@ services:
   dev:
     image: ${COMPOSE_PROJECT_NAME}_dev-base
     volumes:
-      - ./:/home/user/src:O
-      - ../master:/home/user/master:O
-      # Making these an overlay makes git work inside the container
-      # while keeping the .git files intact on the host.
-      #
-      # Unfortunately it also means we lose the build artefacts and can not
-      # modify the git history inside the container.
-      # The git history doesn't matter because we can run release versionator
-      # on the host (also bc git config user.name and email).
-      # And then build packages even in container even with -d and get the
-      # release package as long as there is no new commit and tree is not
-      # dirty.
-      #
-      # FIXME: find a way to make this work with real ./.git.
-      # Not just with this specific worktrees setup.
+      - ./:/home/user/src
     x-podman.uidmaps:
       - +1000:@1000
     command: bash
@@ -37,6 +23,24 @@ services:
     extends:
       service: dev
     volumes:
+      - ./:/home/user/src:O
+      - ../master:/home/user/master:O
+      # Making these an overlay makes git work inside the container
+      # while keeping the .git files intact on the host.
+      #
+      # Unfortunately it also means we lose the build artefacts and can not
+      # modify the git history inside the container.
+      # The git history doesn't matter because we can run release versionator
+      # on the host (also bc git config user.name and email).
+      # And then build packages even in container even with -d and get the
+      # release package as long as there is no new commit and tree is not
+      # dirty.
+      #
+      # Note it is also not possible to propagate changes from host to the running
+      # container with overlay.
+      #
+      # FIXME: find a way to make this work with real ./.git.
+      # Not just with this specific worktrees setup.
       - ${HOME}/.gnupg/pubring.gpg:/home/user/.gnupg/pubring.gpg:ro
       - ${HOME}/.gnupg/pubring.kbx:/home/user/.gnupg/pubring.kbx:ro
       - ${HOME}/.gnupg/secring.gpg:/home/user/.gnupg/secring.gpg:ro
