@@ -191,6 +191,29 @@ int show() {
   return 0;
 }
 
+int compdef(const string &alias) {
+  if(!aliases.contains(alias)) {
+    println(cerr, "jm-alias: {}: alias not found", alias);
+    return 1;
+  }
+
+  auto target = aliases.at(alias);
+  auto target_name = get<0>(target);
+  constexpr auto fmt = R"EOF(#compdef {0}
+
+_{0}() {{
+  words[1]={1}
+  service={1}
+  _{1}
+}}
+
+_{0}
+)EOF";
+  auto x = vformat(fmt, make_format_args(alias, target_name));
+  cout << x;
+  return 0;
+}
+
 int main(const int argc, char** argv) {
   if(boolish(getenv("JMU_ALIAS_VERBOSE")))
     _log = new Log();
@@ -210,6 +233,8 @@ int main(const int argc, char** argv) {
         .default_value(false)
         .implicit_value(true);
 
+    args.add_argument("--compdef")
+        .nargs(1);
     try {
       args.parse_args(argc, argv);
     } catch (const exception &err) {
@@ -219,8 +244,11 @@ int main(const int argc, char** argv) {
     }
     if (args.is_used("--show-aliases"))
       return show();
-    else
-      return ls_aliases();
+
+    if (args.is_used("--compdef"))
+      return compdef(args.get<string>("--compdef"));
+
+    return ls_aliases();
   } else
     return dispatch(cmd.name(), args, cmd.self());
 }
