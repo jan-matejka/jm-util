@@ -7,12 +7,14 @@ tc  ?= *.t.rst
 b_bin_dir     = $(b_dir)/bin
 b_man1_dir     = $(b_dir)/man/man1
 b_man_dir     = $(b_man1_dir)
+b_zsh_comp_dir = $(b_dir)/share/zsh/vendor-completions
 
 prefix       ?= /usr/local
 
 ## installation targets
 i_bin_dir     = $(DESTDIR)$(prefix)/bin
 i_man_dir     = $(DESTDIR)$(prefix)/man/man1
+i_zsh_comp_dir = $(DESTDIR)$(prefix)/share/zsh/vendor-completions
 
 install_bin   = install -m755
 install_data  = install -m644
@@ -35,15 +37,20 @@ mod_cmds += $(patsubst %.rs,%,$(wildcard *.rs))
 
 mod_mans = $(patsubst %.rst,%,$(wildcard *.1.rst))
 
+mod_zsh_completions  =
+mod_zsh_completions += $(patsubst zsh.completion/%,%,$(wildcard zsh.completion/*))
+
 mod_b_deps += $(patsubst %,$(b_bin_dir)/%,$(mod_cmds))
 mod_b_deps += $(patsubst %,$(b_man1_dir)/%,$(mod_mans))
+mod_b_deps += $(patsubst %,$(b_zsh_comp_dir)/%,$(mod_zsh_completions))
 
 i_deps =
 i_deps += $(patsubst %,$(i_bin_dir)/%,$(mod_cmds))
 i_deps += $(patsubst %,$(i_man_dir)/%,$(mod_mans))
+i_deps += $(patsubst %,$(i_zsh_comp_dir)/%,$(mod_zsh_completions))
 endif
 
-$(zsh_comp_dir) $(i_bin_dir):
+$(zsh_comp_dir) $(i_bin_dir) $(b_zsh_comp_dir):
 
 	install -d $@
 
@@ -77,6 +84,11 @@ $(b_man1_dir)/%: %.rst | $(b_man1_dir)/
 
 	rst2man $< $@
 
+# build zsh completions
+$(b_zsh_comp_dir)/%: zsh.completion/% | $(b_zsh_comp_dir)
+
+	$(install_data) $< $@
+
 # install binaries
 $(i_bin_dir)/%: $(b_bin_dir)/% | $(i_bin_dir)/
 
@@ -84,6 +96,11 @@ $(i_bin_dir)/%: $(b_bin_dir)/% | $(i_bin_dir)/
 
 # install man pages
 $(i_man_dir)/%: $(b_man_dir)/% | $(i_man_dir)/
+
+	$(install_data) $< $@
+
+# install zsh completions
+$(i_zsh_comp_dir)/%: $(b_zsh_comp_dir)/% | $(i_zsh_comp_dir)/
 
 	$(install_data) $< $@
 
