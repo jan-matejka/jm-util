@@ -43,7 +43,7 @@ i_deps += $(patsubst %,$(i_bin_dir)/%,$(mod_cmds))
 i_deps += $(patsubst %,$(i_man_dir)/%,$(mod_mans))
 endif
 
-$(zsh_comp_dir):
+$(zsh_comp_dir) $(i_bin_dir):
 
 	install -d $@
 
