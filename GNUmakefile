@@ -108,7 +108,7 @@ clean-changelog:
 
 	git checkout debian/changelog
 
-.PHONY: build-pkg
+.PHONY: packages
 packages: # Build debian package
 
 	podman-compose run --rm debuild
