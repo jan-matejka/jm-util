@@ -73,7 +73,7 @@ check: build
 
 # clean build/tests artefacts
 .PHONY: clean
-clean: clean-changelog
+clean:
 
 	$(RM) -r $(build_dir) $(dist_dir)
 
@@ -106,6 +106,9 @@ version: # detect and write current version into sources
 .PHONY: clean-changelog
 clean-changelog:
 
+	# we can not run this in make clean because that's called by debuild and that
+	# would wipe our dev changelog generator by versionator and build the wrong
+	# .deb files.
 	git checkout debian/changelog
 
 .PHONY: packages
