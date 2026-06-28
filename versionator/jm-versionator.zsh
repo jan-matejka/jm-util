@@ -103,7 +103,7 @@ base_version=${version%%-*}
 
 echo $build_id >$build_counter
 
-if [[ $version =~ '^([^-]*)(-.*)?(-dirty)?$' ]]; then
+if [[ $version =~ '^([^-]*)(-.*)?$' ]]; then
   reason=""
   $is_dirty && reason+=" dirty"
   [[ $vtype == "commit" ]] && reason+=" commit"
@@ -114,7 +114,7 @@ if [[ $version =~ '^([^-]*)(-.*)?(-dirty)?$' ]]; then
   } || insert=""
 
   # insert build id and + separator
-  version="${match[1]}${insert}${match[2]}${match[3]}"
+  version="${match[1]}${insert}${match[2]}"
 else
   fatal "detected version $version is invalid"
 fi
