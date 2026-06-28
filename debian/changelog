@@ -1,3 +1,22 @@
+jm-util (0.3.1-1) unstable; urgency=medium
+
+  [ Jan Matějka ]
+  * rf(versionator): simplify regex
+  * fx(#build): make install-home - make i_bin_dir if missing
+  * ft(#build): general support to build and install zsh completions
+  * fx(jm-alias#build): make check runs dram_check
+  * ft(oci#build): rewrite gitdirs only for debuild
+  * fx(oci#build): overlays only for debuild
+  * ft(oci/Containerfile#build): add libargparse-dev for jm-alias
+  * ft(jm-alias): add --show-aliases
+  * ft(jm-alias): add --compdef
+  * ft(jm-alias): generate compdef files
+  * fx(GNUmakefile#build): PHONY: packages mark
+  * fx(versionator): always generate changelog (not just without -d)
+  * fx(#build): building dev debian packages
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Sun, 28 Jun 2026 19:57:42 +0200
+
 jm-util (0.3.0-1) unstable; urgency=medium
 
   [ Jan Matějka ]
