@@ -2,11 +2,13 @@
 
 set -xeu
 
-home=/home/user
-master=$home/master
-wip=$home/src
+[ "${FIXUP_GIT_DIRS:-false}" = "true" ] && {
+  home=/home/user
+  master=$home/master
+  wip=$home/src
 
-echo "gitdir: $master/.git/worktrees/wip" >$wip/.git
-echo "gitdir: $master/.git" >$master/.git/worktrees/wip/gitdir
+  echo "gitdir: $master/.git/worktrees/wip" >$wip/.git
+  echo "$home/src/.git" >$master/.git/worktrees/wip/gitdir
+}
 
 exec "$@"

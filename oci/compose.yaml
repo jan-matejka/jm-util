@@ -43,4 +43,7 @@ services:
       - ${HOME}/.gnupg/private-keys-v1.d:/home/user/.gnupg/private-keys-v1.d:ro
       - ${HOME}/git/jm/debian-ppa/wip/dists/trixie/main/binary-amd64:/out
       # - /run/user/1000/gnupg/S.gpg-agent:/home/user/.gnupg/S.gpg-agent:Z
+    environment:
+      FIXUP_GIT_DIRS: 'true'
+      # https://github.com/containers/podman-compose/issues/1022
     command: make version debuild cp-packages clean-changelog
