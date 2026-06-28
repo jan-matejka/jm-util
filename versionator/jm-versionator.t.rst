@@ -85,17 +85,24 @@
   $ export JMU_VERSIONATOR_DCH_DATE="$(date -R -d @20)"
   $ jm-versionator -dq --dch
   0.1.2\+1.1.g[0-9a-z]{7} (re)
+  gbp:info: Changelog last touched at 'c194cab0574808ae60f6b36af4568788d7b79691'
+  gbp:info: Continuing from commit 'c194cab0574808ae60f6b36af4568788d7b79691'
   $ git diff
   diff --git a/debian/changelog b/debian/changelog
-  index 515509f..1658315 100644
+  index 515509f..2b8b70c 100644
   --- a/debian/changelog
   +++ b/debian/changelog
-  @@ -1,4 +1,4 @@
+  @@ -1,5 +1,9 @@
   -foo (0.1.0-1) UNRELEASED; urgency=medium
   +foo (0.1.2+1.1.g4a2c131-1) UNRELEASED; urgency=medium
   \s+ (re)
+  +  [ Alice ]
      * init
   \s+ (re)
+  +  [ Foo ]
+  +  * foo
+  +
+    -- Alice <foo@example.com>  Thu, 01 Jan 1970 00:00:20 +0000
 
   $ jm-versionator -dq --output-shell foo.sh
   0.1.2+2.1.g4a2c131.dirty
@@ -105,27 +112,32 @@
   $ echo . >> foo; git commit -qam 'foo'
   $ jm-versionator --dch --output-shell foo.sh "0.1.3"
   foo.sh: version=0.1.3
-  gbp:info: Changelog last touched at 'fb6a356913befe099f8db4f27ef7b3e719f0ec33'
-  gbp:info: Continuing from commit 'fb6a356913befe099f8db4f27ef7b3e719f0ec33'
-  gbp:info: No changes detected from fb6a356913befe099f8db4f27ef7b3e719f0ec33 to HEAD.
+  gbp:info: Changelog last touched at 'e5f8910c8e76ccb597edd6fe3d3cd650390899a5'
+  gbp:info: Continuing from commit 'e5f8910c8e76ccb597edd6fe3d3cd650390899a5'
+  gbp:info: No changes detected from e5f8910c8e76ccb597edd6fe3d3cd650390899a5 to HEAD.
 
   $ git show HEAD~1
-  commit fb6a356913befe099f8db4f27ef7b3e719f0ec33
+  commit e5f8910c8e76ccb597edd6fe3d3cd650390899a5
   Author: Foo <foo@example.com>
   Date:   Thu Jan 1 00:00:00 1970 +0000
   \s* (re)
       foo
   \s* (re)
   diff --git a/debian/changelog b/debian/changelog
-  index 515509f..1658315 100644
+  index 515509f..2b8b70c 100644
   --- a/debian/changelog
   +++ b/debian/changelog
-  @@ -1,4 +1,4 @@
+  @@ -1,5 +1,9 @@
   -foo (0.1.0-1) UNRELEASED; urgency=medium
   +foo (0.1.2+1.1.g4a2c131-1) UNRELEASED; urgency=medium
   \s* (re)
+  +  [ Alice ]
      * init
   \s* (re)
+  +  [ Foo ]
+  +  * foo
+  +
+    -- Alice <foo@example.com>  Thu, 01 Jan 1970 00:00:20 +0000
   diff --git a/foo b/foo
   index 9c558e3..ac860a3 100644
   --- a/foo
@@ -135,8 +147,8 @@
   +.
 
   $ git log --oneline --decorate --graph -3
-  * 195db9c (HEAD -> master, tag: v/0.1.3) version 0.1.3
-  * fb6a356 foo
+  * fdcf168 (HEAD -> master, tag: v/0.1.3) version 0.1.3
+  * e5f8910 foo
   * 4a2c131 foo
 
   $ touch quux

@@ -142,7 +142,7 @@ EOF
 
 (( ${pargs[(I)--dch]} )) && {
   [[ $dcl_version == $version ]] || {
-    (( ${pargs[(I)-d]} )) || gbp dch --ignore-branch --git-log --first-parent
+    gbp dch --ignore-branch --git-log --first-parent
 
     # FIXME: we need to add -1 because we already have been using it. IDK how
     # this should work for general case yet.
