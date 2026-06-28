@@ -13,6 +13,8 @@
 #include <string_view>
 #include <vector>
 
+#include <argparse/argparse.hpp>
+
 using namespace std;
 
 map<string,tuple<string, vector<string>>> aliases{
@@ -169,6 +171,26 @@ public:
   }
 };
 
+const string join(vector<string> xs, const string &sep) {
+  string r;
+  for(auto &x: xs) {
+    if (!r.empty()) r += sep;
+    r += x;
+  }
+  return r;
+}
+
+int show() {
+  for(const auto &[alias, exec]: aliases) {
+    auto args = join(get<1>(exec), " ");
+    auto cmd = get<0>(exec);
+    // alias completion-function aliased-to [ args]
+    cout << format("{} _{} {} {}\n", alias, cmd, cmd, args);
+  }
+
+  return 0;
+}
+
 int main(const int argc, char** argv) {
   if(boolish(getenv("JMU_ALIAS_VERBOSE")))
     _log = new Log();
@@ -180,8 +202,25 @@ int main(const int argc, char** argv) {
 
   auto cmd = Cmd(args[0]);
 
-  if (cmd.name() == "jm-alias")
-    return ls_aliases();
-  else
+  if (cmd.name() == "jm-alias") {
+    argparse::ArgumentParser args("jm-alias");
+
+    args.add_argument("--show-aliases")
+        .help("show aliases")
+        .default_value(false)
+        .implicit_value(true);
+
+    try {
+      args.parse_args(argc, argv);
+    } catch (const exception &err) {
+      cerr << err.what() << endl;
+      cerr << args;
+      return 1;
+    }
+    if (args.is_used("--show-aliases"))
+      return show();
+    else
+      return ls_aliases();
+  } else
     return dispatch(cmd.name(), args, cmd.self());
 }
