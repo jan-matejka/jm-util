@@ -218,10 +218,7 @@ int main(const int argc, char** argv) {
   if(boolish(getenv("JMU_ALIAS_VERBOSE")))
     _log = new Log();
 
-  vector<char*> args;
-  for (int i=0; i<argc; i++) {
-    args.push_back(argv[i]);
-  }
+  vector<char*> args(argv, argv+argc);
 
   auto cmd = Cmd(args[0]);
 
