@@ -17,21 +17,26 @@
 
 using namespace std;
 
-map<string,tuple<string, vector<string>>> aliases{
-  {"b",  {"buildah", {}}},
-  {"g",  {"git", {}}},
-  {"gr", {"grep", {}}},
-  {"d",  {"docker", {}}},
-  {"dc", {"docker-compose", {}}},
-  {"l",  {"ls", {}}},
-  {"ll", {"ls", {"-l"}}},
-  {"grr", {"grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
-  {"p",  {"podman", {}}},
-  {"pc", {"podman-compose", {}}},
-  {"s",  {"systemctl", {}}},
-  {"t",  {"tmux", {}}},
-  {"gr_video", {"grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}}},
-  {"gr_pics", {"grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}}},
+struct AliasDef {
+  const string cmd;
+  const vector<string> argv;
+};
+
+const map<string, const AliasDef> aliases{
+  {"b",  AliasDef{"buildah", {}}},
+  {"g",  AliasDef{"git", {}}},
+  {"gr", AliasDef{"grep", {}}},
+  {"d",  AliasDef{"docker", {}}},
+  {"dc", AliasDef{"docker-compose", {}}},
+  {"l",  AliasDef{"ls", {}}},
+  {"ll", AliasDef{"ls", {"-l"}}},
+  {"grr", AliasDef{"grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
+  {"p",  AliasDef{"podman", {}}},
+  {"pc", AliasDef{"podman-compose", {}}},
+  {"s",  AliasDef{"systemctl", {}}},
+  {"t",  AliasDef{"tmux", {}}},
+  {"gr_video", AliasDef{"grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}}},
+  {"gr_pics", AliasDef{"grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}}},
 };
 
 void to_lower_inplace(char& c) {
@@ -141,16 +146,14 @@ int dispatch(
   }
 
   auto target = aliases.at(name);
-  auto target_name = get<0>(target);
-  auto path = which(target_name, self);
+  auto path = which(target.cmd, self);
   if (!path) {
-    println(cerr, "jm-alias: {}: command not found", target_name);
+    println(cerr, "jm-alias: {}: command not found", target.cmd);
     return 1;
   }
 
-  auto xs = get<1>(target);
-  args.reserve(args.size() + xs.size());
-  for(auto& x: xs | views::reverse) {
+  args.reserve(args.size() + target.argv.size());
+  for(auto& x: target.argv | views::reverse) {
     args.insert((args.begin()+1), const_cast<char*>(x.c_str()));
   }
   args.push_back(nullptr);
@@ -192,11 +195,9 @@ const string join(vector<string> xs, const string &sep) {
 }
 
 int show() {
-  for(const auto &[alias, exec]: aliases) {
-    auto args = join(get<1>(exec), " ");
-    auto cmd = get<0>(exec);
-    // alias completion-function aliased-to [ args]
-    cout << format("{} _{} {} {}\n", alias, cmd, cmd, args);
+  for(const auto &[name, alias]: aliases) {
+    auto args = join(alias.argv, " ");
+    cout << format("{} _{} {} {}\n", name, alias.cmd, alias.cmd, args);
   }
 
   return 0;
@@ -209,7 +210,6 @@ int compdef(const string &alias) {
   }
 
   auto target = aliases.at(alias);
-  auto target_name = get<0>(target);
   constexpr auto fmt = R"EOF(#compdef {0}
 
 _{0}() {{
@@ -220,7 +220,7 @@ _{0}() {{
 
 _{0}
 )EOF";
-  auto x = vformat(fmt, make_format_args(alias, target_name));
+  auto x = vformat(fmt, make_format_args(alias, target.cmd));
   cout << x;
   return 0;
 }
