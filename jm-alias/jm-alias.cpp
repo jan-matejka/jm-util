@@ -18,39 +18,52 @@
 using namespace std;
 
 struct AliasDef {
+  const string alias;
   const string cmd;
   const vector<string> argv;
   const string compF;
 
-  AliasDef(string cmd, vector<string> argv)
-    : cmd(std::move(cmd)), argv(std::move(argv)),
-      compF(makeCompF(this->cmd, this->argv)) {}
+  AliasDef(string alias, string cmd, vector<string> argv)
+    : alias(move(alias)), cmd(std::move(cmd)), argv(std::move(argv)),
+      compF(makeCompF(this->alias, this->cmd)) {}
 
-  AliasDef(string cmd, vector<string> argv, string compF)
-    : cmd(std::move(cmd)), argv(std::move(argv)), compF(std::move(compF)) {}
+  AliasDef(string alias, string cmd, vector<string> argv, string compF)
+    : alias(move(alias)), cmd(std::move(cmd)), argv(std::move(argv)), compF(std::move(compF)) {}
 
 private:
-    static string makeCompF(const string& cmd, const vector<string>& argv) {
-      return format("_{}", cmd);
+    static string makeCompF(const string& alias, const string& cmd) {
+      constexpr auto fmt = R"EOF(#compdef {0}
+_{0}() {{
+  words[1]={1}
+  service={1}
+  _{1}
+}}
+
+_{0}
+)EOF";
+      return vformat(fmt, make_format_args(alias, cmd));
     }
 };
 
-const map<string, const AliasDef> aliases{
-  {"b",  AliasDef{"buildah", {}}},
-  {"g",  AliasDef{"git", {}}},
-  {"gr", AliasDef{"grep", {}}},
-  {"d",  AliasDef{"docker", {}}},
-  {"dc", AliasDef{"docker-compose", {}}},
-  {"l",  AliasDef{"ls", {}}},
-  {"ll", AliasDef{"ls", {"-l"}}},
-  {"grr", AliasDef{"grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
-  {"p",  AliasDef{"podman", {}}},
-  {"pc", AliasDef{"podman-compose", {}, "_podmanCompose"}},
-  {"s",  AliasDef{"systemctl", {}}},
-  {"t",  AliasDef{"tmux", {}}},
-  {"gr_video", AliasDef{"grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}}},
-  {"gr_pics", AliasDef{"grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}}},
+const vector<AliasDef> v_aliases {
+  AliasDef{"b", "buildah", {}},
+  AliasDef{"g", "git", {}},
+  AliasDef{"gr", "grep", {}},
+  AliasDef{"d", "docker", {}},
+  AliasDef{"dc", "docker-compose", {}},
+  AliasDef{"l", "ls", {}},
+  AliasDef{"ll", "ls", {"-l"}},
+  AliasDef{"grr", "grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}},
+  AliasDef{"p", "podman", {}},
+  AliasDef{"pc", "podman-compose", {}, "#compdef pc\ncomplete -F _podmanCompose pc"},
+  // podman-compose completion needs to be set up from bash completion script in zshrc
+  AliasDef{"s", "systemctl", {}},
+  AliasDef{"t", "tmux", {}},
+  AliasDef{"gr_video", "grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}},
+  AliasDef{"gr_pics", "grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}},
 };
+
+map<string, AliasDef> aliases;
 
 void to_lower_inplace(char& c) {
   c = (char)tolower(c);
@@ -223,22 +236,15 @@ int compdef(const string &alias) {
   }
 
   auto target = aliases.at(alias);
-  constexpr auto fmt = R"EOF(#compdef {0}
-
-_{0}() {{
-  words[1]={1}
-  service={1}
-  {1}
-}}
-
-_{0}
-)EOF";
-  auto x = vformat(fmt, make_format_args(alias, target.compF));
-  cout << x;
+  println("{}", target.compF);
   return 0;
 }
 
 int main(const int argc, char** argv) {
+  for (const auto& a : v_aliases) {
+    aliases.emplace(a.alias, a);
+  }
+
   if(boolish(getenv("JMU_ALIAS_VERBOSE")))
     _log = new Log();
 
