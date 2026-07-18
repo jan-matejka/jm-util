@@ -1,8 +1,17 @@
 setup::
 
   $ TMPBINDIR=$TMPDIR/bin
-  $ export PATH="$TMPBINDIR:$PATH"
   $ mkdir $TMPBINDIR
+
+call by relative path::
+
+  $ ln -snf $TESTDIR/../build/bin/jm-alias $TMPBINDIR/grr
+  $ ../tmp/bin/grr foo
+  terminate called after throwing an instance of 'std::runtime_error'
+    what():  jm-util: couldn't find self in PATH
+  [134]
+
+  $ export PATH="$TMPBINDIR:$PATH"
 
 test unknown alias::
 
