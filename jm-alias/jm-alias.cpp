@@ -103,6 +103,12 @@ optional<string> which(
   string name,
   optional<const filesystem::path> skip
 ) {
+  if (name.find("/") != string::npos) {
+    filesystem::path p{name};
+    if (_which_check_path(p, skip))
+      return p;
+  }
+
   char* c_path = getenv("PATH");
   if(!c_path)
     return nullopt;
