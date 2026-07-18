@@ -20,6 +20,19 @@ using namespace std;
 struct AliasDef {
   const string cmd;
   const vector<string> argv;
+  const string compF;
+
+  AliasDef(string cmd, vector<string> argv)
+    : cmd(std::move(cmd)), argv(std::move(argv)),
+      compF(makeCompF(this->cmd, this->argv)) {}
+
+  AliasDef(string cmd, vector<string> argv, string compF)
+    : cmd(std::move(cmd)), argv(std::move(argv)), compF(std::move(compF)) {}
+
+private:
+    static string makeCompF(const string& cmd, const vector<string>& argv) {
+      return format("_{}", cmd);
+    }
 };
 
 const map<string, const AliasDef> aliases{
@@ -215,12 +228,12 @@ int compdef(const string &alias) {
 _{0}() {{
   words[1]={1}
   service={1}
-  _{1}
+  {1}
 }}
 
 _{0}
 )EOF";
-  auto x = vformat(fmt, make_format_args(alias, target.cmd));
+  auto x = vformat(fmt, make_format_args(alias, target.compF));
   cout << x;
   return 0;
 }
