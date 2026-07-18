@@ -10,7 +10,7 @@ services:
       - ./:/home/user/src
     x-podman.uidmaps:
       - +1000:@1000
-    command: bash
+    command: zsh
     environment:
       DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
       NAME: ${NAME}

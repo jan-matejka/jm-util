@@ -17,7 +17,17 @@ RUN sh /root/jma-ppa.sh
 
 RUN apt-get install -y dram xdgenv libargparse-dev
 
+RUN chsh -s /bin/zsh
 RUN useradd -m -s /bin/zsh user
+
+RUN <<EOF
+set -e
+install -d /home/user/git/
+git clone https://github.com/jan-matejka/dotfiles-zsh.git /home/user/git/zsh
+make -C /home/user/git/zsh install
+su -l user -c 'make -C /home/user/git/zsh install'
+EOF
+
 USER user
 RUN touch /home/user/.zshrc
 
