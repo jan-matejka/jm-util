@@ -17,22 +17,53 @@
 
 using namespace std;
 
-map<string,tuple<string, vector<string>>> aliases{
-  {"b",  {"buildah", {}}},
-  {"g",  {"git", {}}},
-  {"gr", {"grep", {}}},
-  {"d",  {"docker", {}}},
-  {"dc", {"docker-compose", {}}},
-  {"l",  {"ls", {}}},
-  {"ll", {"ls", {"-l"}}},
-  {"grr", {"grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
-  {"p",  {"podman", {}}},
-  {"pc", {"podman-compose", {}}},
-  {"s",  {"systemctl", {}}},
-  {"t",  {"tmux", {}}},
-  {"gr_video", {"grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}}},
-  {"gr_pics", {"grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}}},
+struct AliasDef {
+  const string alias;
+  const string cmd;
+  const vector<string> argv;
+  const string compF;
+
+  AliasDef(string alias, string cmd, vector<string> argv)
+    : alias(move(alias)), cmd(std::move(cmd)), argv(std::move(argv)),
+      compF(makeCompF(this->alias, this->cmd)) {}
+
+  AliasDef(string alias, string cmd, vector<string> argv, string compF)
+    : alias(move(alias)), cmd(std::move(cmd)), argv(std::move(argv)), compF(std::move(compF)) {}
+
+private:
+    static string makeCompF(const string& alias, const string& cmd) {
+      constexpr auto fmt = R"EOF(#compdef {0}
+_{0}() {{
+  words[1]={1}
+  service={1}
+  _{1}
+}}
+
+_{0}
+)EOF";
+      return vformat(fmt, make_format_args(alias, cmd));
+    }
 };
+
+const vector<AliasDef> v_aliases {
+  AliasDef{"b", "buildah", {}},
+  AliasDef{"g", "git", {}},
+  AliasDef{"gr", "grep", {}},
+  AliasDef{"d", "docker", {}},
+  AliasDef{"dc", "docker-compose", {}},
+  AliasDef{"l", "ls", {}},
+  AliasDef{"ll", "ls", {"-l"}},
+  AliasDef{"grr", "grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}},
+  AliasDef{"p", "podman", {}},
+  AliasDef{"pc", "podman-compose", {}, "#compdef pc\ncomplete -F _podmanCompose pc"},
+  // podman-compose completion needs to be set up from bash completion script in zshrc
+  AliasDef{"s", "systemctl", {}},
+  AliasDef{"t", "tmux", {}},
+  AliasDef{"gr_video", "grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}},
+  AliasDef{"gr_pics", "grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}},
+};
+
+map<string, AliasDef> aliases;
 
 void to_lower_inplace(char& c) {
   c = (char)tolower(c);
@@ -141,17 +172,14 @@ int dispatch(
   }
 
   auto target = aliases.at(name);
-  auto target_name = get<0>(target);
-  auto path = which(target_name, self);
+  auto path = which(target.cmd, self);
   if (!path) {
-    println(cerr, "jm-alias: {}: command not found", target_name);
+    println(cerr, "jm-alias: {}: command not found", target.cmd);
     return 1;
   }
 
-  auto xs = get<1>(target);
-  args.reserve(args.size() + xs.size());
-  reverse(xs.begin(), xs.end());
-  for(auto& x: xs) {
+  args.reserve(args.size() + target.argv.size());
+  for(auto& x: target.argv | views::reverse) {
     args.insert((args.begin()+1), const_cast<char*>(x.c_str()));
   }
   args.push_back(nullptr);
@@ -193,11 +221,9 @@ const string join(vector<string> xs, const string &sep) {
 }
 
 int show() {
-  for(const auto &[alias, exec]: aliases) {
-    auto args = join(get<1>(exec), " ");
-    auto cmd = get<0>(exec);
-    // alias completion-function aliased-to [ args]
-    cout << format("{} _{} {} {}\n", alias, cmd, cmd, args);
+  for(const auto &[name, alias]: aliases) {
+    auto args = join(alias.argv, " ");
+    cout << format("{} _{} {} {}\n", name, alias.cmd, alias.cmd, args);
   }
 
   return 0;
@@ -210,23 +236,15 @@ int compdef(const string &alias) {
   }
 
   auto target = aliases.at(alias);
-  auto target_name = get<0>(target);
-  constexpr auto fmt = R"EOF(#compdef {0}
-
-_{0}() {{
-  words[1]={1}
-  service={1}
-  _{1}
-}}
-
-_{0}
-)EOF";
-  auto x = vformat(fmt, make_format_args(alias, target_name));
-  cout << x;
+  println("{}", target.compF);
   return 0;
 }
 
 int main(const int argc, char** argv) {
+  for (const auto& a : v_aliases) {
+    aliases.emplace(a.alias, a);
+  }
+
   if(boolish(getenv("JMU_ALIAS_VERBOSE")))
     _log = new Log();
 
