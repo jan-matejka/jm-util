@@ -150,8 +150,7 @@ int dispatch(
 
   auto xs = get<1>(target);
   args.reserve(args.size() + xs.size());
-  reverse(xs.begin(), xs.end());
-  for(auto& x: xs) {
+  for(auto& x: xs | views::reverse) {
     args.insert((args.begin()+1), const_cast<char*>(x.c_str()));
   }
   args.push_back(nullptr);
