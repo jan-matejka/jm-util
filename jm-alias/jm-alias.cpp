@@ -68,6 +68,37 @@ public:
 
 BaseLog* _log = new BaseLog();
 
+bool _which_check_path(
+  filesystem::path p,
+  optional<const filesystem::path> skip
+) {
+  _log->verbose("checking {}", string(p));
+
+  if(!(exists(p) && (is_regular_file(p) || is_symlink(p)))) {
+    _log->verbose("  failed existence check", string(p));
+    return false;
+  }
+
+  using filesystem::perms;
+  auto path_canon = filesystem::canonical(p);
+  if (skip.has_value() and skip.value() == path_canon) {
+    _log->verbose("  skip due to match with skip argument");
+    return false;
+  }
+
+  auto ps = filesystem::status(p).permissions();
+  if (!(
+    perms::none != (ps & perms::owner_exec)
+    || perms::none != (ps & perms::group_exec)
+    || perms::none != (ps & perms::others_exec)
+  )) {
+    _log->verbose("  failed permissions passed");
+    return false;
+  }
+
+  return true;
+};
+
 optional<string> which(
   string name,
   optional<const filesystem::path> skip
@@ -76,36 +107,11 @@ optional<string> which(
   if(!c_path)
     return nullopt;
 
-  using filesystem::perms;
   for(const auto& v_path: views::split(string(c_path), ':')) {
     filesystem::path p{string_view(v_path)};
     p /= name;
-
-    _log->verbose("checking {}", string(p));
-
-    if(!(exists(p) && (is_regular_file(p) || is_symlink(p)))) {
-        _log->verbose("  failed existence check", string(p));
-
-      continue;
-    }
-
-    auto path_canon = filesystem::canonical(p);
-    if (skip.has_value() and skip.value() == path_canon) {
-      _log->verbose("  skip due to match with skip argument");
-      continue;
-    }
-
-    auto ps = filesystem::status(p).permissions();
-    if (!(
-      perms::none != (ps & perms::owner_exec)
-      || perms::none != (ps & perms::group_exec)
-      || perms::none != (ps & perms::others_exec)
-    )) {
-        _log->verbose("  failed permissions passed");
-      continue;
-    }
-
-    return p;
+    if(_which_check_path(p, skip))
+      return p;
   }
 
   return nullopt;
