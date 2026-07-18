@@ -1,3 +1,11 @@
+jm-util (0.3.2-1) unstable; urgency=medium
+
+  [ Jan Matějka ]
+  * fx(jm-alias): call by relative path
+  * fx(jm-alias): pc completion
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Sat, 18 Jul 2026 17:05:22 +0200
+
 jm-util (0.3.1-1) unstable; urgency=medium
 
   [ Jan Matějka ]
