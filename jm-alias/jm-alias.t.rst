@@ -1,8 +1,15 @@
 setup::
 
   $ TMPBINDIR=$TMPDIR/bin
-  $ export PATH="$TMPBINDIR:$PATH"
   $ mkdir $TMPBINDIR
+
+call by relative path::
+
+  $ ln -snf $TESTDIR/../build/bin/jm-alias $TMPBINDIR/grr
+  $ ../tmp/bin/grr foo
+  [1]
+
+  $ export PATH="$TMPBINDIR:$PATH"
 
 test unknown alias::
 
