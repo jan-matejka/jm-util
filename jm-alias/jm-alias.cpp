@@ -45,7 +45,7 @@ const map<string, const AliasDef> aliases{
   {"ll", AliasDef{"ls", {"-l"}}},
   {"grr", AliasDef{"grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}}},
   {"p",  AliasDef{"podman", {}}},
-  {"pc", AliasDef{"podman-compose", {}}},
+  {"pc", AliasDef{"podman-compose", {}, "_podmanCompose"}},
   {"s",  AliasDef{"systemctl", {}}},
   {"t",  AliasDef{"tmux", {}}},
   {"gr_video", AliasDef{"grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}}},
