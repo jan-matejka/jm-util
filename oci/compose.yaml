@@ -1,13 +1,11 @@
 name: jm-util
 
 services:
-  dev-base:
+  dev:
+    image: ${COMPOSE_PROJECT_NAME}_dev
     build:
       dockerfile: wip/oci/Containerfile
       context: ../
-
-  dev:
-    image: ${COMPOSE_PROJECT_NAME}_dev-base
     volumes:
       - ./:/home/user/src
     x-podman.uidmaps:
