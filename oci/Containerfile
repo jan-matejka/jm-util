@@ -1,6 +1,8 @@
 ARG registry=localhost
 ARG tag=latest
-FROM docker.io/library/debian:trixie-slim
+#FROM docker.io/library/debian:trixie-slim
+FROM docker.io/library/rust:trixie
+# Rust in debian stable is too old to build gitoxide/git-lint
 
 RUN printf "APT::Install-Recommends \"0\";" \
   >/etc/apt/apt.conf.d/no-install-recommends
@@ -16,6 +18,8 @@ COPY wip/oci/jma-ppa.sh /root/
 RUN sh /root/jma-ppa.sh
 
 RUN apt-get install -y dram xdgenv libargparse-dev
+
+RUN rustup component add rustfmt
 
 RUN chsh -s /bin/zsh
 RUN useradd -m -s /bin/zsh user
