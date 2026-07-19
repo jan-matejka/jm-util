@@ -1,16 +1,16 @@
+name: jm-util
+
 services:
-  dev-base:
+  dev:
+    image: ${COMPOSE_PROJECT_NAME}_dev
     build:
       dockerfile: wip/oci/Containerfile
       context: ../
-
-  dev:
-    image: ${COMPOSE_PROJECT_NAME}_dev-base
     volumes:
       - ./:/home/user/src
     x-podman.uidmaps:
       - +1000:@1000
-    command: bash
+    command: zsh
     environment:
       DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
       NAME: ${NAME}

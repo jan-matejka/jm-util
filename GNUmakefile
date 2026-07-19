@@ -75,7 +75,7 @@ check: build
 .PHONY: clean
 clean:
 
-	$(RM) -r $(build_dir) $(dist_dir)
+	$(RM) -r $(build_dir) $(dist_dir) target
 
 .PHONY: image
 image:
