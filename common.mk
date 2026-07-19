@@ -77,7 +77,11 @@ $(b_bin_dir)/%: %.zsh | $(b_bin_dir)/
 
 $(b_bin_dir)/%: $(rs_native_build)/%
 
-	install $< $@
+	install -D $< $@
+
+$(rs_native_build)/%: %.rs
+
+	cargo build
 
 # build man pages
 $(b_man1_dir)/%: %.rst | $(b_man1_dir)/
@@ -122,3 +126,5 @@ install-home:
 dram_check: # Run dram tests
 
 	PATH=$$PWD/../build/bin:$$PATH dram -f -s zsh -t .t.rst $(tc)
+
+
