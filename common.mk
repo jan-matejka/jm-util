@@ -127,4 +127,7 @@ dram_check: # Run dram tests
 
 	PATH=$$PWD/../build/bin:$$PATH dram -f -s zsh -t .t.rst $(tc)
 
+.PHONY: cargo_test
+cargo_test: # Run cargo tests
 
+	cargo test

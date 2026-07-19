@@ -7,6 +7,9 @@ edition = "2021"
 
 [dependencies]
 
+[workspace]
+members = ['git-lint']
+
 [[bin]]
 name = 'jm-lcpp'
 path = 'core/jm-lcpp.rs'
