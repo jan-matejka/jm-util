@@ -1,3 +1,5 @@
+name: jm-util
+
 services:
   dev-base:
     build:
