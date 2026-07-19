@@ -119,6 +119,6 @@ install-home:
 	install -m755 -d $@
 
 .PHONY: dram_check
-dram_check:
+dram_check: # Run dram tests
 
 	PATH=$$PWD/../build/bin:$$PATH dram -f -s zsh -t .t.rst $(tc)
