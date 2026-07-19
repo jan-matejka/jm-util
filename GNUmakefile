@@ -90,7 +90,7 @@ check-deb:
 .PHONY: debuild
 debuild:
 
-	debuild -i -b
+	debuild -eCARGO -eCARGO_HOME -eRUST_VERSION -eRUSTUP_HOME -i -b
 
 .PHONY: cp-packages
 cp-packages:
@@ -114,7 +114,7 @@ clean-changelog:
 .PHONY: packages
 packages: # Build debian package
 
-	podman-compose run --rm debuild
+	podman-compose run --rm -e CARGO=/usr/local/cargo/bin/cargo debuild
 
 .PHONY: release
 release: # generate changelog, commit and tag it with ${version}

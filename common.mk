@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := build
 MAKEFLAGS:=-r
 PERCENT:=%
+CARGO ?= cargo
 tc  ?= *.t.rst
 
 # common definitions
@@ -81,7 +82,7 @@ $(b_bin_dir)/%: $(rs_native_build)/%
 
 $(rs_native_build)/%: %.rs
 
-	cargo build
+	$(CARGO) build
 
 # build man pages
 $(b_man1_dir)/%: %.rst | $(b_man1_dir)/
@@ -130,4 +131,4 @@ dram_check: # Run dram tests
 .PHONY: cargo_test
 cargo_test: # Run cargo tests
 
-	cargo test
+	$(CARGO) test
