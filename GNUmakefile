@@ -90,7 +90,7 @@ check-deb:
 .PHONY: debuild
 debuild:
 
-	debuild -eCARGO -eCARGO_HOME -eRUST_VERSION -eRUSTUP_HOME -i -b
+	debuild -eRELEASE=--release -eCARGO -eCARGO_HOME -eRUST_VERSION -eRUSTUP_HOME -i -b
 
 .PHONY: cp-packages
 cp-packages:

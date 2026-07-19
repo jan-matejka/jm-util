@@ -2,6 +2,7 @@
 MAKEFLAGS:=-r
 PERCENT:=%
 CARGO ?= cargo
+RELEASE ?=
 tc  ?= *.t.rst
 
 # common definitions
@@ -55,7 +56,11 @@ $(zsh_comp_dir) $(i_bin_dir) $(b_zsh_comp_dir):
 
 	install -d $@
 
+ifeq ($(RELEASE),)
 rs_native_build = ../target/debug/
+else
+rs_native_build = ../target/release/
+endif
 
 .PHONY: help
 help: ## Print help
@@ -82,7 +87,7 @@ $(b_bin_dir)/%: $(rs_native_build)/%
 
 $(rs_native_build)/%: %.rs
 
-	$(CARGO) build
+	$(CARGO) build ${RELEASE}
 
 # build man pages
 $(b_man1_dir)/%: %.rst | $(b_man1_dir)/
