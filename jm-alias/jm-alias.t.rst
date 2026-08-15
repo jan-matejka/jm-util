@@ -22,12 +22,12 @@ test not found::
 
   $ ln -snf $TESTDIR/../build/bin/jm-alias $TMPBINDIR/pc
   $ pc
-  jm-alias: podman-compose: command not found
+  jm-alias: podman: command not found
   [1]
 
 test ok::
 
-  $ ln -snf /bin/true $TMPBINDIR/podman-compose
+  $ ln -snf /bin/true $TMPBINDIR/podman
   $ pc
 
 test additional argv::
@@ -43,11 +43,13 @@ test alias list::
   b
   d
   dc
+  dpc
   g
   gr
   gr_pics
   gr_video
   grr
+  j
   l
   ll
   p
