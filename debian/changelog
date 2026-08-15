@@ -1,3 +1,10 @@
+jm-util (0.3.4-1) unstable; urgency=medium
+
+  [ Jan Matějka ]
+  * ft(jm-alias): update aliases
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Sat, 15 Aug 2026 21:48:53 +0200
+
 jm-util (0.3.3-1) unstable; urgency=medium
 
   [ Jan Matějka ]
