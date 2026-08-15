@@ -61,6 +61,7 @@ const vector<AliasDef> v_aliases {
   AliasDef{"t", "tmux", {}},
   AliasDef{"gr_video", "grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}},
   AliasDef{"gr_pics", "grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}},
+  AliasDef{"j", "journalctl", {}},
 };
 
 map<string, AliasDef> aliases;
