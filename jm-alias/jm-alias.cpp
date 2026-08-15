@@ -55,12 +55,14 @@ const vector<AliasDef> v_aliases {
   AliasDef{"ll", "ls", {"-l"}},
   AliasDef{"grr", "grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}},
   AliasDef{"p", "podman", {}},
-  AliasDef{"pc", "podman-compose", {}, "#compdef pc\ncomplete -F _podmanCompose pc"},
+  AliasDef{"dpc", "podman-compose", {}, "#compdef pc\ncomplete -F _podmanCompose dpc"},
+  AliasDef{"pc", "podman", {"compose"}},
   // podman-compose completion needs to be set up from bash completion script in zshrc
   AliasDef{"s", "systemctl", {}},
   AliasDef{"t", "tmux", {}},
   AliasDef{"gr_video", "grep", {"-iE", "(avi|flv|mkv|wmv|mpg|mpeg|mp4)"}},
   AliasDef{"gr_pics", "grep", {"-iE", "(jpg|jpeg|tiff|bmp|png|gif)"}},
+  AliasDef{"j", "journalctl", {}},
 };
 
 map<string, AliasDef> aliases;
