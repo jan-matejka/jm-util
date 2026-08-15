@@ -1,3 +1,14 @@
+jm-util (0.3.3-1) unstable; urgency=medium
+
+  [ Jan Matějka ]
+  * ft: add git-lint
+  * rf(oci): Containerfile multirefactor
+  * fx: make packages - remove debian cargo from the image
+  * fx(#build): cargo builds under debuild
+  * fx(#build): cargo build with --release
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Sat, 15 Aug 2026 21:47:36 +0200
+
 jm-util (0.3.2-1) unstable; urgency=medium
 
   [ Jan Matějka ]
