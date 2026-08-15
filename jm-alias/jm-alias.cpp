@@ -56,6 +56,7 @@ const vector<AliasDef> v_aliases {
   AliasDef{"grr", "grep", {"-r", "--color=auto", "--exclude=*.pyc", "--exclude", "tags", "--exclude-dir=.git", "--exclude-dir=.tox"}},
   AliasDef{"p", "podman", {}},
   AliasDef{"dpc", "podman-compose", {}, "#compdef pc\ncomplete -F _podmanCompose dpc"},
+  AliasDef{"pc", "podman", {"compose"}},
   // podman-compose completion needs to be set up from bash completion script in zshrc
   AliasDef{"s", "systemctl", {}},
   AliasDef{"t", "tmux", {}},
