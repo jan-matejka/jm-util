@@ -30,14 +30,9 @@ recurse = printf "%s\n" $(mods) | xargs -I% $(MAKE) -C % $(1)
 
 # build
 .PHONY: build
-build: .cargo_build
+build:
 
 	$(call recurse,build)
-
-.cargo_build: core/*.rs
-
-	cargo build
-	touch .cargo_build
 
 .PHONY: install_mods
 install_mods:
