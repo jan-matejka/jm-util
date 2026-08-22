@@ -6,6 +6,12 @@ services:
     build:
       dockerfile: wip/oci/Containerfile
       context: ../
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # read_only: true
+    # can't do read_only because the debian package build system is
     volumes:
       - ./:/home/user/src
     x-podman.uidmaps:
