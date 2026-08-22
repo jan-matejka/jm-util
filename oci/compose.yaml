@@ -15,6 +15,8 @@ services:
     # can't do read_only because the debian package build system is
     volumes:
       - ../:/home/user/src
+      - jm-util-config:/home/user/.config
+      - jm-util-local:/home/user/.local
     command: zsh
     environment:
       DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
@@ -56,3 +58,7 @@ services:
       FIXUP_GIT_DIRS: 'true'
       # https://github.com/containers/podman-compose/issues/1022
     command: make version debuild cp-packages clean-changelog
+
+volumes:
+  jm-util-config:
+  jm-util-local:
