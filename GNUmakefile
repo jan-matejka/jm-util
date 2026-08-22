@@ -90,7 +90,15 @@ check-deb:
 .PHONY: debuild
 debuild:
 
-	debuild -eRELEASE=--release -eCARGO -eCARGO_HOME -eRUST_VERSION -eRUSTUP_HOME -i -b
+	# Note: using -e for --set-envvar/--preserve-envvar is unreliable.
+	debuild \
+	 --set-envvar=RELEASE=--release \
+	 --preserve-envvar=CARGO \
+	 --preserve-envvar=CARGO_HOME \
+	 --preserve-envvar=RUST_VERSION \
+	 --preserve-envvar=RUSTUP_HOME \
+	 --preserve-envvar=BUILDDEB_DESTDIR \
+	 -i -b
 
 .PHONY: cp-packages
 cp-packages:
