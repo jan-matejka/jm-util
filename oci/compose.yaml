@@ -18,13 +18,6 @@ services:
       - jm-util-config:/home/user/.config
       - jm-util-local:/home/user/.local
     command: zsh
-    environment:
-      DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
-      NAME: ${NAME}
-      DEBEMAIL: ${DEBEMAIL}
-      DEBFULLNAME: ${DEBFULLNAME}
-      DEBSIGN_KEYID: ${DEBSIGN_KEYID}
-      DEBSIGN_MAINT: ${DEBSIGN_MAINT}
 
   debuild:
     extends:
@@ -41,6 +34,12 @@ services:
       # - /run/user/1000/gnupg/S.gpg-agent:/home/user/.gnupg/S.gpg-agent:Z
     environment:
       CARGO: /usr/local/cargo/bin/cargo
+      DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
+      NAME: ${NAME}
+      DEBEMAIL: ${DEBEMAIL}
+      DEBFULLNAME: ${DEBFULLNAME}
+      DEBSIGN_KEYID: ${DEBSIGN_KEYID}
+      DEBSIGN_MAINT: ${DEBSIGN_MAINT}
     command: sh -c "trap 'make clean-changelog' EXIT; make version debuild cp-packages"
 
 volumes:
