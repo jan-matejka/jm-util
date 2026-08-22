@@ -4,6 +4,7 @@
 
   $ jm versionator -d
   fatal: not a git repository .* (re)
+  Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
   [128]
 
   $ git init -q ./
