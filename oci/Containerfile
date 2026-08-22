@@ -29,6 +29,7 @@ pkgs="
   curl
   debhelper-compat
   devscripts
+  docker-compose
   dram
   g++
   gdb
@@ -36,9 +37,11 @@ pkgs="
   git-buildpackage
   gnupg
   gpg
+  jq
   libargparse-dev
   libfmt-dev
   make
+  podman
   python3-docutils
   strace
   xdgenv
@@ -67,6 +70,3 @@ COPY --chown=user:user master/ /home/user/master
 
 WORKDIR /home/user/src
 RUN make
-
-COPY --chown=user:user --chmod=0755 wip/oci/entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]

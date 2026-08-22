@@ -30,14 +30,9 @@ recurse = printf "%s\n" $(mods) | xargs -I% $(MAKE) -C % $(1)
 
 # build
 .PHONY: build
-build: .cargo_build
+build:
 
 	$(call recurse,build)
-
-.cargo_build: core/*.rs
-
-	cargo build
-	touch .cargo_build
 
 .PHONY: install_mods
 install_mods:
@@ -80,7 +75,7 @@ clean:
 .PHONY: image
 image:
 
-	podman-compose build dev-base
+	podman compose build dev-base
 
 .PHONY: check-deb
 check-deb:
@@ -90,7 +85,15 @@ check-deb:
 .PHONY: debuild
 debuild:
 
-	debuild -eRELEASE=--release -eCARGO -eCARGO_HOME -eRUST_VERSION -eRUSTUP_HOME -i -b
+	# Note: using -e for --set-envvar/--preserve-envvar is unreliable.
+	debuild \
+	 --set-envvar=RELEASE=--release \
+	 --preserve-envvar=CARGO \
+	 --preserve-envvar=CARGO_HOME \
+	 --preserve-envvar=RUST_VERSION \
+	 --preserve-envvar=RUSTUP_HOME \
+	 --preserve-envvar=BUILDDEB_DESTDIR \
+	 -i -b
 
 .PHONY: cp-packages
 cp-packages:
@@ -114,7 +117,7 @@ clean-changelog:
 .PHONY: packages
 packages: # Build debian package
 
-	podman-compose run --rm -e CARGO=/usr/local/cargo/bin/cargo debuild
+	podman compose run debuild
 
 .PHONY: release
 release: # generate changelog, commit and tag it with ${version}

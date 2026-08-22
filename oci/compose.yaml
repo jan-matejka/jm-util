@@ -2,45 +2,30 @@ name: jm-util
 
 services:
   dev:
-    image: ${COMPOSE_PROJECT_NAME}_dev
+    image: localhost/${COMPOSE_PROJECT_NAME}_dev
     build:
       dockerfile: wip/oci/Containerfile
-      context: ../
+      context: ../../
+    userns_mode: "keep-id:uid=1000,gid=1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # read_only: true
+    # can't do read_only because the debian package build system is
     volumes:
-      - ./:/home/user/src
-    x-podman.uidmaps:
-      - +1000:@1000
+      - ../:/home/user/src
+      - jm-util-config:/home/user/.config
+      - jm-util-local:/home/user/.local
     command: zsh
-    environment:
-      DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
-      NAME: ${NAME}
-      DEBEMAIL: ${DEBEMAIL}
-      DEBFULLNAME: ${DEBFULLNAME}
-      DEBSIGN_KEYID: ${DEBSIGN_KEYID}
-      DEBSIGN_MAINT: ${DEBSIGN_MAINT}
 
   debuild:
     extends:
       service: dev
     volumes:
-      - ./:/home/user/src:O
-      - ../master:/home/user/master:O
-      # Making these an overlay makes git work inside the container
-      # while keeping the .git files intact on the host.
-      #
-      # Unfortunately it also means we lose the build artefacts and can not
-      # modify the git history inside the container.
-      # The git history doesn't matter because we can run release versionator
-      # on the host (also bc git config user.name and email).
-      # And then build packages even in container even with -d and get the
-      # release package as long as there is no new commit and tree is not
-      # dirty.
-      #
-      # Note it is also not possible to propagate changes from host to the running
-      # container with overlay.
-      #
-      # FIXME: find a way to make this work with real ./.git.
-      # Not just with this specific worktrees setup.
+      - ../../master:/home/user/master
+      # master needs RW because git checkout makes a lock inside
+      # .git/worktrees/<name>/
       - ${HOME}/.gnupg/pubring.gpg:/home/user/.gnupg/pubring.gpg:ro
       - ${HOME}/.gnupg/pubring.kbx:/home/user/.gnupg/pubring.kbx:ro
       - ${HOME}/.gnupg/secring.gpg:/home/user/.gnupg/secring.gpg:ro
@@ -48,6 +33,15 @@ services:
       - ${HOME}/git/jm/debian-ppa/wip/dists/trixie/main/binary-amd64:/out
       # - /run/user/1000/gnupg/S.gpg-agent:/home/user/.gnupg/S.gpg-agent:Z
     environment:
-      FIXUP_GIT_DIRS: 'true'
-      # https://github.com/containers/podman-compose/issues/1022
-    command: make version debuild cp-packages clean-changelog
+      CARGO: /usr/local/cargo/bin/cargo
+      DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
+      NAME: ${NAME}
+      DEBEMAIL: ${DEBEMAIL}
+      DEBFULLNAME: ${DEBFULLNAME}
+      DEBSIGN_KEYID: ${DEBSIGN_KEYID}
+      DEBSIGN_MAINT: ${DEBSIGN_MAINT}
+    command: sh -c "trap 'make clean-changelog' EXIT; make version debuild cp-packages"
+
+volumes:
+  jm-util-config:
+  jm-util-local:

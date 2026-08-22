@@ -131,7 +131,7 @@ install-home:
 .PHONY: dram_check
 dram_check: # Run dram tests
 
-	PATH=$$PWD/../build/bin:$$PATH dram -f -s zsh -t .t.rst $(tc)
+	dram -e PPATH=$$PWD/../build/bin -e PATH=$$PWD/../build/bin:$$PATH -f -s zsh -t .t.rst $(tc)
 
 .PHONY: cargo_test
 cargo_test: # Run cargo tests

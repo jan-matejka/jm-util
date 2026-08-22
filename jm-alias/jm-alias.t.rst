@@ -20,10 +20,13 @@ test unknown alias::
 
 test not found::
 
-  $ ln -snf $TESTDIR/../build/bin/jm-alias $TMPBINDIR/pc
-  $ pc
-  jm-alias: podman: command not found
-  [1]
+  $ export TMPUSRBIN=$TMPDIR/usr-bin; mkdir $TMPUSRBIN
+  $ ls /usr/bin | xargs -P $(nproc) -I% ln -snf /usr/bin/% $TMPUSRBIN/%
+  $ rm $TMPUSRBIN/podman
+  $ ln -snf `which jm-exec` $TMPBINDIR/jm-container-env-setup
+  $ PATH="$TMPBINDIR:$PPATH:$TMPUSRBIN" pc
+  /tmp/dramtests.*/jm-container-env-setup:3: command not found: podman (re)
+  [127]
 
 test ok::
 
