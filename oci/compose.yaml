@@ -2,10 +2,11 @@ name: jm-util
 
 services:
   dev:
-    image: ${COMPOSE_PROJECT_NAME}_dev
+    image: localhost/${COMPOSE_PROJECT_NAME}_dev
     build:
       dockerfile: wip/oci/Containerfile
-      context: ../
+      context: ../../
+    userns_mode: "keep-id:uid=1000,gid=1000"
     cap_drop:
       - ALL
     security_opt:
@@ -13,9 +14,7 @@ services:
     # read_only: true
     # can't do read_only because the debian package build system is
     volumes:
-      - ./:/home/user/src
-    x-podman.uidmaps:
-      - +1000:@1000
+      - ../:/home/user/src
     command: zsh
     environment:
       DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}

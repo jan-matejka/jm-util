@@ -80,7 +80,7 @@ clean:
 .PHONY: image
 image:
 
-	podman-compose build dev-base
+	podman compose build dev-base
 
 .PHONY: check-deb
 check-deb:
@@ -114,7 +114,7 @@ clean-changelog:
 .PHONY: packages
 packages: # Build debian package
 
-	podman-compose run --rm -e CARGO=/usr/local/cargo/bin/cargo debuild
+	podman compose run --rm -e CARGO=/usr/local/cargo/bin/cargo debuild
 
 .PHONY: release
 release: # generate changelog, commit and tag it with ${version}
