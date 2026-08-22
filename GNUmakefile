@@ -122,7 +122,7 @@ clean-changelog:
 .PHONY: packages
 packages: # Build debian package
 
-	podman compose run --rm -e CARGO=/usr/local/cargo/bin/cargo debuild
+	podman compose run debuild
 
 .PHONY: release
 release: # generate changelog, commit and tag it with ${version}
