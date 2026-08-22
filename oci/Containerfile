@@ -70,6 +70,3 @@ COPY --chown=user:user master/ /home/user/master
 
 WORKDIR /home/user/src
 RUN make
-
-COPY --chown=user:user --chmod=0755 wip/oci/entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
