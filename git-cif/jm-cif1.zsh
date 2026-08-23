@@ -42,6 +42,17 @@ $o_quiet && g_args+=( -q )
 # override EDITOR to start it with cursor placed at the end of the commit message subject
 [[ ${${EDITOR:-}[1,3]} = "vim" ]] && export EDITOR='vim -c "normal A"'
 
-git -C $git_path commit $g_args $file </dev/tty
+# stdin here is normally the read end of a pipe (this script is invoked via
+# xargs from git-cif.zsh), not a terminal. That's fine for `git commit -m`
+# itself, but if commit.gpgsign is on and pinentry is curses-based, gpg needs
+# a real tty on stdin to prompt for the passphrase. Reattach one when
+# available; CI/non-interactive runs have no controlling terminal to open,
+# so fall back to the inherited (piped) stdin instead of failing outright.
+# exec's own redirection failing would exit the shell outright (it's a
+# special builtin), so probe openability first and only exec once we know
+# it will succeed.
+zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
+
+git -C $git_path commit $g_args $file
 (( $? > 0 )) && exit 255
 exit 0
