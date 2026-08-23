@@ -1,27 +1,21 @@
-ARG registry=localhost
-ARG tag=latest
-#FROM docker.io/library/debian:trixie-slim
-FROM docker.io/library/rust:trixie
+FROM docker.io/library/rust:trixie AS rust
 # Rust in debian stable is too old to build gitoxide/git-lint
 
+ARG registry=localhost
+ARG tag=latest
+
+FROM ghcr.io/jan-matejka/debian:latest
+
+COPY --from=rust /usr/local/cargo /usr/local/cargo
+COPY --from=rust /usr/local/rustup /usr/local/rustup
+
+ENV PATH=/usr/local/cargo/bin:$PATH \
+    RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo
+
+RUN chmod a+w $RUSTUP_HOME $CARGO_HOME
+
 RUN <<EOF
-printf "APT::Install-Recommends \"0\";" \
-  >/etc/apt/apt.conf.d/no-install-recommends
-
-URI=https://jan-matejka.github.io/debian-ppa
-KEY=/etc/apt/trusted.gpg.d/jma-ppa.key
-FP=D059E95DB734392F42329FF6AD577215EA45A9341EA1773712FEA1693F291BD658EC029314ED8CC2FBE81E011EBB37CA691C591F2B524183A4D7D908
-apt_src=/etc/apt/sources.list.d/
-
-curl -s --compressed $URI/jma-ppa.key
-curl -s --compressed $URI/jma-ppa.key -o $KEY
-[ $(gpg -q --show-keys --with-colons $KEY | awk -F: '$1 == "fpr" { printf $10 }') = $FP ] || {
-  echo 'fingerprint mismatch'
-  exit 1
-}
-
-curl -s --compressed $URI/dists/$(awk -F= '$1=="VERSION_CODENAME" {print $2}' /etc/os-release)/jma-ppa.sources -o $apt_src/jma-ppa.sources
-
 apt-get update
 pkgs="
   build-essential
@@ -51,16 +45,6 @@ apt-get install -y ${pkgs}
 EOF
 
 RUN rustup component add rustfmt
-
-RUN <<EOF
-set -e
-chsh -s /bin/zsh
-useradd -m -s /bin/zsh user
-install -d /home/user/git/
-git clone https://github.com/jan-matejka/dotfiles-zsh.git /home/user/git/zsh
-make -C /home/user/git/zsh install
-su -l user -c 'make -C /home/user/git/zsh install'
-EOF
 
 USER user
 RUN mkdir /home/user/.gnupg && chmod 700 /home/user/.gnupg
