@@ -35,14 +35,6 @@ the CWD git-worktree sharing authentication with primary claude (``jm claude
 
 Claude can still build and run containers if configured to use an isolated VM.
 
-Howto
------
-
-1. Run ``jm claude -p`` and login into claude.
-
-2. ``cd`` into a git-worktree working dir and run ``jm claude`` for isolated
-   claude instance.
-
 Threat Model
 ------------
 
@@ -85,6 +77,13 @@ Therefore it is neccessary:
   breakout exploits and identical method can be used to isolate to a real
   machine for further isolation.
 
+Usage
+=====
+
+1. Run ``jm claude -p`` and login into claude.
+
+2. ``cd`` into a git-worktree working dir and run ``jm claude`` for isolated
+   claude instance.
 
 ENVIRONMENT
 ===========
