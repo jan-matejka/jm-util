@@ -23,7 +23,7 @@ services:
     extends:
       service: dev
     volumes:
-      - ../../master:/home/user/master
+      - ../../main:/home/user/main
       # master needs RW because git checkout makes a lock inside
       # .git/worktrees/<name>/
       - ${HOME}/.gnupg/pubring.gpg:/home/user/.gnupg/pubring.gpg:ro
