@@ -10,39 +10,48 @@ set -eu
 
 declare -A paargs
 declare -a pargs
-zparseopts -K -D -a pargs -A paargs p -primary
+zparseopts -K -D -a pargs -A paargs p -primary -no-workdir
 
 o_primary=false
 
 (( ${pargs[(I)-p]} )) && o_primary=true
 (( ${pargs[(I)--primary]} )) && o_primary=true
+(( ${pargs[(I)--no-workdir]} )) && o_workdir=false || o_workdir=true
 
-root=$(git rev-parse --show-toplevel)
-dotgit=$root/.git
-[[ -f $dotgit ]] || fatal "not a worktree"
+if $o_workdir; then
+  root=$(git rev-parse --show-toplevel)
+  dotgit=$root/.git
+  [[ -f $dotgit ]] || fatal "not a worktree"
 
-main=$(grep '^gitdir: ' $dotgit | head -n1 | sed 's#^gitdir: ../\(.*\)/.git/.*$#../\1#' || true)
-[[ -n $main ]] || fatal "failed to read gitdir"
+  main=$(grep '^gitdir: ' $dotgit | head -n1 | sed 's#^gitdir: ../\(.*\)/.git/.*$#../\1#' || true)
+  [[ -n $main ]] || fatal "failed to read gitdir"
 
-branch=$(git branch --show-current)
+  branch=$(git branch --show-current)
 
-# get project name from docker-compose
-# run docker-compose directly because podman-compose requires working uidmap.
-project=$(docker-compose config --format=json | jq -Mr .name || true)
-if [[ -z $project ]]; then
-  # fall back to parent dir name
-  project=$(basename $(realpath $main/..))
+  # get project name from docker-compose
+  # run docker-compose directly because podman-compose requires working uidmap.
+  project=$(docker-compose config --format=json | jq -Mr .name || true)
+  if [[ -z $project ]]; then
+    # fall back to parent dir name
+    project=$(basename $(realpath $main/..))
+  fi
+
+  instance_name=${project}_${branch}
+  instance_fs=p/${project}/${branch}
+else
+  instance_name=no-workdir
+  instance_fs=no-workdir
 fi
 
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
-: ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME:=${JM_CLAUDE_DATA_HOME}/p/$project/$branch}
+: ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME:=${JM_CLAUDE_DATA_HOME}/${instance_fs}}
 : ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary}
 : ${JM_CLAUDE_CONFIG_KNOWN_HOSTS:=${JM_CONFIG_HOME}/claude/known_hosts}
 
 args=(
   # standard flags
   -it --rm
-  --name jm_claude_${project}_${branch}
+  --name jm_claude_${instance_name}
   # user mapping
   --userns="keep-id:uid=$(id -u),gid=$(id -g)"
   # hardening
@@ -50,9 +59,17 @@ args=(
   --security-opt=no-new-privileges
   --read-only
   # environment
-  # volumes - app
-  -v ./:/src/${TAG}
-  -v ${main}:/src/$(basename ${main}):ro
+)
+
+if $o_workdir; then
+  args+=(
+    # volumes - app
+    -v ./:/src/${TAG}
+    -v ${main}:/src/$(basename ${main}):ro
+  )
+fi
+
+args+=(
   # volumes runtime for podman
   -v jm-claude-local:/home/user/.local
   -v jm-claude-config:/home/user/.config

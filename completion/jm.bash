@@ -31,7 +31,7 @@ function _jm_completion {
     elif [[ ${COMP_WORDS[1]} == "certinfo" ]]; then
       COMPREPLY=($(compgen -W "-h -p" -- "${COMP_WORDS[2]}"))
     elif [[ ${COMP_WORDS[1]} == "claude" ]]; then
-      COMPREPLY=($(compgen -W "-p --primary" -- "${COMP_WORDS[2]}"))
+      COMPREPLY=($(compgen -W "-p --primary --no-workdir" -- ${COMP_WORDS[2]}))
     elif [[ ${COMP_WORDS[1]} == "gh" ]]; then
       COMPREPLY=($(compgen -W "pls-upi move-upi" -- "${COMP_WORDS[2]}"))
     fi

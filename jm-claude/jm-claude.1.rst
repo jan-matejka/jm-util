@@ -13,12 +13,14 @@ Run safe claude code
 SYNOPSIS
 ========
 
-  jm claude [-p] <args>
+  jm claude [opts] <args>
 
 OPTIONS
 =======
 
 -p --primary    Run a primary claude.
+
+--no-workdir    Do add volumes for ./ and git_dir.
 
 <args>          Passed to podman-run <image> <args...> so you can run e.g.
                 ``jm claude zsh``.
