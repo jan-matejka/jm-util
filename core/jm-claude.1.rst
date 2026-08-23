@@ -13,12 +13,15 @@ Run safe claude code
 SYNOPSIS
 ========
 
-  jm claude [-p]
+  jm claude [-p] <args>
 
 OPTIONS
 =======
 
 -p --primary    Run a primary claude.
+
+<args>          Passed to podman-run <image> <args...> so you can run e.g.
+                ``jm claude zsh``.
 
 DESCRIPTION
 ===========
