@@ -5,10 +5,11 @@ SELF="${0##*/}"
 
 set -eu
 
-root=$(git rev-parse --show-toplevel)
-dotgit=$root/.git
+root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+[ -z $root ] || dotgit=$root/.git
 
 function worktree_make_relative {
+  [[ -n $root ]] || return 0
   [[ -f $dotgit ]] || return 0
 
   local gitdir=$(grep '^gitdir: ' $dotgit | head -n1 | sed 's/gitdir: //')
@@ -20,6 +21,8 @@ function worktree_make_relative {
 
 function export_tag {
   [[ -z ${TAG:-} ]] || return 0
+  [[ -n $root ]] || return 0
+
   local b=$(git branch --show-current)
   declare -g TAG=latest
   if [[ $b != "master" ]] && [[ $b != "main" ]]; then
