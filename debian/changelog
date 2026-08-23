@@ -1,3 +1,29 @@
+jm-util (0.3.6-1) unstable; urgency=medium
+
+  [ Jan Matějka ]
+  * fx(completion): add missing commands and arguments
+  * ft(oci): build on top of ghcr.io/jan-matejka/debian
+  * ft(core/jm-tmux-autosession): keep org dir
+  * fx(core/jm-claude#doc): args
+  * ft(core/jm-container-env-setup): noop if not in git
+  * fx(completion): add separator
+  * rf: move jm-claude to its own module
+  * ft(core/jm-claude): add --no-workdir
+  * rf(jm-claude#doc): rename Howto -> USAGE
+  * rm(oci): do not bake in sources
+  * fx: master -> main; resistance is futile
+  * fx(jm-claude#tests): rf: move jm-claude to its own module
+  * ft(#build): add .dockerignore
+  * ft(jm-claude): -p implies --no-workdir
+  * ft: add jm-p-debug
+  * fx(jm-claude#doc): rm incorrect SEE ALSO section
+  * rm(#build): image target - broken and unused
+  * rf(#build): rename image/service dev -> work
+  * ft(#ci): add CI - build, push, & test
+  * fx(git-cif): CI tests - check /dev/tty works before using it
+
+ -- Jan Matejka <jmatejka01@gmail.com>  Sun, 23 Aug 2026 22:13:16 +0200
+
 jm-util (0.3.5-1) unstable; urgency=medium
 
   [ Jan Matějka ]
