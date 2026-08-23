@@ -72,11 +72,6 @@ clean:
 
 	$(RM) -r $(build_dir) $(dist_dir) target
 
-.PHONY: image
-image:
-
-	podman compose build dev-base
-
 .PHONY: check-deb
 check-deb:
 
