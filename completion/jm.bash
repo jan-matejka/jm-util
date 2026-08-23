@@ -13,6 +13,7 @@ _jm_cmds=(
   keymap
   lcpp
   offending
+  p
   tmux-autosession
   version
   xlock
@@ -34,11 +35,17 @@ function _jm_completion {
       COMPREPLY=($(compgen -W "-p --primary --no-workdir" -- ${COMP_WORDS[2]}))
     elif [[ ${COMP_WORDS[1]} == "gh" ]]; then
       COMPREPLY=($(compgen -W "pls-upi move-upi" -- "${COMP_WORDS[2]}"))
+    elif [[ ${COMP_WORDS[1]} == "p" ]]; then
+      COMPREPLY=($(compgen -W "debug name" -- "${COMP_WORDS[2]}"))
     fi
     ;;
   3)
     if [[ ${COMP_WORDS[2]} == "move-upi" ]]; then
       COMPREPLY=($(compgen -W "-n" -- "${COMP_WORDS[2]}"))
+    elif [[ ${COMP_WORDS[1]} == "p" ]]; then
+      if [[ ${COMP_WORDS[2]} == "debug" ]]; then
+        COMPREPLY=($(compgen -W "$(podman ps --format '{{.ID}} {{.Names}}' --filter 'status=running')" -- "${COMP_WORDS[3]}"))
+      fi
     fi
     ;;
   *)
