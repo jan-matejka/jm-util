@@ -42,7 +42,8 @@ worktree with compose.yaml::
 
   $ echo 'name: foo' >compose.yaml
   $ jm claude
-  /tmp/dramtests-(.*)/home/user/src/core/jm-claude.t.rst/tmp/bin/podman run -it --rm --name jm_claude_foo_wip --userns=keep-id:uid=1000,gid=1000 --cap-drop=ALL --security-opt=no-new-privileges --read-only -v ./:/src/wip -v ../master:/src/master:ro -v jm-claude-local:/home/user/.local -v jm-claude-config:/home/user/.config -v /.*/.config/jm-util/claude/conf:/home/user/.config/claude -v /.*/.local/share/jm-util/claude/p/foo/wip:/home/user/.local/share/claude -v /.*/primary/settings.json:/home/user/.local/share/claude/settings.json -v /.*/primary/.credentials.json:/home/user/.local/share/claude/.credentials.json ghcr.io/jan-matejka/claude:latest (re)
+  /tmp/dramtests-(.*)/home/user/src/jm-claude/jm-claude.t.rst/tmp/bin/podman run -it --rm --name jm_claude_foo_wip --userns=keep-id:uid=1000,gid=1000 --cap-drop=ALL --security-opt=no-new-privileges --read-only -v ./:/src/wip -v ../master:/src/master:ro -v jm-claude-local:/home/user/.local -v jm-claude-config:/home/user/.config -v /.*/.config/jm-util/claude/conf:/home/user/.config/claude -v /.*/.local/share/jm-util/claude/p/foo/wip:/home/user/.local/share/claude -v /.*/primary/settings.json:/home/user/.local/share/claude/settings.json -v /.*/primary/.credentials.json:/home/user/.local/share/claude/.credentials.json ghcr.io/jan-matejka/claude:latest (re)
+
 
 worktree with a VM::
 
