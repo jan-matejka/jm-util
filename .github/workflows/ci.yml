@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+  schedule:
+    # Weekly rebuild to pick up upstream base image / package updates even
+    # when there's been no push. GitHub Actions schedules only support fixed
+    # calendar times, not "N days since the last run".
+    - cron: '10 3 * * 1'  # every Monday at 0310Z
+  workflow_dispatch:
+    inputs:
+      no_cache:
+        description: 'Rebuild without pulling from registry cache (still write to it)'
+        type: boolean
+        default: false
+
+jobs:
+  build-and-push:
+    uses: jan-matejka/gha/.github/workflows/build-and-push.yml@v0.1
+    with:
+      image_name: jm-util
+      containerfile: oci/Containerfile
+      no_cache: ${{ inputs.no_cache || false }}
+    permissions:
+      contents: read
+      packages: write
+
+  test:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        run: podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests in the built image
+        run: |
+          image="ghcr.io/${{ github.repository_owner }}/jm-util:sha-$(git rev-parse --short=7 HEAD)"
+          podman run --rm \
+            --userns=keep-id:uid=1000,gid=1000 \
+            -v "$PWD:/home/user/src" \
+            -w /home/user/src \
+            "$image" \
+            make check
