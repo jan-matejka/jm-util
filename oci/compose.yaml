@@ -1,8 +1,8 @@
 name: jm-util
 
 services:
-  dev:
-    image: localhost/${COMPOSE_PROJECT_NAME}_dev
+  work:
+    image: localhost/${COMPOSE_PROJECT_NAME}_work
     build:
       dockerfile: oci/Containerfile
       context: ../
@@ -21,7 +21,7 @@ services:
 
   debuild:
     extends:
-      service: dev
+      service: work
     volumes:
       - ../../main:/home/user/main
       # master needs RW because git checkout makes a lock inside

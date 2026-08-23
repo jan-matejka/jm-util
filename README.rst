@@ -59,7 +59,7 @@ Tests
 
 Requires docker-compose and podman.
 
-``$ podman compose build dev && podman compose run dev make check``
+``$ podman compose build work && podman compose run work make check``
 
 While it should be possible to run tests on host it is not recommended for your
 own safety.
