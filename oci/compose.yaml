@@ -4,8 +4,8 @@ services:
   dev:
     image: localhost/${COMPOSE_PROJECT_NAME}_dev
     build:
-      dockerfile: wip/oci/Containerfile
-      context: ../../
+      dockerfile: oci/Containerfile
+      context: ../
     userns_mode: "keep-id:uid=1000,gid=1000"
     cap_drop:
       - ALL

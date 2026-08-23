@@ -49,8 +49,4 @@ RUN rustup component add rustfmt
 USER user
 RUN mkdir /home/user/.gnupg && chmod 700 /home/user/.gnupg
 
-COPY --chown=user:user wip/ /home/user/src
-COPY --chown=user:user master/ /home/user/master
-
 WORKDIR /home/user/src
-RUN make
