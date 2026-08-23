@@ -171,9 +171,4 @@ Your git repository structure is ``<name>/{master|main,<branch-name>}``.
 
         - Allow forwarding only to public networks.
 
-SEE ALSO
-========
-
-* ``man 1 openssl``
-
 .. include:: ../core/common-foot.rst
