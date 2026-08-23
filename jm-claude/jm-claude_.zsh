@@ -16,7 +16,7 @@ o_primary=false
 
 (( ${pargs[(I)-p]} )) && o_primary=true
 (( ${pargs[(I)--primary]} )) && o_primary=true
-(( ${pargs[(I)--no-workdir]} )) && o_workdir=false || o_workdir=true
+{ (( ${pargs[(I)--no-workdir]} )) || $o_primary } && o_workdir=false || o_workdir=true
 
 if $o_workdir; then
   root=$(git rev-parse --show-toplevel)

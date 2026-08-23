@@ -18,7 +18,7 @@ SYNOPSIS
 OPTIONS
 =======
 
--p --primary    Run a primary claude.
+-p --primary    Run a primary claude. Implies --no-workdir.
 
 --no-workdir    Do add volumes for ./ and git_dir.
 
