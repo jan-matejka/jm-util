@@ -18,12 +18,19 @@ SYNOPSIS
 OPTIONS
 =======
 
--p --primary    Run a primary claude. Implies --no-workdir.
+-p --primary
+  Run a primary claude. Implies --no-workdir.
 
---no-workdir    Do add volumes for ./ and git_dir.
+--no-workdir
+  Do add volumes for ./ and git_dir.
 
-<args>          Passed to podman-run <image> <args...> so you can run e.g.
-                ``jm claude zsh``.
+-a <account>, --account <account>
+  Arbitrary file system path compatible string.
+
+  Used for distinguishing between different claude accounts.
+
+<args>
+  Passed to podman-run <image> <args...> so you can run e.g. ``jm claude zsh``.
 
 DESCRIPTION
 ===========

@@ -10,10 +10,13 @@ set -eu
 
 declare -A paargs
 declare -a pargs
-zparseopts -K -D -a pargs -A paargs p -primary -no-workdir
+zparseopts -K -D -a pargs -A paargs p -primary -no-workdir a: -account:
 
 o_primary=false
+o_account=default
 
+(( ${${(k)paargs}[(I)-a]} )) && o_account=${paargs[-a]}
+(( ${${(k)paargs}[(I)--account]} )) && o_account=${paargs[--account]}
 (( ${pargs[(I)-p]} )) && o_primary=true
 (( ${pargs[(I)--primary]} )) && o_primary=true
 { (( ${pargs[(I)--no-workdir]} )) || $o_primary } && o_workdir=false || o_workdir=true
@@ -45,7 +48,7 @@ fi
 
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 : ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME:=${JM_CLAUDE_DATA_HOME}/${instance_fs}}
-: ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary}
+: ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary/$o_account}
 : ${JM_CLAUDE_CONFIG_KNOWN_HOSTS:=${JM_CONFIG_HOME}/claude/known_hosts}
 
 args=(
