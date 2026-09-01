@@ -18,12 +18,20 @@ SYNOPSIS
 OPTIONS
 =======
 
--p --primary    Run a primary claude. Implies --no-workdir.
+-p --primary
+  Run a primary instance of claude.
 
---no-workdir    Do add volumes for ./ and git_dir.
+-a <account>, --account <account>
+  Arbitrary file system path compatible string.
 
-<args>          Passed to podman-run <image> <args...> so you can run e.g.
-                ``jm claude zsh``.
+  Used for distinguishing between different claude accounts.
+
+-i <instance>, --instance <instance>
+  Instance name for the container.
+  Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
+
+<args>
+  Passed to podman-run <image> <args...> so you can run e.g. ``jm claude zsh``.
 
 DESCRIPTION
 ===========
@@ -101,8 +109,8 @@ JM_CLAUDE_DATA_PRIMARY_HOME
   Data home directory for primary claude instance. Files needed for
   authentication will be mounted into isolated instances as well.
 
-JM_CLAUDE_DATA_PROJECT_BRANCH_HOME
-  Data home directory for isolated claude instances.
+JM_CLAUDE_DATA_INSTANCE_HOME
+  Data home directory for the isolated claude instance.
 
 JM_CONFIG_KNOWN_HOSTS
   Known hosts file for claude to use for connecting to an isolated VM.
@@ -115,6 +123,9 @@ JM_CLAUDE_CONTAINER_HOST
 
 JM_CLAUDE_CONTAINER_SSHKEY
   ssh key for claude to use to connect to the isolated VM.
+
+JM_CLAUDE_DATA_INSTANCE_SRC
+  path to volume mount into /src when using -i.
 
 DEPENDENCIES
 ============
