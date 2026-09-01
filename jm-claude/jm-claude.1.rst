@@ -22,7 +22,7 @@ OPTIONS
   Run a primary claude. Implies --no-workdir.
 
 --no-workdir
-  Do add volumes for ./ and git_dir.
+  Do not mount CWD nor gitdir into the container.
 
 -a <account>, --account <account>
   Arbitrary file system path compatible string.
