@@ -21,6 +21,10 @@ o_primary=false
 o_account=default
 o_instance=
 
+function _mkdir() {
+  mkdir --mode=0750 -p $@
+}
+
 (( ${${(k)paargs}[(I)-a]} )) && o_account=${paargs[-a]}
 (( ${${(k)paargs}[(I)--account]} )) && o_account=${paargs[--account]}
 (( ${${(k)paargs}[(I)-i]} )) && o_instance=${paargs[-i]}
@@ -88,6 +92,7 @@ if $o_workdir; then
     -v ${main}:/src/$(basename ${main}):ro
   )
 else
+  _mkdir ${JM_CLAUDE_DATA_INSTANCE_SRC}
   args+=(
     -v ${JM_CLAUDE_DATA_INSTANCE_SRC}:/src
   )
@@ -100,17 +105,20 @@ args+=(
   # volumes - config
   -v ${JM_CLAUDE_CONFIG_HOME}:/home/user/.config/claude
 )
+_mkdir ${JM_CLAUDE_CONFIG_HOME}
 
 if $o_primary ; then
   args+=(
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}:/home/user/.local/share/claude
   )
+  _mkdir ${JM_CLAUDE_DATA_PRIMARY_HOME}
 else
   args+=(
     -v ${JM_CLAUDE_DATA_INSTANCE_HOME}:/home/user/.local/share/claude
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/settings.json:/home/user/.local/share/claude/settings.json
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/.credentials.json:/home/user/.local/share/claude/.credentials.json
   )
+  _mkdir ${JM_CLAUDE_DATA_INSTANCE_HOME} ${JM_CLAUDE_DATA_PRIMARY_HOME}
 fi
 
 function add_vm_args {
@@ -130,7 +138,5 @@ function add_vm_args {
 
 add_vm_args
 args+=( ${JM_CLAUDE_IMAGE} )
-
-mkdir -p --mode=0750 ${JM_CLAUDE_DATA_INSTANCE_HOME} ${JM_CLAUDE_CONFIG_HOME}
 
 podman run $args $@
