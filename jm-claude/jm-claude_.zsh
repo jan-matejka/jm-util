@@ -8,9 +8,14 @@ set -eu
 : ${JM_CLAUDE_IMAGE:=ghcr.io/jan-matejka/claude:latest}
 : ${JM_CLAUDE_CONFIG_HOME:=${JM_CONFIG_HOME}/claude/conf}
 
+opts=(
+  p -primary
+  -no-workdir
+  a: -account:
+)
 declare -A paargs
 declare -a pargs
-zparseopts -K -D -a pargs -A paargs p -primary -no-workdir a: -account:
+zparseopts -K -D -a pargs -A paargs $opts
 
 o_primary=false
 o_account=default
