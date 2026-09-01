@@ -19,7 +19,7 @@ OPTIONS
 =======
 
 -p --primary
-  Run a primary claude. Implies --no-workdir.
+  Run a primary instance of claude. Implies --no-workdir.
 
 --no-workdir
   Do not mount CWD nor gitdir into the container.
@@ -112,8 +112,8 @@ JM_CLAUDE_DATA_PRIMARY_HOME
   Data home directory for primary claude instance. Files needed for
   authentication will be mounted into isolated instances as well.
 
-JM_CLAUDE_DATA_PROJECT_BRANCH_HOME
-  Data home directory for isolated claude instances.
+JM_CLAUDE_DATA_INSTANCE_HOME
+  Data home directory for the isolated claude instance.
 
 JM_CONFIG_KNOWN_HOSTS
   Known hosts file for claude to use for connecting to an isolated VM.

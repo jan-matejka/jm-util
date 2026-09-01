@@ -62,7 +62,8 @@ else
 fi
 
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
-: ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME:=${JM_CLAUDE_DATA_HOME}/${instance_fs}}
+
+: ${JM_CLAUDE_DATA_INSTANCE_HOME:=${JM_CLAUDE_DATA_HOME}/${instance_fs}}
 : ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary/$o_account}
 : ${JM_CLAUDE_CONFIG_KNOWN_HOSTS:=${JM_CONFIG_HOME}/claude/known_hosts}
 : ${JM_CLAUDE_DATA_INSTANCE_SRC:=${JM_CLAUDE_DATA_HOME}/data/${instance_name}}
@@ -106,7 +107,7 @@ if $o_primary ; then
   )
 else
   args+=(
-    -v ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME}:/home/user/.local/share/claude
+    -v ${JM_CLAUDE_DATA_INSTANCE_HOME}:/home/user/.local/share/claude
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/settings.json:/home/user/.local/share/claude/settings.json
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/.credentials.json:/home/user/.local/share/claude/.credentials.json
   )
@@ -130,6 +131,6 @@ function add_vm_args {
 add_vm_args
 args+=( ${JM_CLAUDE_IMAGE} )
 
-mkdir -p --mode=0750 ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME} ${JM_CLAUDE_CONFIG_HOME}
+mkdir -p --mode=0750 ${JM_CLAUDE_DATA_INSTANCE_HOME} ${JM_CLAUDE_CONFIG_HOME}
 
 podman run $args $@
