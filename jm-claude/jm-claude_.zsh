@@ -10,7 +10,6 @@ set -eu
 
 opts=(
   p -primary
-  -no-workdir
   a: -account:
   i: -instance:
 )
@@ -28,8 +27,7 @@ o_instance=
 (( ${${(k)paargs}[(I)--instance]} )) && o_instance=${paargs[--instance]}
 (( ${pargs[(I)-p]} )) && o_primary=true
 (( ${pargs[(I)--primary]} )) && o_primary=true
-{ (( ${pargs[(I)--no-workdir]} )) || $o_primary } && o_workdir=false || o_workdir=true
-[[ -n ${o_instance} ]] && o_workdir=false
+{ [[ -n ${o_instance} ]] || $o_primary } && o_workdir=false || o_workdir=true
 
 if $o_workdir; then
   root=$(git rev-parse --show-toplevel)
@@ -52,18 +50,20 @@ if $o_workdir; then
   instance_name=p_${project}_${branch}
   instance_fs=p/${project}/${branch}
 else
-  if $o_instance; then
+  if [[ -n $o_instance ]]; then
     instance_name=i_${o_instance}
     instance_fs=i/${o_instance}
+  elif $o_primary; then
+    instance_name=primary
+    instance_fs=primary
   else
-    instance_name=no-workdir
-    instance_fs=no-workdir
+    fatal "Invalid internal state"
   fi
 fi
 
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 
-: ${JM_CLAUDE_DATA_INSTANCE_HOME:=${JM_CLAUDE_DATA_HOME}/${instance_fs}}
+: ${JM_CLAUDE_DATA_INSTANCE_HOME:=${JM_CLAUDE_DATA_HOME}/home/${instance_fs}}
 : ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary/$o_account}
 : ${JM_CLAUDE_CONFIG_KNOWN_HOSTS:=${JM_CONFIG_HOME}/claude/known_hosts}
 : ${JM_CLAUDE_DATA_INSTANCE_SRC:=${JM_CLAUDE_DATA_HOME}/data/${instance_name}}

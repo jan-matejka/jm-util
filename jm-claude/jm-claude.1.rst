@@ -19,10 +19,7 @@ OPTIONS
 =======
 
 -p --primary
-  Run a primary instance of claude. Implies --no-workdir.
-
---no-workdir
-  Do not mount CWD nor gitdir into the container.
+  Run a primary instance of claude.
 
 -a <account>, --account <account>
   Arbitrary file system path compatible string.
@@ -30,7 +27,7 @@ OPTIONS
   Used for distinguishing between different claude accounts.
 
 -i <instance>, --instance <instance>
-  Instance name for the container. Implies --no-workdir.
+  Instance name for the container.
   Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
 
 <args>
