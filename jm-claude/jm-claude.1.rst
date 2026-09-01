@@ -30,8 +30,7 @@ OPTIONS
   Used for distinguishing between different claude accounts.
 
 -i <instance>, --instance <instance>
-  Instance name for the container.
-  Active only with --no-workdir.
+  Instance name for the container. Implies --no-workdir.
   Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
 
 <args>

@@ -29,6 +29,7 @@ o_instance=
 (( ${pargs[(I)-p]} )) && o_primary=true
 (( ${pargs[(I)--primary]} )) && o_primary=true
 { (( ${pargs[(I)--no-workdir]} )) || $o_primary } && o_workdir=false || o_workdir=true
+[[ -n ${o_instance} ]] && o_workdir=false
 
 if $o_workdir; then
   root=$(git rev-parse --show-toplevel)
