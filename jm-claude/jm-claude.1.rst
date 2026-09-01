@@ -29,6 +29,11 @@ OPTIONS
 
   Used for distinguishing between different claude accounts.
 
+-i <instance>, --instance <instance>
+  Instance name for the container.
+  Active only with --no-workdir.
+  Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
+
 <args>
   Passed to podman-run <image> <args...> so you can run e.g. ``jm claude zsh``.
 
@@ -122,6 +127,9 @@ JM_CLAUDE_CONTAINER_HOST
 
 JM_CLAUDE_CONTAINER_SSHKEY
   ssh key for claude to use to connect to the isolated VM.
+
+JM_CLAUDE_DATA_INSTANCE_SRC
+  path to volume mount into /src when using -i.
 
 DEPENDENCIES
 ============

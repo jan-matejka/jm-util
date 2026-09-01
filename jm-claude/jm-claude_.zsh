@@ -12,6 +12,7 @@ opts=(
   p -primary
   -no-workdir
   a: -account:
+  i: -instance:
 )
 declare -A paargs
 declare -a pargs
@@ -19,9 +20,12 @@ zparseopts -K -D -a pargs -A paargs $opts
 
 o_primary=false
 o_account=default
+o_instance=
 
 (( ${${(k)paargs}[(I)-a]} )) && o_account=${paargs[-a]}
 (( ${${(k)paargs}[(I)--account]} )) && o_account=${paargs[--account]}
+(( ${${(k)paargs}[(I)-i]} )) && o_instance=${paargs[-i]}
+(( ${${(k)paargs}[(I)--instance]} )) && o_instance=${paargs[--instance]}
 (( ${pargs[(I)-p]} )) && o_primary=true
 (( ${pargs[(I)--primary]} )) && o_primary=true
 { (( ${pargs[(I)--no-workdir]} )) || $o_primary } && o_workdir=false || o_workdir=true
@@ -44,17 +48,23 @@ if $o_workdir; then
     project=$(basename $(realpath $main/..))
   fi
 
-  instance_name=${project}_${branch}
+  instance_name=p_${project}_${branch}
   instance_fs=p/${project}/${branch}
 else
-  instance_name=no-workdir
-  instance_fs=no-workdir
+  if $o_instance; then
+    instance_name=i_${o_instance}
+    instance_fs=i/${o_instance}
+  else
+    instance_name=no-workdir
+    instance_fs=no-workdir
+  fi
 fi
 
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 : ${JM_CLAUDE_DATA_PROJECT_BRANCH_HOME:=${JM_CLAUDE_DATA_HOME}/${instance_fs}}
 : ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary/$o_account}
 : ${JM_CLAUDE_CONFIG_KNOWN_HOSTS:=${JM_CONFIG_HOME}/claude/known_hosts}
+: ${JM_CLAUDE_DATA_INSTANCE_SRC:=${JM_CLAUDE_DATA_HOME}/data/${instance_name}}
 
 args=(
   # standard flags
@@ -74,6 +84,10 @@ if $o_workdir; then
     # volumes - app
     -v ./:/src/${TAG}
     -v ${main}:/src/$(basename ${main}):ro
+  )
+else
+  args+=(
+    -v ${JM_CLAUDE_DATA_INSTANCE_SRC}:/src
   )
 fi
 
