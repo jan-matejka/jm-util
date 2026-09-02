@@ -254,3 +254,34 @@ git-cif -d does --no-edit by default::
 
   $ echo a >> a
   $ EDITOR=false git cif -adq
+
+
+git-cif trims the file extension depending on its setting::
+
+  $ mkdir -p foo/bar/qux
+  $ touch foo/bar/qux/file.pp
+  $ git add foo
+  $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  foo/bar/qux/file
+  $ echo >> foo/bar/qux/file.pp
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
+  $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  foo/bar/qux/file.pp
+
+
+git-cif trims the file name portion if enabled::
+
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-name true
+  $ echo >>foo/bar/qux/file.pp
+  $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  foo/bar/qux
+
+and doesn't apply to files in work tree root::
+
+  $ echo >>a
+  $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  a

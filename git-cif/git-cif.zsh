@@ -22,6 +22,10 @@ zparseopts -K -D -a pargs -A paargs a m: q d
 (( ${pargs[(I)-q]} )) && set -- -q $@
 (( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
 
+# FIXME: these should be in file config that can be committed.
+c_lcpp_trim_file_name=$(git config get --default false jmutil.gitcif.lcpp-trim-file-name)
+c_lcpp_trim_file_ext=$(git config get --default true jmutil.gitcif.lcpp-trim-file-ext)
+
 status() {
   git -C $root status --porcelain=v2
 }
@@ -48,6 +52,13 @@ $o_all && {
 
   # Passing the default message into git via stdin is messing with running
   # editor so that is not an option.
+
+  if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
+    lcpp=${lcpp%/*}
+  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
+    lcpp=${lcpp%.*}
+  fi
+
   git -C $root commit $@ $commit_opts -m "$lcpp"
   (( $? > 0 )) && exit 255
   exit 0
