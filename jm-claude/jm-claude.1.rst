@@ -99,36 +99,67 @@ Usage
 ENVIRONMENT
 ===========
 
+Standard
+--------
+
 JM_CLAUDE_IMAGE
   Image to run claude in.
 
 JM_CLAUDE_CONFIG_HOME
   Config home directory for claude.
 
+  Shared across all instances.
+
 JM_CLAUDE_DATA_HOME
   Data home directory for claude.
+
+  This is used as default parent for:
+  - JM_CLAUDE_DATA_PRIMARY_HOME
+  - JM_CLAUDE_DATA_INSTANCE_HOME
+  - JM_CLAUDE_DATA_INSTANCE_SRC
 
 JM_CLAUDE_DATA_PRIMARY_HOME
   Data home directory for primary claude instance. Files needed for
   authentication will be mounted into isolated instances as well.
 
+  This is instance specific path parented to JM_CLAUDE_DATA_HOME.
+
 JM_CLAUDE_DATA_INSTANCE_HOME
   Data home directory for the isolated claude instance.
+
+  This is instance specific path parented to JM_CLAUDE_DATA_HOME.
+
+JM_CLAUDE_DATA_INSTANCE_SRC
+  path to volume mount into /src when using -i.
+
+  This is instance specific path parented to JM_CLAUDE_DATA_HOME.
+
+Remote VM related
+-----------------
 
 JM_CONFIG_KNOWN_HOSTS
   Known hosts file for claude to use for connecting to an isolated VM.
   Can be created with:
   ``$ ssh-keyscan <VM_SANDBOX_HOSTNAME> > ~/.config/jm-util/claude/known_hosts``
 
+  This is instance specific but intended to be shared.
+
+  FIXME: unclear how to resolve with different --acount.
+
 JM_CLAUDE_CONTAINER_HOST
   URL to podman socket on the isolated VM for claude.
   E.g. ``ssh://user@machine/.../podman.sock``.
 
+  This is instance specific but intended to be shared.
+
+  FIXME: unclear how to resolve with different --acount.
+
 JM_CLAUDE_CONTAINER_SSHKEY
   ssh key for claude to use to connect to the isolated VM.
 
-JM_CLAUDE_DATA_INSTANCE_SRC
-  path to volume mount into /src when using -i.
+  This is instance specific but intended to be shared.
+
+  FIXME: unclear how to resolve with different --acount.
 
 DEPENDENCIES
 ============
