@@ -107,7 +107,7 @@ git-cif prefixes the file with "add: " if a file becomes tracked::
   $ git add c
   $ git cif -qm ""
   $ git lg -1
-  foo/c
+  add: foo/c
   
   A	foo/c
 
@@ -263,7 +263,7 @@ git-cif trims the file extension depending on its setting::
   $ git add foo
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  foo/bar/qux/file
+  add: foo/bar/qux/file
   $ echo >> foo/bar/qux/file.pp
   $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ EDITOR=: git cif -aq
@@ -296,7 +296,7 @@ git-cif applies scope-rewrite rules to the lcpp path::
   $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  lib/thing.txt
+  add: lib/thing.txt
 
 rules apply in the order they were added::
 
@@ -320,3 +320,21 @@ git-cif -w::
   $ EDITOR=: git cif -awq
   $ git log -1 --pretty=%s
   wip: a
+
+git-cif prefixes the message with "add: " when the single committed file is
+newly tracked::
+
+  $ echo x > newfile
+  $ git add newfile
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  add: newfile
+
+and not when more than one file is committed::
+
+  $ mkdir pkg
+  $ touch pkg/x pkg/y
+  $ git add pkg
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  pkg

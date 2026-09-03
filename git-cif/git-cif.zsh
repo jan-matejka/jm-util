@@ -43,7 +43,11 @@ $o_all && {
 }
 
 ! $o_discrete && {
-  lcpp=$(status | awk "$filter { print \$9 }" | jm-lcpp)
+  local st
+  local -a matched
+  st=$(status)
+  matched=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
+  lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
 
   # apply configured scope-rewrite rules (sed s/// expressions), in the
   # order they appear in git config, e.g.:
@@ -69,6 +73,10 @@ $o_all && {
   else
     o_msg="$lcpp"
   fi
+
+  # only meaningful when there's exactly one file, since lcpp collapses to a
+  # shared directory (not a file's own status) once more than one is matched
+  (( ${#matched} == 1 )) && [[ ${matched[1]:0:1} == A ]] && o_msg="add: ${o_msg}"
 
   $o_wip && o_msg="wip: ${o_msg}"
 
