@@ -101,4 +101,19 @@ jmutil.gitcif.lcpp-trim-file-ext
   FIXME: Perhaps we could also look for files with the same base name but
   different extension to decide automatically if we should keep it or not.
 
+jmutil.gitcif.scope-rewrite
+  A multi-valued list of ``sed`` expressions, applied in order to
+  the lcpp path before it becomes the commit subject.
+
+  Example, stripping a ``src/`` prefix from the lcpp::
+
+    git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
+
+  Applied after the lcpp is computed but before
+  ``jmutil.gitcif.lcpp-trim-file-name`` / ``jmutil.gitcif.lcpp-trim-file-ext``,
+  so a rule that changes whether the result still refers to an actual file
+  on disk affects whether those two settings trigger.
+
+  FIXME: Should apply to discrete commits.
+
 .. include:: ../core/common-foot.rst

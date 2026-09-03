@@ -285,3 +285,23 @@ and doesn't apply to files in work tree root::
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   a
+
+git-cif applies scope-rewrite rules to the lcpp path::
+
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
+  $ mkdir -p src/lib
+  $ touch src/lib/thing.txt
+  $ git add src
+  $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
+  $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  lib/thing.txt
+
+rules apply in the order they were added::
+
+  $ echo >> src/lib/thing.txt
+  $ git config set --local --append jmutil.gitcif.scope-rewrite 's/lib/vendor/'
+  $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  vendor/thing.txt

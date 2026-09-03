@@ -42,6 +42,20 @@ $o_all && {
 
 ! $o_discrete && {
   lcpp=$(status | awk "$filter { print \$9 }" | jm-lcpp)
+
+  # apply configured scope-rewrite rules (sed s/// expressions), in the
+  # order they appear in git config, e.g.:
+  #   git config set --local --append jmutil.gitcif.scope-rewrite 's/^foo\/src\//foo\//'
+  local -a scope_rewrite_rules sed_args
+  scope_rewrite_rules=(${(f)"$(git -C $root config get --all jmutil.gitcif.scope-rewrite || true)"})
+  (( ${#scope_rewrite_rules} )) && {
+    sed_args=()
+    for r in "${scope_rewrite_rules[@]}"; do
+      sed_args+=(-e "$r")
+    done
+    lcpp=$(print -r -- "$lcpp" | sed "${sed_args[@]}")
+  }
+
   [[ -n $o_msg ]] && lcpp+=": $o_msg"
 
   # open EDITOR only if -m is not given
