@@ -56,7 +56,17 @@ $o_all && {
     lcpp=$(print -r -- "$lcpp" | sed "${sed_args[@]}")
   }
 
-  [[ -n $o_msg ]] && lcpp+=": $o_msg"
+  if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
+    lcpp=${lcpp%/*}
+  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
+    lcpp=${lcpp%.*}
+  fi
+
+  if [[ -n $o_msg ]]; then
+    o_msg="$lcpp: $o_msg"
+  else
+    o_msg="$lcpp"
+  fi
 
   # open EDITOR only if -m is not given
   (( ${${(k)paargs}[(I)-m]} )) || commit_opts+=( --edit )
@@ -66,12 +76,6 @@ $o_all && {
 
   # Passing the default message into git via stdin is messing with running
   # editor so that is not an option.
-
-  if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
-    lcpp=${lcpp%/*}
-  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
-    lcpp=${lcpp%.*}
-  fi
 
   # stdin here is normally the read end of a pipe (this script is invoked via
   # xargs from git-cif.zsh), not a terminal. That's fine for `git commit -m`
@@ -83,7 +87,7 @@ $o_all && {
   # special builtin), so probe openability first and only exec once we know
   # it will succeed.
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
-  git -C $root commit $@ $commit_opts -m "$lcpp"
+  git -C $root commit $@ $commit_opts -m "$o_msg"
   (( $? > 0 )) && exit 255
   exit 0
 } || {
