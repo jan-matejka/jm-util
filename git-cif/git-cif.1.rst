@@ -5,33 +5,38 @@ Commit Files
 ------------
 
 :Manual section: 1
-:Date: 2025-07-29
+:Date: 2026-09-03
 :Author: Jan Matějka jan@matejka.ninja
 :Manual group: jm-util manual
 
 SYNOPSIS
 ========
 
-git cif [-1w] [-m <msg>]
+git cif [opts]
 
 DESCRIPTION
 ===========
 
 Commit with a longest common prefix path as commit message.
 
+"add: " prefix is added to the subject message when a sole file is being
+committed and is newly tracked.
+
 OPTIONS
 =======
 
--a      Commit all changes to tracked files. Not just the index.
+-a       Commit all changes to tracked files. Not just the index.
 
--w      Add a "WIP" marker to the commit message.
+-w       Add a "WIP" marker to the commit message.
 
--m      Use the given <msg> as the commit message.
+-m <msg> Use the given <msg> as the commit message.
 
--q      Suppress commit summary message.
+-q       Suppress commit summary message.
 
--d      Commit each file separately. Does not open EDITOR for individual
-        messages by default. See `Discrete`_ user story.
+-d       Commit each file separately. Does not open EDITOR for individual
+         messages by default. See `Discrete`_ user story.
+
+*        Unrecognized options are passed through to git-commit
 
 USER STORIES
 ============
@@ -82,8 +87,6 @@ jmutil.gitcif.lcpp-trim-file-name
   FIXME: It should also be possible to read this setting from a file commited
   to the repository.
 
-  FIXME: doesn't apply to discrete commits and it is unclear if it should.
-
 jmutil.gitcif.lcpp-trim-file-ext
   Strip the file extension from the lcpp if true. Default: true.
 
@@ -95,8 +98,6 @@ jmutil.gitcif.lcpp-trim-file-ext
 
   FIXME: It should also be possible to read this setting from a file commited
   to the repository.
-
-  FIXME: doesn't apply to discrete commits and it is unclear if it should.
 
   FIXME: Perhaps we could also look for files with the same base name but
   different extension to decide automatically if we should keep it or not.
@@ -113,7 +114,5 @@ jmutil.gitcif.scope-rewrite
   ``jmutil.gitcif.lcpp-trim-file-name`` / ``jmutil.gitcif.lcpp-trim-file-ext``,
   so a rule that changes whether the result still refers to an actual file
   on disk affects whether those two settings trigger.
-
-  FIXME: Should apply to discrete commits.
 
 .. include:: ../core/common-foot.rst

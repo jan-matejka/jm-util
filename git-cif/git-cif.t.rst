@@ -58,11 +58,11 @@ git-cif commits changed files in subdirs::
 
   $ cd foo && git cif -dqam ""
   $ git lg -2
-  foo/bar/b:
+  foo/bar/b
   
   M	foo/bar/b
   
-  c:
+  c
   
   M	c
 
@@ -83,8 +83,8 @@ git-cif -a does not add untracked files by default::
 Finally, check the messages of created commits::
 
   $ git log --format="%s" -6
-  foo/bar/b:
-  c:
+  foo/bar/b
+  c
   setup
   a
   a
@@ -96,7 +96,7 @@ git-cif -aw creates wip commits::
   $ git add bar/b
   $ git cif -dqam "" -w
   $ git lg -1
-  wip: foo/bar/b:
+  wip: foo/bar/b
   
   M	foo/bar/b
 
@@ -107,7 +107,7 @@ git-cif prefixes the file with "add: " if a file becomes tracked::
   $ git add c
   $ git cif -qm ""
   $ git lg -1
-  foo/c
+  add: foo/c
   
   A	foo/c
 
@@ -218,7 +218,7 @@ git commit -m but no value given::
 git cif -m but no value given::
 
   $ git cif -m
-  */build/bin/git-cif:zparseopts:19: missing argument for option: -m (glob)
+  */build/bin/git-cif:zparseopts:*: missing argument for option: -m (glob)
   [1]
 
   
@@ -263,7 +263,7 @@ git-cif trims the file extension depending on its setting::
   $ git add foo
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  foo/bar/qux/file
+  add: foo/bar/qux/file
   $ echo >> foo/bar/qux/file.pp
   $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ EDITOR=: git cif -aq
@@ -276,6 +276,13 @@ git-cif trims the file name portion if enabled::
   $ git config set --local jmutil.gitcif.lcpp-trim-file-name true
   $ echo >>foo/bar/qux/file.pp
   $ EDITOR=: git cif -aq
+  $ git log -1 --pretty=%s
+  foo/bar/qux
+
+trimming applies in discrete mode as well::
+
+  $ echo >>foo/bar/qux/file.pp
+  $ EDITOR=: git cif -aqd
   $ git log -1 --pretty=%s
   foo/bar/qux
 
@@ -296,6 +303,13 @@ git-cif applies scope-rewrite rules to the lcpp path::
   $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
+  add: lib/thing.txt
+
+scope-rewrite applies to discrete mode as well::
+
+  $ echo >>src/lib/thing.txt
+  $ EDITOR=: git cif -aqd
+  $ git log -1 --pretty=%s
   lib/thing.txt
 
 rules apply in the order they were added::
@@ -305,3 +319,45 @@ rules apply in the order they were added::
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   vendor/thing.txt
+
+git-cif -d honors the -m value::
+
+  $ echo x >> a
+  $ git add a
+  $ git cif -dqm "msg"
+  $ git log -1 --pretty=%s
+  a: msg
+
+git-cif -w::
+
+  $ echo >>a
+  $ EDITOR=: git cif -awq
+  $ git log -1 --pretty=%s
+  wip: a
+
+git-cif prefixes the message with "add: " when the single committed file is
+newly tracked::
+
+  $ echo x > newfile
+  $ git add newfile
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  add: newfile
+
+and not when more than one file is committed::
+
+  $ mkdir pkg
+  $ touch pkg/x pkg/y
+  $ git add pkg
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  pkg
+
+git-cif -d also gets "add: " (and -w) for free through recursion into the
+same non-discrete message-building path::
+
+  $ echo x > discrete-new
+  $ git add discrete-new
+  $ git cif -dqw
+  $ git log -1 --pretty=%s
+  wip: add: discrete-new
