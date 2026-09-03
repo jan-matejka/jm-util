@@ -30,6 +30,9 @@ OPTIONS
   Instance name for the container.
   Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
 
+-e --exec
+  Exec run zsh inside the running container instance.
+
 <args>
   Passed to podman-run <image> <args...> so you can run e.g. ``jm claude zsh``.
 
