@@ -305,3 +305,11 @@ rules apply in the order they were added::
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   vendor/thing.txt
+
+git-cif -d honors the -m value::
+
+  $ echo x >> a
+  $ git add a
+  $ git cif -dqm "msg"
+  $ git log -1 --pretty=%s
+  a: msg

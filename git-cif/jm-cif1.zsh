@@ -12,7 +12,7 @@ o_quiet=false
 # parse args
 declare -a pargs
 declare -A paargs
-zparseopts -K -D -a pargs w m: -no-edit q
+zparseopts -K -D -a pargs -A paargs w m: -no-edit q
 (( ${pargs[(I)-w]} )) && o_wip=true
 (( ${pargs[(I)--no-edit]} )) && o_no_edit=true
 (( ${pargs[(I)-q]} )) && o_quiet=true
@@ -30,7 +30,7 @@ $o_wip && msg="wip: " || msg=""
 # add the file into message
 
 msg+="$file:"
-[[ -n $o_msg ]] && msg+="$o_msg"
+[[ -n $o_msg ]] && msg+=" $o_msg"
 
 # prefix message with "add " if file_status indicates
 test ${file_status:0:1} = A && o_msg+=":add"
