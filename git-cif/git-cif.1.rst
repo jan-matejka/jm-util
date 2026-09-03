@@ -12,7 +12,7 @@ Commit Files
 SYNOPSIS
 ========
 
-git cif [-1w] [-m <msg>]
+git cif [opts]
 
 DESCRIPTION
 ===========
@@ -25,16 +25,16 @@ committed and is newly tracked.
 OPTIONS
 =======
 
--a      Commit all changes to tracked files. Not just the index.
+-a       Commit all changes to tracked files. Not just the index.
 
--w      Add a "WIP" marker to the commit message.
+-w       Add a "WIP" marker to the commit message.
 
--m      Use the given <msg> as the commit message.
+-m <msg> Use the given <msg> as the commit message.
 
--q      Suppress commit summary message.
+-q       Suppress commit summary message.
 
--d      Commit each file separately. Does not open EDITOR for individual
-        messages by default. See `Discrete`_ user story.
+-d       Commit each file separately. Does not open EDITOR for individual
+         messages by default. See `Discrete`_ user story.
 
 USER STORIES
 ============
