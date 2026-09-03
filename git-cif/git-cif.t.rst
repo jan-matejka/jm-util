@@ -218,7 +218,7 @@ git commit -m but no value given::
 git cif -m but no value given::
 
   $ git cif -m
-  */build/bin/git-cif:zparseopts:19: missing argument for option: -m (glob)
+  */build/bin/git-cif:zparseopts:*: missing argument for option: -m (glob)
   [1]
 
   
