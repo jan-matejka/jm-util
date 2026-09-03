@@ -11,12 +11,14 @@ o_all=false
 o_msg=""
 o_quiet=false
 o_discrete=false
+o_wip=false
 
 # parse args
 declare -a pargs
 declare -A paargs
 
-zparseopts -K -D -a pargs -A paargs a m: q d
+zparseopts -K -D -a pargs -A paargs a m: q d w
+(( ${pargs[(I)-w]} )) && o_wip=true
 (( ${pargs[(I)-a]} )) && o_all=true
 (( ${pargs[(I)-d]} )) && o_discrete=true
 (( ${pargs[(I)-q]} )) && set -- -q $@
@@ -68,6 +70,8 @@ $o_all && {
     o_msg="$lcpp"
   fi
 
+  $o_wip && o_msg="wip: ${o_msg}"
+
   # open EDITOR only if -m is not given
   (( ${${(k)paargs}[(I)-m]} )) || commit_opts+=( --edit )
 
@@ -96,6 +100,7 @@ $o_all && {
   (( ${${(k)paargs}[(I)-m]} )) && {
     [[ -n $o_msg ]] && set -- $@ -m "$o_msg" || set -- $@ --no-edit
   }
+  $o_wip && set -- -w $@
   status | \
     awk "$filter { print \$2 \" \" \$9; }" | \
     xargs -n2 -r jm cif1 $@ $root

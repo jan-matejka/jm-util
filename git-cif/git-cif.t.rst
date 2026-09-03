@@ -313,3 +313,10 @@ git-cif -d honors the -m value::
   $ git cif -dqm "msg"
   $ git log -1 --pretty=%s
   a: msg
+
+git-cif -w::
+
+  $ echo >>a
+  $ EDITOR=: git cif -awq
+  $ git log -1 --pretty=%s
+  wip: a
