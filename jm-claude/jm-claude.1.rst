@@ -110,6 +110,10 @@ JM_CLAUDE_CONFIG_HOME
 
   Shared across all instances.
 
+JM_CLAUDE_CONFIG_SKILLS
+
+  Directory to mount into ~/.claude/skills in the container.
+
 JM_CLAUDE_DATA_HOME
   Data home directory for claude.
 
