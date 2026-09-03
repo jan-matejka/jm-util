@@ -44,10 +44,20 @@ $o_all && {
 
 ! $o_discrete && {
   local st
-  local -a matched
-  st=$(status)
-  matched=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
-  lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
+  local -a st_xy pathspec
+
+  if [[ -n ${JM_GITCIF_PATHSPEC:-} ]]; then
+    pathspec=( -- "$JM_GITCIF_PATHSPEC" )
+    # discrete mode recurses once per file, passing it via env
+    # XY is how is this field referenced in the git-status man page.
+    st_xy=( $(git -C $root status --porcelain=v2 -- "$JM_GITCIF_PATHSPEC" |
+      awk '{ print $2 }') )
+    lcpp=$JM_GITCIF_PATHSPEC
+  else
+    st=$(status)
+    st_xy=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
+    lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
+  fi
 
   # apply configured scope-rewrite rules (sed s/// expressions), in the
   # order they appear in git config, e.g.:
@@ -62,22 +72,24 @@ $o_all && {
     lcpp=$(print -r -- "$lcpp" | sed "${sed_args[@]}")
   }
 
+  # apply trimming rules
   if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
     lcpp=${lcpp%/*}
   elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
     lcpp=${lcpp%.*}
   fi
 
+  # append custom message if passed
   if [[ -n $o_msg ]]; then
     o_msg="$lcpp: $o_msg"
   else
     o_msg="$lcpp"
   fi
 
-  # only meaningful when there's exactly one file, since lcpp collapses to a
-  # shared directory (not a file's own status) once more than one is matched
-  (( ${#matched} == 1 )) && [[ ${matched[1]:0:1} == A ]] && o_msg="add: ${o_msg}"
+  # add "add: " prefix if committing a sole newly tracked file
+  (( ${#st_xy} == 1 )) && [[ ${st_xy[1]:0:1} == A ]] && o_msg="add: ${o_msg}"
 
+  # add wip prefix
   $o_wip && o_msg="wip: ${o_msg}"
 
   # open EDITOR only if -m is not given
@@ -89,27 +101,28 @@ $o_all && {
   # Passing the default message into git via stdin is messing with running
   # editor so that is not an option.
 
-  # stdin here is normally the read end of a pipe (this script is invoked via
-  # xargs from git-cif.zsh), not a terminal. That's fine for `git commit -m`
-  # itself, but if commit.gpgsign is on and pinentry is curses-based, gpg needs
-  # a real tty on stdin to prompt for the passphrase. Reattach one when
-  # available; CI/non-interactive runs have no controlling terminal to open,
-  # so fall back to the inherited (piped) stdin instead of failing outright.
-  # exec's own redirection failing would exit the shell outright (it's a
-  # special builtin), so probe openability first and only exec once we know
-  # it will succeed.
+  # stdin here may be the read end of a pipe rather than a terminal (discrete
+  # mode recursion).
+  #
+  # That's fine for `git commit -m` itself, but if commit.gpgsign is on and
+  # pinentry is curses-based, gpg needs a real tty on stdin to prompt for the
+  # passphrase.
+  #
+  # The line below tests if tty is available and re-attaches it if it is.
+  #
+  # Note there may be no tty at all, e.g. in CI.
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
-  git -C $root commit $@ $commit_opts -m "$o_msg"
+
+  git -C $root commit $@ $commit_opts -m "$o_msg" $pathspec
   (( $? > 0 )) && exit 255
   exit 0
 } || {
+  $o_wip && set -- -w $@
+  set -- $@ -m "$o_msg"
+
   # For the output of status porcelain refer to dram/99-ref-git-status-porcelain-v2.rst in addition to
   # the git-status(1)
-  (( ${${(k)paargs}[(I)-m]} )) && {
-    [[ -n $o_msg ]] && set -- $@ -m "$o_msg" || set -- $@ --no-edit
-  }
-  $o_wip && set -- -w $@
   status | \
-    awk "$filter { print \$2 \" \" \$9; }" | \
-    xargs -n2 -r jm cif1 $@ $root
+    awk "$filter { print \$9 }" | \
+    xargs -r -I{} env JM_GITCIF_PATHSPEC={} git -C $root cif "$@"
 }

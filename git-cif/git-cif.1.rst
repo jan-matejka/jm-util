@@ -85,8 +85,6 @@ jmutil.gitcif.lcpp-trim-file-name
   FIXME: It should also be possible to read this setting from a file commited
   to the repository.
 
-  FIXME: doesn't apply to discrete commits and it is unclear if it should.
-
 jmutil.gitcif.lcpp-trim-file-ext
   Strip the file extension from the lcpp if true. Default: true.
 
@@ -98,8 +96,6 @@ jmutil.gitcif.lcpp-trim-file-ext
 
   FIXME: It should also be possible to read this setting from a file commited
   to the repository.
-
-  FIXME: doesn't apply to discrete commits and it is unclear if it should.
 
   FIXME: Perhaps we could also look for files with the same base name but
   different extension to decide automatically if we should keep it or not.
@@ -116,7 +112,5 @@ jmutil.gitcif.scope-rewrite
   ``jmutil.gitcif.lcpp-trim-file-name`` / ``jmutil.gitcif.lcpp-trim-file-ext``,
   so a rule that changes whether the result still refers to an actual file
   on disk affects whether those two settings trigger.
-
-  FIXME: Should apply to discrete commits.
 
 .. include:: ../core/common-foot.rst

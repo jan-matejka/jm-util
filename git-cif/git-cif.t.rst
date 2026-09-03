@@ -58,11 +58,11 @@ git-cif commits changed files in subdirs::
 
   $ cd foo && git cif -dqam ""
   $ git lg -2
-  foo/bar/b:
+  foo/bar/b
   
   M	foo/bar/b
   
-  c:
+  c
   
   M	c
 
@@ -83,8 +83,8 @@ git-cif -a does not add untracked files by default::
 Finally, check the messages of created commits::
 
   $ git log --format="%s" -6
-  foo/bar/b:
-  c:
+  foo/bar/b
+  c
   setup
   a
   a
@@ -96,7 +96,7 @@ git-cif -aw creates wip commits::
   $ git add bar/b
   $ git cif -dqam "" -w
   $ git lg -1
-  wip: foo/bar/b:
+  wip: foo/bar/b
   
   M	foo/bar/b
 
@@ -279,6 +279,13 @@ git-cif trims the file name portion if enabled::
   $ git log -1 --pretty=%s
   foo/bar/qux
 
+trimming applies in discrete mode as well::
+
+  $ echo >>foo/bar/qux/file.pp
+  $ EDITOR=: git cif -aqd
+  $ git log -1 --pretty=%s
+  foo/bar/qux
+
 and doesn't apply to files in work tree root::
 
   $ echo >>a
@@ -297,6 +304,13 @@ git-cif applies scope-rewrite rules to the lcpp path::
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   add: lib/thing.txt
+
+scope-rewrite applies to discrete mode as well::
+
+  $ echo >>src/lib/thing.txt
+  $ EDITOR=: git cif -aqd
+  $ git log -1 --pretty=%s
+  lib/thing.txt
 
 rules apply in the order they were added::
 
@@ -338,3 +352,12 @@ and not when more than one file is committed::
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
   pkg
+
+git-cif -d also gets "add: " (and -w) for free through recursion into the
+same non-discrete message-building path::
+
+  $ echo x > discrete-new
+  $ git add discrete-new
+  $ git cif -dqw
+  $ git log -1 --pretty=%s
+  wip: add: discrete-new
