@@ -36,6 +36,8 @@ OPTIONS
 -d       Commit each file separately. Does not open EDITOR for individual
          messages by default. See `Discrete`_ user story.
 
+*        Unrecognized options are passed through to git-commit
+
 USER STORIES
 ============
 
