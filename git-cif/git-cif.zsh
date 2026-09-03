@@ -59,6 +59,14 @@ $o_all && {
     lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
   fi
 
+  # apply trimming rules before scope-rewrites because we are checking for file
+  # existence.
+  if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
+    lcpp=${lcpp%/*}
+  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
+    lcpp=${lcpp%.*}
+  fi
+
   # apply configured scope-rewrite rules (sed s/// expressions), in the
   # order they appear in git config, e.g.:
   #   git config set --local --append jmutil.gitcif.scope-rewrite 's/^foo\/src\//foo\//'
@@ -71,13 +79,6 @@ $o_all && {
     done
     lcpp=$(print -r -- "$lcpp" | sed "${sed_args[@]}")
   }
-
-  # apply trimming rules
-  if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
-    lcpp=${lcpp%/*}
-  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
-    lcpp=${lcpp%.*}
-  fi
 
   # append custom message if passed
   if [[ -n $o_msg ]]; then
