@@ -92,6 +92,8 @@ args=(
   --security-opt=no-new-privileges
   --read-only
   # environment
+  # Doctor doesnt work in container.
+  -e DISABLE_DOCTOR_COMMAND=1
 )
 
 if $o_workdir; then
