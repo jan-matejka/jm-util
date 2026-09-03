@@ -68,6 +68,7 @@ else
   fi
 fi
 
+: ${JM_CLAUDE_CONFIG_SKILLS:=${JM_CLAUDE_CONFIG_HOME}/skills}
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 
 : ${JM_CLAUDE_DATA_INSTANCE_HOME:=${JM_CLAUDE_DATA_HOME}/home/${instance_fs}}
@@ -124,9 +125,16 @@ else
   args+=(
     -v ${JM_CLAUDE_DATA_INSTANCE_HOME}:/home/user/.local/share/claude
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/settings.json:/home/user/.local/share/claude/settings.json
+    -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/settings.json:/home/user/.local/share/claude/settings.json
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/.credentials.json:/home/user/.local/share/claude/.credentials.json
   )
   _mkdir ${JM_CLAUDE_DATA_INSTANCE_HOME} ${JM_CLAUDE_DATA_PRIMARY_HOME}
+fi
+
+if test -d ${JM_CLAUDE_CONFIG_SKILLS}; then
+  args+=(
+    -v ${JM_CLAUDE_CONFIG_SKILLS}:/home/user/.local/share/claude/skills
+  )
 fi
 
 function add_vm_args {
