@@ -5,7 +5,7 @@ Commit Files
 ------------
 
 :Manual section: 1
-:Date: 2025-07-29
+:Date: 2026-09-03
 :Author: Jan Matějka jan@matejka.ninja
 :Manual group: jm-util manual
 
