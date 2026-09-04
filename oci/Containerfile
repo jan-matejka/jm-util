@@ -15,6 +15,9 @@ ENV PATH=/usr/local/cargo/bin:$PATH \
 
 RUN chmod a+w $RUSTUP_HOME $CARGO_HOME
 
+RUN echo 'deb http://deb.debian.org/debian trixie-backports main' \
+      > /etc/apt/sources.list.d/backports.list
+
 RUN <<EOF
 apt-get update
 pkgs="
@@ -42,6 +45,7 @@ pkgs="
   zsh
 "
 apt-get install -y ${pkgs}
+apt-get install -y -t trixie-backports yq-go
 EOF
 
 RUN rustup component add rustfmt

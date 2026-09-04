@@ -51,12 +51,50 @@ if $o_all && ! $o_discrete; then
   leftovers+=( -a )
 fi
 
+if [[ -z ${JM_UTIL_YQ:=} ]]; then
+  if command -v yq-go >/dev/null; then
+    JM_UTIL_YQ=yq-go
+  else
+    if command -v yq >/dev/null; then
+      JM_UTIL_YQ=yq
+    fi
+  fi
+fi
+
+if [[ -z ${JM_UTIL_YQ} ]]; then
+  warning "command not found: yq-go"
+  warning "command not found: yq"
+fi
+
 # printf "leftovers: %s\n" $leftovers >&2
 # printf "pathspec: %s\n" $pathspec >&2
 
-# FIXME: these should be in file config that can be committed.
-c_lcpp_trim_file_name=$(git config get --default false jmutil.gitcif.lcpp-trim-file-name)
-c_lcpp_trim_file_ext=$(git config get --default true jmutil.gitcif.lcpp-trim-file-ext)
+# FIXME: midden ablaze
+# It is mind boggling how many tools for manipulating toml from cli there are,
+# yet none are usable. I'm planck length away of sticking envdir in here.
+toml_get() {
+  local key="$1" default="$2"
+  if [[ -n ${JM_UTIL_YQ} ]]; then
+    local base="${key%\[\]}"
+    local section="tool.jmutil.gitcif"
+    local -a candidates=( "$root/project.toml" "$root/pyproject.toml" )
+    local f present
+    for f in "${candidates[@]}"; do
+      [[ -f $f ]] || continue
+      present=$(yq -p toml -o toml ".$section | has(\"$base\")" "$f") || present=false
+      if [[ $present == true ]]; then
+        yq -p toml -o toml ".tool.jmutil.gitcif.$key" "$f"
+        return 0
+      fi
+    done
+  fi
+
+  [[ -n $default ]] && print -r -- "$default"
+  return 0
+}
+
+c_lcpp_trim_file_name=$(toml_get lcpp-trim-file-name false)
+c_lcpp_trim_file_ext=$(toml_get lcpp-trim-file-ext true)
 
 status() {
   git -C $root status --porcelain=v2 "$@"
@@ -117,10 +155,11 @@ if ! $o_discrete; then
   fi
 
   # apply configured scope-rewrite rules (sed s/// expressions), in the
-  # order they appear in git config, e.g.:
-  #   git config set --local --append jmutil.gitcif.scope-rewrite 's/^foo\/src\//foo\//'
+  # order they appear in the [tool.jmutil.gitcif] scope-rewrite array of
+  # project.toml / pyproject.toml, e.g.:
+  #   scope-rewrite = ["s/^foo\\/src\\//foo\\//"]
   local -a scope_rewrite_rules sed_args
-  scope_rewrite_rules=(${(f)"$(git -C $root config get --all jmutil.gitcif.scope-rewrite || true)"})
+  scope_rewrite_rules=(${(f)"$(toml_get 'scope-rewrite[]' '')"})
   (( ${#scope_rewrite_rules} )) && {
     for r in "${scope_rewrite_rules[@]}"; do
       sed_args+=(-e "$r")

@@ -91,13 +91,11 @@ squash the commits by their file or file system scope.
 CONFIGURATION
 =============
 
-git config
-----------
+Settings are read from the ``[tool.jmutil.gitcif]`` table of a
+``project.toml`` or ``pyproject.toml`` respectively in the git work tree root.
 
 jmutil.gitcif.lcpp-trim-file-name
   Strip the file name from the lcpp if true. Default: false.
-
-  Valid values: arbitrary shell command. Typically "true" / "false".
 
   Trimming the filename is typically desired when
   working with code as the parent directory is typically the appropriate
@@ -111,31 +109,24 @@ jmutil.gitcif.lcpp-trim-file-name
   FIXME: since a repository may contain both code and documentation it is clear
   a more nuanced approach is required for full resolution.
 
-  FIXME: It should also be possible to read this setting from a file commited
-  to the repository.
-
 jmutil.gitcif.lcpp-trim-file-ext
   Strip the file extension from the lcpp if true. Default: true.
-
-  Valid values: arbitrary shell command. Typically "true" / "false".
 
   If lcpp-trim-file-name is not active, it is typically desired to trim the
   extension because it does not add any valuable context and can typically be
   inferred from the rest of the commit subject.
 
-  FIXME: It should also be possible to read this setting from a file commited
-  to the repository.
-
   FIXME: Perhaps we could also look for files with the same base name but
   different extension to decide automatically if we should keep it or not.
 
 jmutil.gitcif.scope-rewrite
-  A multi-valued list of ``sed`` expressions, applied in order to
-  the lcpp path before it becomes the commit subject.
+  A list of ``sed`` expressions, applied in order to the lcpp path before
+  it becomes the commit subject.
 
   Example, stripping a ``src/`` prefix from the lcpp::
 
-    git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
+    [tool.jmutil.gitcif]
+    scope-rewrite = ["s#^src/##"]
 
   Applied after the lcpp is computed but before
   ``jmutil.gitcif.lcpp-trim-file-name`` / ``jmutil.gitcif.lcpp-trim-file-ext``,
