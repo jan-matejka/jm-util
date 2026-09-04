@@ -115,4 +115,9 @@ jmutil.gitcif.scope-rewrite
   so a rule that changes whether the result still refers to an actual file
   on disk affects whether those two settings trigger.
 
+EXIT STATUS
+===========
+
+The exit status of the underlying git-commit is returned for non -d operation.
+
 .. include:: ../core/common-foot.rst
