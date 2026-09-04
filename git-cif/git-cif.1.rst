@@ -29,6 +29,8 @@ CC type
 
   - Is set to "mv" if a single file is being renamed.
 
+  - Is set to "ft" if a a single file is being added to the repository.
+
   - An explicit -t option takes precedence over all the automatically
     determined types above.
 
