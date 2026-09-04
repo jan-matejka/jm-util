@@ -107,9 +107,9 @@ if ! $o_discrete; then
 
   # apply trimming rules before scope-rewrites because we are checking for file
   # existence.
-  if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
+  if $c_lcpp_trim_file_name && test -f $root/$lcpp && [[ $lcpp == */* ]]; then
     lcpp=${lcpp%/*}
-  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ ${lcpp:t} == ?*.* ]]; then
+  elif $c_lcpp_trim_file_ext && test -f $root/$lcpp && [[ ${lcpp:t} == ?*.* ]]; then
     lcpp=${lcpp%.*}
   fi
 
