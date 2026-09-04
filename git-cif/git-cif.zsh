@@ -12,18 +12,20 @@ o_msg=""
 o_quiet=false
 o_discrete=false
 o_wip=false
+o_type=
 
 # parse args
 declare -a pargs
 declare -A paargs
 
-zparseopts -K -D -a pargs -A paargs a m: q d w
+zparseopts -K -D -a pargs -A paargs a m: q d w t:
 leftovers=()
 (( ${pargs[(I)-w]} )) && o_wip=true
 (( ${pargs[(I)-a]} )) && o_all=true
 (( ${pargs[(I)-d]} )) && o_discrete=true
 (( ${pargs[(I)-q]} )) && leftovers+=( -q )
 (( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
+(( ${pargs[(I)-t]} )) && o_type="${paargs[-t]}"
 
 pathspec=()
 
@@ -109,6 +111,9 @@ $o_all && {
       ;;
     esac
   fi
+
+  # add cc type
+  [[ -n $o_type ]] && cc=( "$o_type" )
 
   # add scope
   [[ -n $lcpp ]] && cc+=( "$lcpp" )
