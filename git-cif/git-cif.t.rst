@@ -286,6 +286,19 @@ trimming applies in discrete mode as well::
   $ git log -1 --pretty=%s
   foo/bar/qux
 
+trim does not apply to dotfiles and directories::
+
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext true
+  $ mkdir foo/bar.d
+  $ touch foo/bar.d/qux
+  $ touch foo/.quux
+  $ git add foo
+  $ git cif -dqam ''
+  $ git log -2 --pretty=%s
+  foo/bar.d/qux: add
+  foo/.quux: add
+
 and doesn't apply to files in work tree root::
 
   $ echo >>a
