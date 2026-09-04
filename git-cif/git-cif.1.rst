@@ -27,7 +27,7 @@ OPTIONS
 
 -a       Commit all changes to tracked files. Not just the index.
 
--w       Add a "WIP" marker to the commit message.
+-w       Add a "wip:" marker to the commit message.
 
 -m <msg> Use the given <msg> as the commit message.
 
