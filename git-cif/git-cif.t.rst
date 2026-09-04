@@ -100,14 +100,14 @@ git-cif -aw creates wip commits::
   
   M	foo/bar/b
 
-git-cif prefixes the file with "add: " if a file becomes tracked::
+git-cif prefixes the file with "add " if a file becomes tracked::
 
   $ ! test -e c
   $ echo x > c
   $ git add c
   $ git cif -qm ""
   $ git lg -1
-  add: foo/c
+  add foo/c
   
   A	foo/c
 
@@ -263,7 +263,7 @@ git-cif trims the file extension depending on its setting::
   $ git add foo
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  add: foo/bar/qux/file
+  add foo/bar/qux/file
   $ echo >> foo/bar/qux/file.pp
   $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ EDITOR=: git cif -aq
@@ -303,7 +303,7 @@ git-cif applies scope-rewrite rules to the lcpp path::
   $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  add: lib/thing.txt
+  add lib/thing.txt
 
 scope-rewrite applies to discrete mode as well::
 
@@ -335,14 +335,14 @@ git-cif -w::
   $ git log -1 --pretty=%s
   wip: a
 
-git-cif prefixes the message with "add: " when the single committed file is
+git-cif prefixes the message with "add " when the single committed file is
 newly tracked::
 
   $ echo x > newfile
   $ git add newfile
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
-  add: newfile
+  add newfile
 
 and not when more than one file is committed::
 
@@ -353,11 +353,11 @@ and not when more than one file is committed::
   $ git log -1 --pretty=%s
   pkg
 
-git-cif -d also gets "add: " (and -w) for free through recursion into the
+git-cif -d also gets "add " (and -w) for free through recursion into the
 same non-discrete message-building path::
 
   $ echo x > discrete-new
   $ git add discrete-new
   $ git cif -dqw
   $ git log -1 --pretty=%s
-  wip: add: discrete-new
+  wip: add discrete-new

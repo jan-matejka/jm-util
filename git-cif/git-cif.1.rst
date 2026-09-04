@@ -19,7 +19,7 @@ DESCRIPTION
 
 Commit with a longest common prefix path as commit message.
 
-"add: " prefix is added to the subject message when a sole file is being
+"add " prefix to is added to the subject message when a sole file is being
 committed and is newly tracked.
 
 OPTIONS
