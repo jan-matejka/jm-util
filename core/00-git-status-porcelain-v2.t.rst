@@ -53,3 +53,17 @@ Porcelain::
   2 R. N... 100644 100644 100644 [a-f0-9]{40} [a-f0-9]{40} R100 moved-b	moved-a (re)
   1 A. N... 000000 100644 100644 [a-f0-9]{40} [a-f0-9]{40} newly-tracked (re)
   ? untracked
+
+Porcelain with pathspec::
+
+  $ git status --porcelain=v2 -- deleted
+  1 D. N... 100644 000000 000000 [a-f0-9]{40} [a-f0-9]{40} deleted (re)
+
+Porcelain with sep but no pathspec is identical to no sep::
+
+  $ git status --porcelain=v2 --
+  1 D. N... 100644 000000 000000 [a-f0-9]{40} [a-f0-9]{40} deleted (re)
+  1 .M N... 100644 100644 100644 [a-f0-9]{40} [a-f0-9]{40} modified-tracked (re)
+  2 R. N... 100644 100644 100644 [a-f0-9]{40} [a-f0-9]{40} R100 moved-b	moved-a (re)
+  1 A. N... 000000 100644 100644 [a-f0-9]{40} [a-f0-9]{40} newly-tracked (re)
+  ? untracked
