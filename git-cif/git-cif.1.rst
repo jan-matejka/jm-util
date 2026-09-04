@@ -21,6 +21,15 @@ Commit with a longest common prefix path as commit message.
 
 .. It may be time to do this in an actual programming language.
 
+Todo
+----
+
+- determining the fixup commits could be probably be decently automated as
+  well. It would also completely eliminate the idea of having
+  ``git-fixup --primary-sel-as-committish``.
+
+- --amend mode is sorely needed.
+
 Automation
 ----------
 
