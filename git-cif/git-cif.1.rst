@@ -19,8 +19,16 @@ DESCRIPTION
 
 Commit with a longest common prefix path as commit message.
 
-"add " prefix to is added to the subject message when a sole file is being
-committed and is newly tracked.
+Automation
+----------
+
+Add marker
+  An "add " string is prefixed to CC message if a single file is being added to
+  the repository.
+
+rm CC type
+  CC type is changed to "rm" unless a type is provided explicitly (-t) and a
+  single file is being deleted from the repository.
 
 OPTIONS
 =======
