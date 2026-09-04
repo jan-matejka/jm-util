@@ -60,8 +60,8 @@ status() {
 }
 
 status_to_filenames() {
-  local filter="${1}"
-  local rename_print="${2}"
+  # Reads the script-global $filter, set once $o_all is known (below).
+  local rename_print="${1}"
   # FIXME: rename_print could removed as an argument to this function (not from
   # the awk itself) if lcpp would split files on both \n and (" " or maybe \t
   # instead if that expands to multiple argv through the xargs pipeline).
@@ -103,7 +103,7 @@ if ! $o_discrete; then
     st=$(status -- "${pathspec[@]}")
   fi
   st_xy=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
-  lcpp=$(print -r -- "$st" | status_to_filenames $filter 'print $10; print $11' | jm-lcpp)
+  lcpp=$(print -r -- "$st" | status_to_filenames 'print $10; print $11' | jm-lcpp)
 
   # apply trimming rules before scope-rewrites because we are checking for file
   # existence.
@@ -197,6 +197,6 @@ else
   # For the output of status porcelain refer to dram/99-ref-git-status-porcelain-v2.rst in addition to
   # the git-status(1)
   status | \
-    status_to_filenames $filter 'print $10 " " $11;' | \
+    status_to_filenames 'print $10 " " $11;' | \
     xargs -r -L 1 git -C $root cif "$@" --
 fi
