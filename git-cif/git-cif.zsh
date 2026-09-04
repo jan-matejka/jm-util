@@ -83,7 +83,7 @@ $o_all && {
   # existence.
   if $c_lcpp_trim_file_name && test -f $lcpp && [[ $lcpp == */* ]]; then
     lcpp=${lcpp%/*}
-  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == *.* ]]; then
+  elif $c_lcpp_trim_file_ext && test -f $lcpp && [[ $lcpp == ?*.* ]]; then
     lcpp=${lcpp%.*}
   fi
 
