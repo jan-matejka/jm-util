@@ -59,6 +59,17 @@ status() {
   git -C $root status --porcelain=v2 "$@"
 }
 
+status_to_filenames() {
+  local filter="${1}"
+  local rename_print="${2}"
+  # FIXME: rename_print could removed as an argument to this function (not from
+  # the awk itself) if lcpp would split files on both \n and (" " or maybe \t
+  # instead if that expands to multiple argv through the xargs pipeline).
+  # Because then we could probably use the same input for both lcpp and for the
+  # xargs pipeline in -d mode.
+  awk -F'[ \t]+' "$filter"' { if ($1==1) print $9; else if ($1==2) { '"$rename_print"' } }'
+}
+
 $o_all && {
   # match all changes except to untracked or ignored files
   filter='$1 ~ "1|2"'
@@ -73,11 +84,26 @@ if ! $o_discrete; then
   local subject
 
   if (( ${#pathspec} )); then
-    git add "${pathspec[@]}"
+    # FIXME: this is bad
+    if $o_all; then
+      addable=( $pathspec )
+    else
+      addable=($(status -- "${pathspec[@]}" | awk '$1 != "2" { print $9 }'))
+    fi
+    if (( ${#addable} )) ; then
+      git -C $root add -- "${addable[@]}"
+    fi
   fi
-  st=$(status -- "${pathspec[@]}")
+  # Refresh status after git-add. Under -a the final commit isn't
+  # restricted to pathspec, so the scope must be computed from
+  # everything that will actually be committed.
+  if $o_all; then
+    st=$(status)
+  else
+    st=$(status -- "${pathspec[@]}")
+  fi
   st_xy=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
-  lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
+  lcpp=$(print -r -- "$st" | status_to_filenames $filter 'print $10; print $11' | jm-lcpp)
 
   # apply trimming rules before scope-rewrites because we are checking for file
   # existence.
@@ -111,6 +137,14 @@ if ! $o_discrete; then
         o_type='rm'
       fi
       ;;
+    R)
+      if ! (( ${pargs[(I)-t]} )); then
+        o_type='mv'
+      fi
+      if ! (( ${pargs[(I)-m]} )) && (( ${#pathspec} )); then
+        o_msg="${pathspec[1]} -> ${pathspec[2]}"
+      fi
+    ;;
     esac
   fi
 
@@ -163,6 +197,6 @@ else
   # For the output of status porcelain refer to dram/99-ref-git-status-porcelain-v2.rst in addition to
   # the git-status(1)
   status | \
-    awk "$filter { print \$9 }" | \
-    xargs -r -I{} git -C $root cif "$@" -- {}
+    status_to_filenames $filter 'print $10 " " $11;' | \
+    xargs -r -L 1 git -C $root cif "$@" --
 fi
