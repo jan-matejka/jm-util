@@ -96,7 +96,7 @@ git-cif -aw creates wip commits::
   $ git add bar/b
   $ git cif -dqam "" -w
   $ git lg -1
-  wip: foo/bar/b
+  wip:foo/bar/b
   
   M	foo/bar/b
 
@@ -333,7 +333,7 @@ git-cif -w::
   $ echo >>a
   $ EDITOR=: git cif -awq
   $ git log -1 --pretty=%s
-  wip: a
+  wip:a
 
 git-cif prefixes the message with "add " when the single committed file is
 newly tracked::
@@ -360,4 +360,4 @@ same non-discrete message-building path::
   $ git add discrete-new
   $ git cif -dqw
   $ git log -1 --pretty=%s
-  wip: add discrete-new
+  wip:add discrete-new
