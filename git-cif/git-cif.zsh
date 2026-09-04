@@ -18,47 +18,64 @@ declare -a pargs
 declare -A paargs
 
 zparseopts -K -D -a pargs -A paargs a m: q d w
+leftovers=()
 (( ${pargs[(I)-w]} )) && o_wip=true
 (( ${pargs[(I)-a]} )) && o_all=true
 (( ${pargs[(I)-d]} )) && o_discrete=true
-(( ${pargs[(I)-q]} )) && set -- -q $@
+(( ${pargs[(I)-q]} )) && leftovers+=( -q )
 (( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
+
+pathspec=()
+
+# printf "args: %s\n" $@ >&2
+
+while (( $# )); do
+  case $1 in
+  --)
+    ;;
+  -*)
+    leftovers+=( "$1" )
+    ;;
+  *)
+    pathspec+=( "$1" )
+  esac
+  shift 1
+done
+
+if $o_all && ! $o_discrete; then
+  leftovers+=( -a )
+fi
+
+# printf "leftovers: %s\n" $leftovers >&2
+# printf "pathspec: %s\n" $pathspec >&2
 
 # FIXME: these should be in file config that can be committed.
 c_lcpp_trim_file_name=$(git config get --default false jmutil.gitcif.lcpp-trim-file-name)
 c_lcpp_trim_file_ext=$(git config get --default true jmutil.gitcif.lcpp-trim-file-ext)
 
 status() {
-  git -C $root status --porcelain=v2
+  git -C $root status --porcelain=v2 "$@"
 }
 
 $o_all && {
   # match all changes except to untracked or ignored files
   filter='$1 ~ "1|2"'
-  commit_opts=( -a )
 } || {
   # match any change in index
   filter='$1 ~ "1|2" && $2 ~ "[^.]."'
-  commit_opts=( )
 }
 
 ! $o_discrete && {
   local st
-  local -a st_xy pathspec cc
+  local -a st_xy cc
   local subject
 
-  if [[ -n ${JM_GITCIF_PATHSPEC:-} ]]; then
-    pathspec=( -- "$JM_GITCIF_PATHSPEC" )
-    # discrete mode recurses once per file, passing it via env
-    # XY is how is this field referenced in the git-status man page.
-    st_xy=( $(git -C $root status --porcelain=v2 -- "$JM_GITCIF_PATHSPEC" |
-      awk '{ print $2 }') )
-    lcpp=$JM_GITCIF_PATHSPEC
-  else
-    st=$(status)
-    st_xy=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
-    lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
+  if (( ${#pathspec} )); then
+    git add "${pathspec[@]}"
   fi
+  st=$(status -- "${pathspec[@]}")
+  st_xy=(${(f)"$(print -r -- "$st" | awk "$filter { print \$2 }")"})
+  lcpp=$(print -r -- "$st" | awk "$filter { print \$9 }" | jm-lcpp)
 
   # apply trimming rules before scope-rewrites because we are checking for file
   # existence.
@@ -104,9 +121,6 @@ $o_all && {
   # add wip prefix
   $o_wip && subject="wip:${subject}"
 
-  # open EDITOR only if -m is not given
-  (( ${${(k)paargs}[(I)-m]} )) || commit_opts+=( --edit )
-
   # override EDITOR to start it with cursor placed at the end of the commit message subject
   [[ ${${EDITOR:-}[1,3]} = "vim" ]] && export EDITOR='vim -c "normal A"'
 
@@ -125,15 +139,21 @@ $o_all && {
   # Note there may be no tty at all, e.g. in CI.
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
 
-  git -C $root commit $@ $commit_opts -m "$subject" $pathspec
+  leftovers+=( -m "$subject" )
+  set -- "${leftovers[@]}"
+  if ! $o_all; then
+    set -- "$@" -- "${pathspec[@]}"
+  fi
+  git -C $root commit "$@"
   exit $?
 } || {
-  $o_wip && set -- -w $@
-  set -- $@ -m "$o_msg"
+  $o_wip && leftovers+=( -w )
+  leftovers+=( -m "$o_msg" )
+  set -- "${leftovers[@]}"
 
   # For the output of status porcelain refer to dram/99-ref-git-status-porcelain-v2.rst in addition to
   # the git-status(1)
   status | \
     awk "$filter { print \$9 }" | \
-    xargs -r -I{} env JM_GITCIF_PATHSPEC={} git -C $root cif "$@"
+    xargs -r -I{} git -C $root cif "$@" -- {}
 }
