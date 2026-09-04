@@ -60,6 +60,27 @@ TODO
   Which might get hairy. But, primarily, there may be other options depending
   on resolution of claude commit authoring.
 
+- Claude Code makes a distinction between the interactive session (the default
+  prompt upon starting claude), and background agents (other tasks started via
+  the left-arrow prompt for new session).
+
+  When in the background agent, it automatically tries to use EnterWorktree to
+  prevent data races.
+
+  This can be prevented with ``settings.json`` entry::
+
+    "permissions": {"deny": ["EnterWorktree"]}
+
+  Which is useful for claude to not go into rabbit holes on why he can not
+  create worktrees.
+
+  But that seems to hard blocks the agent from writing (even though there is no
+  security guarantee). It can be unblocked with::
+
+    "worktree": {"bgIsolation": "none"},
+
+  But then it is on you not to cause data races.
+
 Threat Model
 ------------
 
