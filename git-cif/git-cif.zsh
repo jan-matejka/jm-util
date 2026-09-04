@@ -141,7 +141,9 @@ $o_all && {
   # Note there may be no tty at all, e.g. in CI.
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
 
-  leftovers+=( -m "$subject" )
+  if [[ -n $subject ]] || (( ${${(k)paargs}[(I)-m]} )); then
+    leftovers+=( -m "$subject" )
+  fi
   set -- "${leftovers[@]}"
   if ! $o_all; then
     set -- "$@" -- "${pathspec[@]}"
