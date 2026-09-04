@@ -98,11 +98,8 @@ $o_all && {
     lcpp=$(print -r -- "$lcpp" | sed "${sed_args[@]}")
   }
 
-  # add scope
-  [[ -n $lcpp ]] && cc+=( "$lcpp" )
-
   if (( ${#st_xy} == 1 )); then
-    # Single file commit. Add change type markers.
+    # Single file commit automation.
     case ${st_xy[1]:0:1} in
     A)
       o_msg="add ${o_msg}"
@@ -112,6 +109,9 @@ $o_all && {
       ;;
     esac
   fi
+
+  # add scope
+  [[ -n $lcpp ]] && cc+=( "$lcpp" )
 
   subject=${(j.:.)cc}
 
