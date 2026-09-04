@@ -87,8 +87,17 @@ $o_all && {
     o_msg="$lcpp"
   fi
 
-  # add "add: " prefix if committing a sole newly tracked file
-  (( ${#st_xy} == 1 )) && [[ ${st_xy[1]:0:1} == A ]] && o_msg="add ${o_msg}"
+  if (( ${#st_xy} == 1 )); then
+    # Single file commit. Add change type markers.
+    case ${st_xy[1]:0:1} in
+    A)
+      o_msg="add ${o_msg}"
+      ;;
+    D)
+      o_msg="rm ${o_msg}"
+      ;;
+    esac
+  fi
 
   # add wip prefix
   $o_wip && o_msg="wip:${o_msg}"

@@ -361,3 +361,13 @@ same non-discrete message-building path::
   $ git cif -dqw
   $ git log -1 --pretty=%s
   wip:add discrete-new
+
+rm marker::
+
+  $ echo delete > deleted
+  $ git add deleted
+  $ git commit -qam 'delete me'
+  $ git rm -q deleted
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  rm deleted
