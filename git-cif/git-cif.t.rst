@@ -286,6 +286,18 @@ trimming applies in discrete mode as well::
   $ git log -1 --pretty=%s
   foo/bar/qux
 
+extension trimming still applies when invoked from a subdirectory, not
+just from the work tree root -- lcpp is always root-relative, so the
+existence check backing the trim must be too::
+
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
+  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext true
+  $ echo >>foo/bar/qux/file.pp
+  $ git add foo/bar/qux/file.pp
+  $ cd foo/bar && EDITOR=: git cif -q && cd ../..
+  $ git log -1 --pretty=%s
+  foo/bar/qux/file
+
 trim does not apply to dotfiles and directories::
 
   $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
