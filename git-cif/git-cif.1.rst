@@ -19,16 +19,24 @@ DESCRIPTION
 
 Commit with a longest common prefix path as commit message.
 
+.. It may be time to do this in an actual programming language.
+
 Automation
 ----------
 
-Add marker
-  An "add " string is prefixed to CC message if a single file is being added to
-  the repository.
+CC type
+  - Is set to "rm" if a single file is being deleted from the repository.
 
-rm CC type
-  CC type is changed to "rm" unless a type is provided explicitly (-t) and a
-  single file is being deleted from the repository.
+  - Is set to "mv" if a single file is being renamed.
+
+  - An explicit -t option takes precedence over all the automatically
+    determined types above.
+
+CC message
+  - Is prefixed with "add " if a single file is being added to the repository.
+
+  - Is set to 'old -> new' if a message is not provided explicitly
+    (-m) and single file is being renamed.
 
 OPTIONS
 =======
