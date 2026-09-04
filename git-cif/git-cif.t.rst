@@ -383,4 +383,4 @@ rm marker::
   $ git rm -q deleted
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
-  deleted: rm
+  rm:deleted
