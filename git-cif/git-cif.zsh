@@ -126,8 +126,7 @@ $o_all && {
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
 
   git -C $root commit $@ $commit_opts -m "$subject" $pathspec
-  (( $? > 0 )) && exit 255
-  exit 0
+  exit $?
 } || {
   $o_wip && set -- -w $@
   set -- $@ -m "$o_msg"

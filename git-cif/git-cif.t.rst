@@ -22,7 +22,7 @@ git-cif does nothing if there is no index::
   \tmodified:   a (re)
   
   no changes added to commit (use "git add" and/or "git commit -a")
-  [255]
+  [1]
 
 git cif commits changes in index::
 
@@ -77,7 +77,7 @@ git-cif -a does not add untracked files by default::
   	foo/d
   
   nothing added to commit but untracked files present (use "git add" to track)
-  [255]
+  [1]
 
 
 Finally, check the messages of created commits::
@@ -189,7 +189,7 @@ git-cif aborts when there is no lcpp and no editor::
   $ git cif
   error: Terminal is dumb, but EDITOR unset
   Please supply the message using either -m or -F option.
-  [255]
+  [1]
 
 git-cif aborts when there is no lcpp and editor does not edit the message::
 
@@ -207,7 +207,7 @@ git-cif aborts when there is no lcpp and editor does not edit the message::
   #\tmodified:   c (re)
   #
   Aborting commit due to empty commit message.
-  [255]
+  [1]
 
 git commit -m but no value given::
 
@@ -229,7 +229,7 @@ git-cif aborts when there is no lcpp and -m is given but empty::
   $ git add a c
   $ git cif -q -m ''
   Aborting commit due to empty commit message.
-  [255]
+  [1]
 
 git-cif commits as usual when there is no lcpp but -m is given::
 
