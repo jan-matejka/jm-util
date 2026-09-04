@@ -15,17 +15,20 @@ o_wip=false
 o_type=
 
 # parse args
-declare -a pargs
 declare -A paargs
 
-zparseopts -K -D -a pargs -A paargs a m: q d w t:
+has_opt() {
+  (( ${${(k)paargs}[(I)$1]} ))
+}
+
+zparseopts -K -D -A paargs a m: q d w t:
 leftovers=()
-(( ${pargs[(I)-w]} )) && o_wip=true
-(( ${pargs[(I)-a]} )) && o_all=true
-(( ${pargs[(I)-d]} )) && o_discrete=true
-(( ${pargs[(I)-q]} )) && leftovers+=( -q )
-(( ${${(k)paargs}[(I)-m]} )) && o_msg="${paargs[-m]}"
-(( ${pargs[(I)-t]} )) && o_type="${paargs[-t]}"
+has_opt -w && o_wip=true
+has_opt -a && o_all=true
+has_opt -d && o_discrete=true
+has_opt -q && leftovers+=( -q )
+has_opt -m && o_msg="${paargs[-m]}"
+has_opt -t && o_type="${paargs[-t]}"
 
 pathspec=()
 
@@ -126,21 +129,18 @@ if ! $o_discrete; then
   }
 
   if (( ${#st_xy} == 1 )); then
-    # Single file commit automation.
+    # Single file commit automation. An explicit -t always wins over the
+    # automatic D/R type.
     case ${st_xy[1]:0:1} in
     A)
       o_msg="add ${o_msg}"
       ;;
     D)
-      if ! (( ${pargs[(I)-t]} )); then
-        o_type='rm'
-      fi
+      has_opt -t || o_type='rm'
       ;;
     R)
-      if ! (( ${pargs[(I)-t]} )); then
-        o_type='mv'
-      fi
-      if ! (( ${pargs[(I)-m]} )) && (( ${#pathspec} )); then
+      has_opt -t || o_type='mv'
+      if ! has_opt -m && (( ${#pathspec} )); then
         o_msg="${pathspec[1]} -> ${pathspec[2]}"
       fi
     ;;
@@ -179,7 +179,7 @@ if ! $o_discrete; then
   # Note there may be no tty at all, e.g. in CI.
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
 
-  if [[ -n $subject ]] || (( ${${(k)paargs}[(I)-m]} )); then
+  if [[ -n $subject ]] || has_opt -m; then
     leftovers+=( -m "$subject" )
   fi
   set -- "${leftovers[@]}"
