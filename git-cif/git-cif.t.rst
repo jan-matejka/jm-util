@@ -265,7 +265,7 @@ git-cif trims the file extension depending on its setting::
   $ git log -1 --pretty=%s
   ft:foo/bar/qux/file: add
   $ echo >> foo/bar/qux/file.pp
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > project.toml
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   foo/bar/qux/file.pp
@@ -273,7 +273,7 @@ git-cif trims the file extension depending on its setting::
 
 git-cif trims the file name portion if enabled::
 
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-name true
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = true\n' > project.toml
   $ echo >>foo/bar/qux/file.pp
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
@@ -290,8 +290,7 @@ extension trimming still applies when invoked from a subdirectory, not
 just from the work tree root -- lcpp is always root-relative, so the
 existence check backing the trim must be too::
 
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext true
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = false\nlcpp-trim-file-ext = true\n' > project.toml
   $ echo >>foo/bar/qux/file.pp
   $ git add foo/bar/qux/file.pp
   $ cd foo/bar && EDITOR=: git cif -q && cd ../..
@@ -300,8 +299,6 @@ existence check backing the trim must be too::
 
 trim does not apply to dotfiles and directories::
 
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext true
   $ mkdir foo/bar.d
   $ touch foo/bar.d/qux
   $ touch foo/.quux
@@ -320,12 +317,10 @@ and doesn't apply to files in work tree root::
 
 git-cif applies scope-rewrite rules to the lcpp path::
 
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ mkdir -p src/lib
   $ touch src/lib/thing.txt
   $ git add src
-  $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = false\nlcpp-trim-file-ext = false\nscope-rewrite = ["s#^src/##"]\n' > project.toml
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   ft:lib/thing.txt: add
@@ -337,10 +332,10 @@ scope-rewrite applies to discrete mode as well::
   $ git log -1 --pretty=%s
   lib/thing.txt
 
-rules apply in the order they were added::
+rules apply in the order they appear in the array::
 
   $ echo >> src/lib/thing.txt
-  $ git config set --local --append jmutil.gitcif.scope-rewrite 's/lib/vendor/'
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = false\nlcpp-trim-file-ext = false\nscope-rewrite = ["s#^src/##", "s/lib/vendor/"]\n' > project.toml
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   vendor/thing.txt
@@ -419,6 +414,7 @@ git-cif -d commits a rename atomically, as a single commit::
   $ git log -1 --pretty=%s
   mv:ren2
   $ git status --porcelain=v2
+  ? project.toml
 
 git-cif -t sets an explicit commit type prefix::
 
@@ -475,3 +471,58 @@ files with no common path end up with no scope at all::
   $ EDITOR=: git cif -aq -m 'edit multiple' multi1
   $ git log -1 --pretty=%s
   : edit multiple
+
+git-cif reads jmutil.gitcif.lcpp-trim-file-ext from the
+[tool.jmutil.gitcif] table of project.toml::
+
+  $ mkdir tomlcfg
+  $ echo x > tomlcfg/thing.txt
+  $ git add tomlcfg
+  $ git commit -qam 'setup tomlcfg'
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > project.toml
+  $ echo >> tomlcfg/thing.txt
+  $ git add tomlcfg/thing.txt
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  tomlcfg/thing.txt
+
+pyproject.toml is used as a fallback when project.toml doesn't exist::
+
+  $ rm project.toml
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > pyproject.toml
+  $ echo >> tomlcfg/thing.txt
+  $ git add tomlcfg/thing.txt
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  tomlcfg/thing.txt
+
+git-cif falls back to the hardcoded default -- with a warning, not an
+error -- when project.toml is syntactically invalid TOML::
+
+  $ rm -f pyproject.toml
+  $ mkdir badcfg
+  $ echo x > badcfg/thing.txt
+  $ git add badcfg
+  $ git commit -qam 'setup badcfg'
+  $ printf 'this is not valid [[[ toml' > project.toml
+  $ echo >> badcfg/thing.txt
+  $ git add badcfg/thing.txt
+  $ EDITOR=: git cif -q
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  $ git log -1 --pretty=%s
+  badcfg/thing
+
+an invalid project.toml still falls through to a valid pyproject.toml,
+rather than aborting outright::
+
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > pyproject.toml
+  $ echo >> badcfg/thing.txt
+  $ git add badcfg/thing.txt
+  $ EDITOR=: git cif -q
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  $ git log -1 --pretty=%s
+  badcfg/thing.txt
