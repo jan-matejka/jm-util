@@ -91,7 +91,7 @@ $o_all && {
   (( ${#st_xy} == 1 )) && [[ ${st_xy[1]:0:1} == A ]] && o_msg="add ${o_msg}"
 
   # add wip prefix
-  $o_wip && o_msg="wip: ${o_msg}"
+  $o_wip && o_msg="wip:${o_msg}"
 
   # open EDITOR only if -m is not given
   (( ${${(k)paargs}[(I)-m]} )) || commit_opts+=( --edit )
