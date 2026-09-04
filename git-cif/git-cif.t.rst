@@ -384,3 +384,74 @@ rm marker::
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
   rm:deleted
+
+git-cif commits a rename without an add or rm marker::
+
+  $ mkdir ren
+  $ echo x > ren/old
+  $ git add ren
+  $ git commit -qam 'setup rename fixture'
+  $ git mv ren/old ren/new
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  rn:ren
+
+git-cif -d commits a rename atomically, as a single commit::
+
+  $ mkdir ren2
+  $ echo x > ren2/old
+  $ git add ren2
+  $ git commit -qam 'setup rename fixture 2'
+  $ git mv ren2/old ren2/new
+  $ EDITOR=: git cif -dq
+  $ git log -1 --pretty=%s
+  rn:ren2
+  $ git status --porcelain=v2
+
+git-cif -t sets an explicit commit type prefix::
+
+  $ echo x > widget.txt
+  $ git add widget.txt
+  $ git commit -qam 'setup widget'
+  $ echo y >> widget.txt
+  $ git add widget.txt
+  $ EDITOR=: git cif -q -t feat -m 'support flux capacitor'
+  $ git log -1 --pretty=%s
+  feat:widget.txt: support flux capacitor
+
+git-cif -t overrides the automatic "rm" type on a deletion::
+
+  $ echo z > todelete
+  $ git add todelete
+  $ git commit -qam 'setup todelete'
+  $ git rm -q todelete
+  $ EDITOR=: git cif -q -t chore -m cleanup
+  $ git log -1 --pretty=%s
+  chore:todelete: cleanup
+
+git-cif builds an "old -> new" message for a rename given as explicit
+pathspec arguments, instead of recursing::
+
+  $ mkdir arr
+  $ echo z > arr/before
+  $ git add arr
+  $ git commit -qam 'setup arr'
+  $ git mv arr/before arr/after
+  $ EDITOR=: git cif -q arr/before arr/after
+  $ git log -1 --pretty=%s
+  rn:arr: arr/before -> arr/after
+
+git-cif -a still commits all tracked changes even when an explicit
+pathspec is also given: the scope is computed from everything that
+actually gets committed, not just the named pathspec, so unrelated
+files with no common path end up with no scope at all::
+
+  $ echo w > multi1
+  $ echo v > multi2
+  $ git add multi1 multi2
+  $ git commit -qam 'setup multi'
+  $ echo edit1 >> multi1
+  $ echo edit2 >> multi2
+  $ EDITOR=: git cif -aq -m 'edit multiple' multi1
+  $ git log -1 --pretty=%s
+  : edit multiple
