@@ -69,7 +69,7 @@ $o_all && {
   filter='$1 ~ "1|2" && $2 ~ "[^.]."'
 }
 
-! $o_discrete && {
+if ! $o_discrete; then
   local st
   local -a st_xy cc
   local subject
@@ -157,7 +157,7 @@ $o_all && {
   fi
   git -C $root commit "$@"
   exit $?
-} || {
+else
   $o_wip && leftovers+=( -w )
   leftovers+=( -m "$o_msg" )
   set -- "${leftovers[@]}"
@@ -167,4 +167,4 @@ $o_all && {
   status | \
     awk "$filter { print \$9 }" | \
     xargs -r -I{} git -C $root cif "$@" -- {}
-}
+fi
