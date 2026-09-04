@@ -44,7 +44,8 @@ $o_all && {
 
 ! $o_discrete && {
   local st
-  local -a st_xy pathspec
+  local -a st_xy pathspec cc
+  local subject
 
   if [[ -n ${JM_GITCIF_PATHSPEC:-} ]]; then
     pathspec=( -- "$JM_GITCIF_PATHSPEC" )
@@ -80,18 +81,28 @@ $o_all && {
     lcpp=$(print -r -- "$lcpp" | sed "${sed_args[@]}")
   }
 
-  # append custom message if passed
-  if [[ -n $o_msg ]]; then
-    o_msg="$lcpp: $o_msg"
-  else
-    o_msg="$lcpp"
+  # add scope
+  [[ -n $lcpp ]] && cc+=( "$lcpp" )
+
+  if (( ${#st_xy} == 1 )); then
+    # Single file commit. Add change type markers.
+    case ${st_xy[1]:0:1} in
+    A)
+      o_msg="add ${o_msg}"
+      ;;
+    D)
+      o_msg="rm ${o_msg}"
+      ;;
+    esac
   fi
 
-  # add "add: " prefix if committing a sole newly tracked file
-  (( ${#st_xy} == 1 )) && [[ ${st_xy[1]:0:1} == A ]] && o_msg="add ${o_msg}"
+  subject=${(j.:.)cc}
+
+  # add messge
+  [[ -n $o_msg ]] && subject="${subject}: $o_msg"
 
   # add wip prefix
-  $o_wip && o_msg="wip:${o_msg}"
+  $o_wip && subject="wip:${subject}"
 
   # open EDITOR only if -m is not given
   (( ${${(k)paargs}[(I)-m]} )) || commit_opts+=( --edit )
@@ -114,7 +125,7 @@ $o_all && {
   # Note there may be no tty at all, e.g. in CI.
   zsh -c ': </dev/tty' 2>/dev/null && exec 0</dev/tty
 
-  git -C $root commit $@ $commit_opts -m "$o_msg" $pathspec
+  git -C $root commit $@ $commit_opts -m "$subject" $pathspec
   (( $? > 0 )) && exit 255
   exit 0
 } || {
