@@ -109,7 +109,9 @@ $o_all && {
       o_msg="add ${o_msg}"
       ;;
     D)
-      o_msg="rm ${o_msg}"
+      if ! (( ${pargs[(I)-t]} )); then
+        o_type='rm'
+      fi
       ;;
     esac
   fi
