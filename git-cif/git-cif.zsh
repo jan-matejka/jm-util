@@ -119,7 +119,6 @@ if ! $o_discrete; then
   local -a scope_rewrite_rules sed_args
   scope_rewrite_rules=(${(f)"$(git -C $root config get --all jmutil.gitcif.scope-rewrite || true)"})
   (( ${#scope_rewrite_rules} )) && {
-    sed_args=()
     for r in "${scope_rewrite_rules[@]}"; do
       sed_args+=(-e "$r")
     done
