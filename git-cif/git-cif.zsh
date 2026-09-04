@@ -98,7 +98,7 @@ $o_all && {
 
   subject=${(j.:.)cc}
 
-  # add messge
+  # add message
   [[ -n $o_msg ]] && subject="${subject}: $o_msg"
 
   # add wip prefix
