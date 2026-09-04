@@ -107,7 +107,7 @@ git-cif prefixes the file with "add " if a file becomes tracked::
   $ git add c
   $ git cif -qm ""
   $ git lg -1
-  foo/c: add
+  ft:foo/c: add
   
   A	foo/c
 
@@ -263,7 +263,7 @@ git-cif trims the file extension depending on its setting::
   $ git add foo
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  foo/bar/qux/file: add
+  ft:foo/bar/qux/file: add
   $ echo >> foo/bar/qux/file.pp
   $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ EDITOR=: git cif -aq
@@ -308,8 +308,8 @@ trim does not apply to dotfiles and directories::
   $ git add foo
   $ git cif -dqam ''
   $ git log -2 --pretty=%s
-  foo/bar.d/qux: add
-  foo/.quux: add
+  ft:foo/bar.d/qux: add
+  ft:foo/.quux: add
 
 and doesn't apply to files in work tree root::
 
@@ -328,7 +328,7 @@ git-cif applies scope-rewrite rules to the lcpp path::
   $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  lib/thing.txt: add
+  ft:lib/thing.txt: add
 
 scope-rewrite applies to discrete mode as well::
 
@@ -367,7 +367,7 @@ newly tracked::
   $ git add newfile
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
-  newfile: add
+  ft:newfile: add
 
 and not when more than one file is committed::
 
@@ -385,7 +385,7 @@ same non-discrete message-building path::
   $ git add discrete-new
   $ git cif -dqw
   $ git log -1 --pretty=%s
-  wip:discrete-new: add
+  wip:ft:discrete-new: add
 
 rm marker::
 
@@ -440,6 +440,14 @@ git-cif -t overrides the automatic "rm" type on a deletion::
   $ EDITOR=: git cif -q -t chore -m cleanup
   $ git log -1 --pretty=%s
   chore:todelete: cleanup
+
+git-cif -t overrides the automatic "ft" type on a newly tracked file::
+
+  $ echo x > newthing.txt
+  $ git add newthing.txt
+  $ EDITOR=: git cif -q -t feat
+  $ git log -1 --pretty=%s
+  feat:newthing.txt: add
 
 git-cif builds an "old -> new" message for a rename given as explicit
 pathspec arguments, instead of recursing::

@@ -133,6 +133,7 @@ if ! $o_discrete; then
     # automatic D/R type.
     case ${st_xy[1]:0:1} in
     A)
+      has_opt -t || o_type='ft'
       o_msg="add ${o_msg}"
       ;;
     D)
