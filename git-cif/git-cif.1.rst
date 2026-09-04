@@ -25,21 +25,27 @@ committed and is newly tracked.
 OPTIONS
 =======
 
--a       Commit all changes to tracked files. Not just the index.
+-a
+  Commit all changes to tracked files. Not just the index.
 
--w       Add a "wip:" marker to the commit message.
+-w
+  Add a "wip:" marker to the commit message.
 
--m <msg> Use the given <msg> as the commit message.
+-m <msg>
+  Use the given <msg> as the commit message.
 
--q       Suppress commit summary message.
+-q
+  Suppress commit summary message.
 
--d       Commit each file separately. Does not open EDITOR for individual
-         messages by default. See `Discrete`_ user story.
+-d
+  Commit each file separately. Does not open EDITOR for individual messages by
+  default. See `Discrete`_ user story.
 
 -t <type>
   Conventional Commit type.
 
-*        Unrecognized options are passed through to git-commit
+-*
+  Options not recognized are passed through to git-commit
 
 USER STORIES
 ============
