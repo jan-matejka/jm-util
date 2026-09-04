@@ -107,7 +107,7 @@ git-cif prefixes the file with "add " if a file becomes tracked::
   $ git add c
   $ git cif -qm ""
   $ git lg -1
-  add foo/c
+  foo/c: add
   
   A	foo/c
 
@@ -263,7 +263,7 @@ git-cif trims the file extension depending on its setting::
   $ git add foo
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  add foo/bar/qux/file
+  foo/bar/qux/file: add
   $ echo >> foo/bar/qux/file.pp
   $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ EDITOR=: git cif -aq
@@ -303,7 +303,7 @@ git-cif applies scope-rewrite rules to the lcpp path::
   $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  add lib/thing.txt
+  lib/thing.txt: add
 
 scope-rewrite applies to discrete mode as well::
 
@@ -342,7 +342,7 @@ newly tracked::
   $ git add newfile
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
-  add newfile
+  newfile: add
 
 and not when more than one file is committed::
 
@@ -360,7 +360,7 @@ same non-discrete message-building path::
   $ git add discrete-new
   $ git cif -dqw
   $ git log -1 --pretty=%s
-  wip:add discrete-new
+  wip:discrete-new: add
 
 rm marker::
 
@@ -370,4 +370,4 @@ rm marker::
   $ git rm -q deleted
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
-  rm deleted
+  deleted: rm
