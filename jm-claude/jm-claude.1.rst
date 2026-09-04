@@ -46,6 +46,20 @@ the CWD git-worktree sharing authentication with primary claude (``jm claude
 
 Claude can still build and run containers if configured to use an isolated VM.
 
+
+TODO
+----
+
+- It is becoming clear I need to give claude ability to author commits.
+  I am unsure on how to design this while not weakening security or degrading
+  user experience (albeit minimally).
+
+- It is also becoming clear I will need to run multiple wip branches.
+  Too easy with worktrees but the design would likely involve wip/main and then
+  wip/1, wip/2, ... . wip/main being for integrating passing changes.
+  Which might get hairy. But, primarily, there may be other options depending
+  on resolution of claude commit authoring.
+
 Threat Model
 ------------
 
