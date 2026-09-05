@@ -31,6 +31,10 @@ Todo
 - --amend mode is sorely needed.
   Maybe not a priority. Muscle memory is adjusting.
 
+  A curious pattern is emerging where I trigger an `Automation`_ to get the
+  proper commit subject and then amend the commit with the rest of changes that
+  should've been part of the commit.
+
 - git-cif config subcommand.
 
   - this needs an actually usable toml tool.
