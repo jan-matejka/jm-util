@@ -69,6 +69,13 @@ Todo
 - -a should be the default mode in the absence of other options or partially
   staged index perchance?
 
+- needs a flag for emphasis / breaking change (! marker).
+
+  - and it shall be formatted at the end of the subject line.
+
+    - probaly. It just makes sense. But there may be some value in having it at
+      the end of the scope when eyeballing it. No, I don't think so. idk tho.
+
 Automation
 ^^^^^^^^^^
 
