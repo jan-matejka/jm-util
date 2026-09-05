@@ -96,6 +96,8 @@ TODO
 
   Could also form a basis for more automation.
 
+- option to wipe session data
+
 Threat Model
 ------------
 
