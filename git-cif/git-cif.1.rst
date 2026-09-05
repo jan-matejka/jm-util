@@ -29,6 +29,13 @@ Todo
   ``git-fixup --primary-sel-as-committish``.
 
 - --amend mode is sorely needed.
+  Maybe not a priority. Muscle memory is adjusting.
+
+- git-cif config subcommand.
+
+  - this needs an actually usable toml tool.
+
+- Do we want the ability to commit individual hunks with -d mode?
 
 Automation
 ^^^^^^^^^^
