@@ -102,6 +102,8 @@ TODO
 - -a should be the default mode in the absence of other options or partially
   staged index perchance?
 
+- Changes to skills on the host should be visible to the running containers.
+
 Threat Model
 ------------
 
