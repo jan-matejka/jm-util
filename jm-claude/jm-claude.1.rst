@@ -99,6 +99,11 @@ TODO
 
   Compaction needs to be invertible.
 
+- Commit compaction / squash
+
+  - Some commits can clearly be squashed automatically, like td CC types with
+    no message.
+
 - -a should be the default mode in the absence of other options or partially
   staged index perchance?
 
