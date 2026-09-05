@@ -40,6 +40,8 @@ Todo
   - Perhaps we could run some inference on the hunks context to autogenerate CC
     message.
 
+  - Perhaps externally so each project can define its set of heuristics to run.
+
 Automation
 ^^^^^^^^^^
 
