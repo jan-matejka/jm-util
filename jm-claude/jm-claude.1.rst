@@ -91,6 +91,11 @@ TODO
 
 - Changes to skills on the host should be visible to the running containers.
 
+- jm-claude should probably be able to also create a new worktree and launch
+  new claude instance in that worktree for state isolation.
+
+  Could also form a basis for more automation.
+
 Threat Model
 ------------
 
