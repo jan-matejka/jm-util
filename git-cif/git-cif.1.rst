@@ -46,6 +46,9 @@ Todo
 
   - Perhaps externally so each project can define its set of heuristics to run.
 
+  - Might even not need heuristics if first few words of each hunk are distinct
+    enough.
+
 Automation
 ^^^^^^^^^^
 
