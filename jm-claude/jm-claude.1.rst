@@ -99,6 +99,9 @@ TODO
 
   Compaction needs to be invertible.
 
+- -a should be the default mode in the absence of other options or partially
+  staged index perchance?
+
 Threat Model
 ------------
 
