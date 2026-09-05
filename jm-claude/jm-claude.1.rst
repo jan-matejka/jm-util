@@ -81,6 +81,14 @@ TODO
 
   But then it is on you not to cause data races.
 
+- The /src/{wip,main} distinction / nesting is obnoxious.
+
+  A /wip would be more appropriate perchance?
+
+  Or maybe we could mount main git dir over /src/wip/.git in RO with RW
+  overlay. This could solve a number of problems. But how do we get the repo
+  access from outside (this feels very doable)?
+
 Threat Model
 ------------
 
