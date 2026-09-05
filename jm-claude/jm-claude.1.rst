@@ -89,6 +89,16 @@ TODO
   overlay. This could solve a number of problems. But how do we get the repo
   access from outside (this feels very doable)?
 
+- Subject / Path compaction
+
+  Multiple use cases:
+
+  - LCPP use for subject
+
+  - mv path gen
+
+  Compaction needs to be invertible.
+
 Threat Model
 ------------
 
