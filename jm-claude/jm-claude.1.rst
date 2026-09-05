@@ -89,24 +89,6 @@ TODO
   overlay. This could solve a number of problems. But how do we get the repo
   access from outside (this feels very doable)?
 
-- Subject / Path compaction
-
-  Multiple use cases:
-
-  - LCPP use for subject
-
-  - mv path gen
-
-  Compaction needs to be invertible.
-
-- Commit compaction / squash
-
-  - Some commits can clearly be squashed automatically, like td CC types with
-    no message.
-
-- -a should be the default mode in the absence of other options or partially
-  staged index perchance?
-
 - Changes to skills on the host should be visible to the running containers.
 
 Threat Model
