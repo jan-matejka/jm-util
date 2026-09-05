@@ -37,6 +37,9 @@ Todo
 
 - Do we want the ability to commit individual hunks with -d mode?
 
+  - Perhaps we could run some inference on the hunks context to autogenerate CC
+    message.
+
 Automation
 ^^^^^^^^^^
 
