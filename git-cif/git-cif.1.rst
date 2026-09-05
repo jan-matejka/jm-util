@@ -49,6 +49,8 @@ Todo
   - Might even not need heuristics if first few words of each hunk are distinct
     enough.
 
+- ft might be the default CC type. This might be very project dependent tho.
+
 Automation
 ^^^^^^^^^^
 
