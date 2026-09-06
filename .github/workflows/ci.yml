@@ -23,7 +23,7 @@ jobs:
     uses: jan-matejka/gha/.github/workflows/build-and-push.yml@v0.1
     with:
       image_name: jm-util
-      containerfile: oci/Containerfile
+      containerfile: Containerfile
       no_cache: ${{ inputs.no_cache || false }}
     permissions:
       contents: read

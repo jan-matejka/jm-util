@@ -12,21 +12,21 @@ The more interesting ones are:
 
 - git-cif
 
-    git commit helper to pre-fill commit message with longest common prefix
+    Git commit helper to pre-fill commit message with longest common prefix
     path of the files being committed.
 
 - jm-alias
 
-    shell aliases but as real commands so they can be passed to xargs,
+    Shell aliases but as real commands so they can be passed to xargs,
     exec, etc.
 
 - versionator
 
-    Generates a debian compatible version from git repository.
+    Generates a Debian compatible version from git repository.
 
 - jm tmux-dmenu
 
-    dmenu for tmux sessions.
+    Dmenu for tmux sessions.
 
 
 Installation
@@ -43,23 +43,31 @@ Available through my PPA https://github.com/jan-matejka/debian-ppa::
 From source
 ===========
 
-into home::
+Build with ``$ podman compose run build``.
+
+Install into home::
 
   $ make build install-home
 
-or into system::
+Install into system::
 
-  $ make
   # make install
 
-For dependencies see ``./oci/Containerfile``.
+Note individual modules can be built and installed individually. E.g.: ``make
+-C core build check install``.
+
+Dependencies
+============
+
+For container build you need only podman (or docker perchance) and
+docker-compose.
+
+For the actual dependencies see ``./debian/control`` or ``./Containerfile``.
 
 Tests
 #####
 
-Requires docker-compose and podman.
-
-``$ podman compose build work && podman compose run work make check``
+``$ podman compose run build``
 
 While it should be possible to run tests on host it is not recommended for your
 own safety.
@@ -68,7 +76,7 @@ Release Management
 ##################
 
 ``make packages`` can be called any time and will build either release package
-or dev package depeneding on git state.
+or dev package depending on git state.
 
 To actually release a package::
 

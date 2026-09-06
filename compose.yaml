@@ -1,4 +1,62 @@
 name: jm-util
 
-include:
-- oci/compose.yaml
+x-hardening: &hardening
+  userns_mode: "keep-id:uid=1000,gid=1000"
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+# <<: only merges mappings, not sequences, so the shared volume entries
+# are anchored individually and referenced in both services' volumes
+# lists instead of anchoring the whole list.
+x-volumes:
+  src: &vol-src ./:/home/user/src
+  config: &vol-config jm-util-config:/home/user/.config
+  local: &vol-local jm-util-local:/home/user/.local
+
+services:
+  build:
+    <<: *hardening
+    image: localhost/${COMPOSE_PROJECT_NAME}_build
+    build:
+      dockerfile: Containerfile
+      context: ./
+    # read_only: true
+    # can't do read_only because the debian package build system is
+    volumes:
+      - *vol-src
+      - *vol-config
+      - *vol-local
+
+  debuild:
+    <<: *hardening
+    image: localhost/${COMPOSE_PROJECT_NAME}_build
+    depends_on:
+      - build
+    volumes:
+      - *vol-src
+      - *vol-config
+      - *vol-local
+      - ../main:/home/user/main
+      # master needs RW because git checkout makes a lock inside
+      # .git/worktrees/<name>/
+      - ${HOME}/.gnupg/pubring.gpg:/home/user/.gnupg/pubring.gpg:ro
+      - ${HOME}/.gnupg/pubring.kbx:/home/user/.gnupg/pubring.kbx:ro
+      - ${HOME}/.gnupg/secring.gpg:/home/user/.gnupg/secring.gpg:ro
+      - ${HOME}/.gnupg/private-keys-v1.d:/home/user/.gnupg/private-keys-v1.d:ro
+      - ${HOME}/git/jm/debian-ppa/wip/dists/trixie/main/binary-amd64:/out
+      # - /run/user/1000/gnupg/S.gpg-agent:/home/user/.gnupg/S.gpg-agent:Z
+    environment:
+      CARGO: /usr/local/cargo/bin/cargo
+      DEB_SIGN_KEYID: ${DEB_SIGN_KEYID}
+      NAME: ${NAME}
+      DEBEMAIL: ${DEBEMAIL}
+      DEBFULLNAME: ${DEBFULLNAME}
+      DEBSIGN_KEYID: ${DEBSIGN_KEYID}
+      DEBSIGN_MAINT: ${DEBSIGN_MAINT}
+    command: sh -c "trap 'make clean-changelog' EXIT; make version debuild cp-packages"
+
+volumes:
+  jm-util-config:
+  jm-util-local:

@@ -54,3 +54,4 @@ USER user
 RUN mkdir /home/user/.gnupg && chmod 700 /home/user/.gnupg
 
 WORKDIR /home/user/src
+CMD ["make", "clean", "build", "check"]
