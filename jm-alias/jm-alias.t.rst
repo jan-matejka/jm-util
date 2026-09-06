@@ -59,3 +59,4 @@ test alias list::
   pc
   s
   t
+  x
