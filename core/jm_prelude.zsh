@@ -123,4 +123,8 @@ function gh-project-id {
   done
 }
 
+has_opt() {
+  (( ${${(k)paargs}[(I)$1]} ))
+}
+
 ${JM_XTRACE:-false} && set -x
