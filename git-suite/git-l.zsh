@@ -14,6 +14,8 @@ has_opt -G && args+=( -G ${paargs[-G]} --no-graph )
 # -h is extra option; not in vanilla git
 has_opt -h && args+=( --pretty=format:"%H" --no-graph )
 
+cur=$(git branch --show-current)
+ref="refs/heads/$cur"
 # cases:
 # --grep <s>
 # --grep <s> <rev-range>
@@ -25,10 +27,18 @@ has_opt -h && args+=( --pretty=format:"%H" --no-graph )
 # generically bc we don't know if <arg> is opt-val or narg.
 if ! (( $# )); then
   def=$(git config get --default main init.defaultBranch )
-  cur=$(git branch --show-current)
   if [[ $def != $cur ]]; then
     args+=( "${def}.." )
   fi
 fi
 
-exec git log $args $@
+# -h just wants a clean, scriptable hash list; leave it alone.
+if has_opt -h; then
+  exec git log $args $@
+fi
+
+args+=( --no-abbrev-commit )
+[[ -t 1 ]] && args+=( --color=always )
+
+git log --color=auto $args $@ \
+  | git name-rev --annotate-stdin --name-only --refs $ref --always

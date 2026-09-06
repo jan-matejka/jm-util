@@ -1,5 +1,3 @@
 include ../common.mk
 
-check:
-
-	true
+check: dram_check
