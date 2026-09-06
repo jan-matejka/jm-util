@@ -12,6 +12,7 @@ opts=(
   p -primary
   a: -account:
   i: -instance:
+  e -exec
 )
 declare -A paargs
 declare -a pargs
@@ -20,11 +21,13 @@ zparseopts -K -D -a pargs -A paargs $opts
 o_primary=false
 o_account=default
 o_instance=
+o_exec=false
 
 function _mkdir() {
   mkdir --mode=0750 -p $@
 }
 
+{ (( ${pargs[(I)-e]} )) || (( ${pargs[(I)--exec]} )) } && o_exec=true
 (( ${${(k)paargs}[(I)-a]} )) && o_account=${paargs[-a]}
 (( ${${(k)paargs}[(I)--account]} )) && o_account=${paargs[--account]}
 (( ${${(k)paargs}[(I)-i]} )) && o_instance=${paargs[-i]}
@@ -65,12 +68,18 @@ else
   fi
 fi
 
+: ${JM_CLAUDE_CONFIG_SKILLS:=${JM_CLAUDE_CONFIG_HOME}/skills}
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 
 : ${JM_CLAUDE_DATA_INSTANCE_HOME:=${JM_CLAUDE_DATA_HOME}/home/${instance_fs}}
 : ${JM_CLAUDE_DATA_PRIMARY_HOME:=${JM_CLAUDE_DATA_HOME}/primary/$o_account}
 : ${JM_CLAUDE_CONFIG_KNOWN_HOSTS:=${JM_CONFIG_HOME}/claude/known_hosts}
 : ${JM_CLAUDE_DATA_INSTANCE_SRC:=${JM_CLAUDE_DATA_HOME}/data/${instance_name}}
+
+if $o_exec; then
+  podman exec -it jm_claude_$instance_name zsh
+  exit $?
+fi
 
 args=(
   # standard flags
@@ -83,6 +92,8 @@ args=(
   --security-opt=no-new-privileges
   --read-only
   # environment
+  # Doctor doesnt work in container.
+  -e DISABLE_DOCTOR_COMMAND=1
 )
 
 if $o_workdir; then
@@ -116,9 +127,22 @@ else
   args+=(
     -v ${JM_CLAUDE_DATA_INSTANCE_HOME}:/home/user/.local/share/claude
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/settings.json:/home/user/.local/share/claude/settings.json
+    -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/settings.json:/home/user/.local/share/claude/settings.json
     -v ${JM_CLAUDE_DATA_PRIMARY_HOME}/.credentials.json:/home/user/.local/share/claude/.credentials.json
   )
   _mkdir ${JM_CLAUDE_DATA_INSTANCE_HOME} ${JM_CLAUDE_DATA_PRIMARY_HOME}
+fi
+
+if test -d ${JM_CLAUDE_CONFIG_SKILLS}; then
+  args+=(
+    -v ${JM_CLAUDE_CONFIG_SKILLS}:/home/user/.local/share/claude/skills
+  )
+fi
+
+if test -f ${JM_CLAUDE_CONFIG_HOME}/CLAUDE.md; then
+  args+=(
+    -v ${JM_CLAUDE_CONFIG_HOME}/CLAUDE.md:/home/user/.local/share/claude/CLAUDE.md
+  )
 fi
 
 function add_vm_args {
