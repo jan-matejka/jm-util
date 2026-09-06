@@ -62,6 +62,11 @@ OPTIONS
 -t <type>
   Conventional Commit type.
 
+-u
+  ``commit --fixup``
+
+  Canonically ``git fx -u <committish>`` (read: git fix up <committish>)
+
 -*
   Options not recognized are passed through to git-commit
 

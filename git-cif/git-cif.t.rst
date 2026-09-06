@@ -526,3 +526,26 @@ rather than aborting outright::
   Error: bad file '*project.toml': expected character = (glob)
   $ git log -1 --pretty=%s
   badcfg/thing.txt
+  $ rm -f project.toml pyproject.toml
+
+git-cif -u alone, without -t fx, does not apply --fixup::
+
+  $ echo target > ufile
+  $ git add ufile
+  $ git commit -qam 'target commit'
+  $ TARGET=$(git rev-parse HEAD)
+  $ echo >> ufile
+  $ git add ufile
+  $ EDITOR=: git cif -u $TARGET -q
+  $ git log --pretty=%s -1
+  ufile
+
+git-cif -t fx -u <commit> commits a fixup for the given commit, using
+git's own "fixup! <subject>" message instead of git-cif's own computed
+subject::
+
+  $ echo >> hfile
+  $ git add hfile
+  $ EDITOR=: git cif -t fx -u $TARGET -q
+  $ git log --pretty=%s -1
+  fixup! target commit

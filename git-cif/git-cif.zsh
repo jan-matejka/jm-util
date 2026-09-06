@@ -13,11 +13,12 @@ o_quiet=false
 o_discrete=false
 o_wip=false
 o_type=
+o_fixup=
 
 # parse args
 declare -A paargs
 
-zparseopts -K -D -A paargs a m: q d w t:
+zparseopts -K -D -A paargs a m: q d w t: u:
 leftovers=()
 has_opt -w && o_wip=true
 has_opt -a && o_all=true
@@ -25,6 +26,7 @@ has_opt -d && o_discrete=true
 has_opt -q && leftovers+=( -q )
 has_opt -m && o_msg="${paargs[-m]}"
 has_opt -t && o_type="${paargs[-t]}"
+has_opt -u && o_fixup="${paargs[-u]}"
 
 pathspec=()
 
@@ -219,6 +221,11 @@ if ! $o_discrete; then
     leftovers+=( -m "$subject" )
   fi
   set -- "${leftovers[@]}"
+
+  if [[ $o_type == 'fx' ]] && [[ -n $o_fixup ]]; then
+    set -- $@ --fixup $o_fixup
+  fi
+
   if ! $o_all; then
     set -- "$@" -- "${pathspec[@]}"
   fi
