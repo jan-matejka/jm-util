@@ -67,6 +67,14 @@ OPTIONS
 
   Canonically ``git fx -u <committish>`` (read: git fix up <committish>)
 
+-h
+  ``commit --amend``
+
+  Canonically ``git fx -h`` (read: git fix head)
+
+  It is unfortunate that -h is typically --help but I can't find
+  an alternate.
+
 -*
   Options not recognized are passed through to git-commit
 

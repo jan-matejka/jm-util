@@ -549,3 +549,36 @@ subject::
   $ EDITOR=: git cif -t fx -u $TARGET -q
   $ git log --pretty=%s -1
   fixup! target commit
+
+git-cif -h alone, without -t fx, does not amend::
+
+  $ echo x > hfile
+  $ git add hfile
+  $ git commit -qam 'setup hfile'
+  $ git commit -q --allow-empty -m 'target commit'
+  $ echo >> hfile
+  $ git add hfile
+  $ EDITOR=: git cif -h -q
+  $ git log --pretty=%s -3
+  hfile
+  target commit
+  setup hfile
+
+git-cif -h -t fx amends the current HEAD commit::
+
+  $ git commit -q --allow-empty -m 'another target'
+  $ echo >> hfile
+  $ git add hfile
+  $ EDITOR=: git cif -h -t fx -q
+  $ git log --pretty=%s -3
+  fx:hfile
+  hfile
+  target commit
+
+git-cif -h is not compatible with -d::
+
+  $ echo >> hfile
+  $ git add hfile
+  $ EDITOR=: git cif -h -t fx -d -q
+  git-cif: fatal: -h is not compatible with -d
+  [1]

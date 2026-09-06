@@ -8,6 +8,7 @@ root=$(git rev-parse --show-toplevel) || fatal "failed to find work dir"
 
 # opts
 o_all=false
+o_head=false
 o_msg=""
 o_quiet=false
 o_discrete=false
@@ -18,7 +19,7 @@ o_fixup=
 # parse args
 declare -A paargs
 
-zparseopts -K -D -A paargs a m: q d w t: u:
+zparseopts -K -D -A paargs a m: q d w t: u: h
 leftovers=()
 has_opt -w && o_wip=true
 has_opt -a && o_all=true
@@ -27,6 +28,13 @@ has_opt -q && leftovers+=( -q )
 has_opt -m && o_msg="${paargs[-m]}"
 has_opt -t && o_type="${paargs[-t]}"
 has_opt -u && o_fixup="${paargs[-u]}"
+has_opt -h && o_head=true
+
+if has_opt -h; then
+  if has_opt -d; then
+    fatal "-h is not compatible with -d"
+  fi
+fi
 
 pathspec=()
 
@@ -229,6 +237,11 @@ if ! $o_discrete; then
   if ! $o_all; then
     set -- "$@" -- "${pathspec[@]}"
   fi
+
+  if [[ $o_type == 'fx' ]] && $o_head; then
+    set -- --amend $@
+  fi
+
   git -C $root commit "$@"
   exit $?
 else
