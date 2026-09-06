@@ -40,7 +40,10 @@ if has_opt -h; then
 fi
 
 args+=( --no-abbrev-commit )
-[[ -t 1 ]] && args+=( --color=always )
+
+ps_size=$(( 4 + 1 ))
+lines=$(( $LINES - $ps_size ))
+[[ -t 1 ]] && args+=( --color=always -$lines )
 
 git log --color=auto $args $@ \
   | git name-rev --annotate-stdin --name-only --refs $ref --always
