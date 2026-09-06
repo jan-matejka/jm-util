@@ -5,12 +5,14 @@ SELF="${0##*/}"
 set -e
 
 declare -A paargs
-zparseopts -K -D -E -A paargs S: G:
+zparseopts -K -D -E -A paargs S: G: h
 
 args=( --oneline --decorate --graph )
 
 has_opt -S && args+=( -S ${paargs[-S]} --no-graph )
 has_opt -G && args+=( -G ${paargs[-G]} --no-graph )
+# -h is extra option; not in vanilla git
+has_opt -h && args+=( --pretty=format:"%H" --no-graph )
 
 # cases:
 # --grep <s>
