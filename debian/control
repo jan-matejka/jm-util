@@ -3,9 +3,10 @@ Maintainer: Jan Matějka <jan@matejka.ninja>
 Section: misc
 Priority: optional
 Standards-Version: 4.6.2
-Build-Depends: debhelper-compat (= 13), python3-docutils, g++, libfmt-dev, xdgenv, dram
+Build-Depends: debhelper-compat (= 13), python3-docutils, g++, libfmt-dev,
+  xdgenv, dram
 
 Package: jm-util
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, zsh, xdgenv
+Depends: ${shlibs:Depends}, ${misc:Depends}, zsh, xdgenv, yq-go
 Description: jm-util

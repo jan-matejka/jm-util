@@ -22,7 +22,7 @@ git-cif does nothing if there is no index::
   \tmodified:   a (re)
   
   no changes added to commit (use "git add" and/or "git commit -a")
-  [255]
+  [1]
 
 git cif commits changes in index::
 
@@ -77,7 +77,7 @@ git-cif -a does not add untracked files by default::
   	foo/d
   
   nothing added to commit but untracked files present (use "git add" to track)
-  [255]
+  [1]
 
 
 Finally, check the messages of created commits::
@@ -96,18 +96,18 @@ git-cif -aw creates wip commits::
   $ git add bar/b
   $ git cif -dqam "" -w
   $ git lg -1
-  wip: foo/bar/b
+  wip:foo/bar/b
   
   M	foo/bar/b
 
-git-cif prefixes the file with "add: " if a file becomes tracked::
+git-cif prefixes the file with "add " if a file becomes tracked::
 
   $ ! test -e c
   $ echo x > c
   $ git add c
   $ git cif -qm ""
   $ git lg -1
-  add: foo/c
+  ft:foo/c: add
   
   A	foo/c
 
@@ -189,7 +189,7 @@ git-cif aborts when there is no lcpp and no editor::
   $ git cif
   error: Terminal is dumb, but EDITOR unset
   Please supply the message using either -m or -F option.
-  [255]
+  [1]
 
 git-cif aborts when there is no lcpp and editor does not edit the message::
 
@@ -207,7 +207,7 @@ git-cif aborts when there is no lcpp and editor does not edit the message::
   #\tmodified:   c (re)
   #
   Aborting commit due to empty commit message.
-  [255]
+  [1]
 
 git commit -m but no value given::
 
@@ -229,7 +229,7 @@ git-cif aborts when there is no lcpp and -m is given but empty::
   $ git add a c
   $ git cif -q -m ''
   Aborting commit due to empty commit message.
-  [255]
+  [1]
 
 git-cif commits as usual when there is no lcpp but -m is given::
 
@@ -263,9 +263,9 @@ git-cif trims the file extension depending on its setting::
   $ git add foo
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  add: foo/bar/qux/file
+  ft:foo/bar/qux/file: add
   $ echo >> foo/bar/qux/file.pp
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > project.toml
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   foo/bar/qux/file.pp
@@ -273,7 +273,7 @@ git-cif trims the file extension depending on its setting::
 
 git-cif trims the file name portion if enabled::
 
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-name true
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = true\n' > project.toml
   $ echo >>foo/bar/qux/file.pp
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
@@ -286,6 +286,28 @@ trimming applies in discrete mode as well::
   $ git log -1 --pretty=%s
   foo/bar/qux
 
+extension trimming still applies when invoked from a subdirectory, not
+just from the work tree root -- lcpp is always root-relative, so the
+existence check backing the trim must be too::
+
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = false\nlcpp-trim-file-ext = true\n' > project.toml
+  $ echo >>foo/bar/qux/file.pp
+  $ git add foo/bar/qux/file.pp
+  $ cd foo/bar && EDITOR=: git cif -q && cd ../..
+  $ git log -1 --pretty=%s
+  foo/bar/qux/file
+
+trim does not apply to dotfiles and directories::
+
+  $ mkdir foo/bar.d
+  $ touch foo/bar.d/qux
+  $ touch foo/.quux
+  $ git add foo
+  $ git cif -dqam ''
+  $ git log -2 --pretty=%s
+  ft:foo/bar.d/qux: add
+  ft:foo/.quux: add
+
 and doesn't apply to files in work tree root::
 
   $ echo >>a
@@ -295,15 +317,13 @@ and doesn't apply to files in work tree root::
 
 git-cif applies scope-rewrite rules to the lcpp path::
 
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-name false
-  $ git config set --local jmutil.gitcif.lcpp-trim-file-ext false
   $ mkdir -p src/lib
   $ touch src/lib/thing.txt
   $ git add src
-  $ git config set --local --append jmutil.gitcif.scope-rewrite 's#^src/##'
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = false\nlcpp-trim-file-ext = false\nscope-rewrite = ["s#^src/##"]\n' > project.toml
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
-  add: lib/thing.txt
+  ft:lib/thing.txt: add
 
 scope-rewrite applies to discrete mode as well::
 
@@ -312,10 +332,10 @@ scope-rewrite applies to discrete mode as well::
   $ git log -1 --pretty=%s
   lib/thing.txt
 
-rules apply in the order they were added::
+rules apply in the order they appear in the array::
 
   $ echo >> src/lib/thing.txt
-  $ git config set --local --append jmutil.gitcif.scope-rewrite 's/lib/vendor/'
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-name = false\nlcpp-trim-file-ext = false\nscope-rewrite = ["s#^src/##", "s/lib/vendor/"]\n' > project.toml
   $ EDITOR=: git cif -aq
   $ git log -1 --pretty=%s
   vendor/thing.txt
@@ -333,16 +353,16 @@ git-cif -w::
   $ echo >>a
   $ EDITOR=: git cif -awq
   $ git log -1 --pretty=%s
-  wip: a
+  wip:a
 
-git-cif prefixes the message with "add: " when the single committed file is
+git-cif prefixes the message with "add " when the single committed file is
 newly tracked::
 
   $ echo x > newfile
   $ git add newfile
   $ EDITOR=: git cif -q
   $ git log -1 --pretty=%s
-  add: newfile
+  ft:newfile: add
 
 and not when more than one file is committed::
 
@@ -353,11 +373,156 @@ and not when more than one file is committed::
   $ git log -1 --pretty=%s
   pkg
 
-git-cif -d also gets "add: " (and -w) for free through recursion into the
+git-cif -d also gets "add " (and -w) for free through recursion into the
 same non-discrete message-building path::
 
   $ echo x > discrete-new
   $ git add discrete-new
   $ git cif -dqw
   $ git log -1 --pretty=%s
-  wip: add: discrete-new
+  wip:ft:discrete-new: add
+
+rm marker::
+
+  $ echo delete > deleted
+  $ git add deleted
+  $ git commit -qam 'delete me'
+  $ git rm -q deleted
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  rm:deleted
+
+git-cif commits a rename without an add or rm marker::
+
+  $ mkdir ren
+  $ echo x > ren/old
+  $ git add ren
+  $ git commit -qam 'setup rename fixture'
+  $ git mv ren/old ren/new
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  mv:ren
+
+git-cif -d commits a rename atomically, as a single commit::
+
+  $ mkdir ren2
+  $ echo x > ren2/old
+  $ git add ren2
+  $ git commit -qam 'setup rename fixture 2'
+  $ git mv ren2/old ren2/new
+  $ EDITOR=: git cif -dq
+  $ git log -1 --pretty=%s
+  mv:ren2
+  $ git status --porcelain=v2
+  ? project.toml
+
+git-cif -t sets an explicit commit type prefix::
+
+  $ echo x > widget.txt
+  $ git add widget.txt
+  $ git commit -qam 'setup widget'
+  $ echo y >> widget.txt
+  $ git add widget.txt
+  $ EDITOR=: git cif -q -t feat -m 'support flux capacitor'
+  $ git log -1 --pretty=%s
+  feat:widget.txt: support flux capacitor
+
+git-cif -t overrides the automatic "rm" type on a deletion::
+
+  $ echo z > todelete
+  $ git add todelete
+  $ git commit -qam 'setup todelete'
+  $ git rm -q todelete
+  $ EDITOR=: git cif -q -t chore -m cleanup
+  $ git log -1 --pretty=%s
+  chore:todelete: cleanup
+
+git-cif -t overrides the automatic "ft" type on a newly tracked file::
+
+  $ echo x > newthing.txt
+  $ git add newthing.txt
+  $ EDITOR=: git cif -q -t feat
+  $ git log -1 --pretty=%s
+  feat:newthing.txt: add
+
+git-cif builds an "old -> new" message for a rename given as explicit
+pathspec arguments, instead of recursing::
+
+  $ mkdir arr
+  $ echo z > arr/before
+  $ git add arr
+  $ git commit -qam 'setup arr'
+  $ git mv arr/before arr/after
+  $ EDITOR=: git cif -q arr/before arr/after
+  $ git log -1 --pretty=%s
+  mv:arr: arr/before -> arr/after
+
+git-cif -a still commits all tracked changes even when an explicit
+pathspec is also given: the scope is computed from everything that
+actually gets committed, not just the named pathspec, so unrelated
+files with no common path end up with no scope at all::
+
+  $ echo w > multi1
+  $ echo v > multi2
+  $ git add multi1 multi2
+  $ git commit -qam 'setup multi'
+  $ echo edit1 >> multi1
+  $ echo edit2 >> multi2
+  $ EDITOR=: git cif -aq -m 'edit multiple' multi1
+  $ git log -1 --pretty=%s
+  : edit multiple
+
+git-cif reads jmutil.gitcif.lcpp-trim-file-ext from the
+[tool.jmutil.gitcif] table of project.toml::
+
+  $ mkdir tomlcfg
+  $ echo x > tomlcfg/thing.txt
+  $ git add tomlcfg
+  $ git commit -qam 'setup tomlcfg'
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > project.toml
+  $ echo >> tomlcfg/thing.txt
+  $ git add tomlcfg/thing.txt
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  tomlcfg/thing.txt
+
+pyproject.toml is used as a fallback when project.toml doesn't exist::
+
+  $ rm project.toml
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > pyproject.toml
+  $ echo >> tomlcfg/thing.txt
+  $ git add tomlcfg/thing.txt
+  $ EDITOR=: git cif -q
+  $ git log -1 --pretty=%s
+  tomlcfg/thing.txt
+
+git-cif falls back to the hardcoded default -- with a warning, not an
+error -- when project.toml is syntactically invalid TOML::
+
+  $ rm -f pyproject.toml
+  $ mkdir badcfg
+  $ echo x > badcfg/thing.txt
+  $ git add badcfg
+  $ git commit -qam 'setup badcfg'
+  $ printf 'this is not valid [[[ toml' > project.toml
+  $ echo >> badcfg/thing.txt
+  $ git add badcfg/thing.txt
+  $ EDITOR=: git cif -q
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  $ git log -1 --pretty=%s
+  badcfg/thing
+
+an invalid project.toml still falls through to a valid pyproject.toml,
+rather than aborting outright::
+
+  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > pyproject.toml
+  $ echo >> badcfg/thing.txt
+  $ git add badcfg/thing.txt
+  $ EDITOR=: git cif -q
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  Error: bad file '*project.toml': expected character = (glob)
+  $ git log -1 --pretty=%s
+  badcfg/thing.txt
