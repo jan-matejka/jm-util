@@ -28,7 +28,9 @@ ref="refs/heads/$cur"
 if ! (( $# )); then
   def=$(git config get --default main init.defaultBranch )
   if [[ $def != $cur ]]; then
-    args+=( "${def}.." )
+    # include the tip of $def for context
+    args+=( "${def}~1.." )
+    # FIXME: ~1 may not exist
   fi
 fi
 

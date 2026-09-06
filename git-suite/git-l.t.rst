@@ -56,9 +56,12 @@ repo's default branch::
   .*master~3.*commit 1.* (re)
 
 And restricts to commits unique to the current branch when it differs
-from the default branch::
+from the default branch, plus one commit of context past the branch
+point (default~1..)::
 
   $ git checkout -qb another
   $ touch another-file && git add another-file && git commit -qam "another commit"
   $ git-l
   .*another.*another commit.* (re)
+  .*another~1.*master.*merge feature.* (re)
+  .*another~1\^2.*feature.*feature commit.* (re)
