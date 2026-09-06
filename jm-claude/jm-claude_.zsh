@@ -139,6 +139,12 @@ if test -d ${JM_CLAUDE_CONFIG_SKILLS}; then
   )
 fi
 
+if test -f ${JM_CLAUDE_CONFIG_HOME}/CLAUDE.md; then
+  args+=(
+    -v ${JM_CLAUDE_CONFIG_HOME}/CLAUDE.md:/home/user/.local/share/claude/CLAUDE.md
+  )
+fi
+
 function add_vm_args {
   local i
   for i in CONTAINER_HOST CONTAINER_SSHKEY CONFIG_KNOWN_HOSTS; do
