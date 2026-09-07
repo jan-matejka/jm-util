@@ -15,8 +15,7 @@ opts=(
   e -exec
 )
 declare -A paargs
-declare -a pargs
-zparseopts -K -D -a pargs -A paargs $opts
+zparseopts -K -D -A paargs $opts
 
 o_primary=false
 o_account=default
@@ -27,13 +26,14 @@ function _mkdir() {
   mkdir --mode=0750 -p $@
 }
 
-{ (( ${pargs[(I)-e]} )) || (( ${pargs[(I)--exec]} )) } && o_exec=true
-(( ${${(k)paargs}[(I)-a]} )) && o_account=${paargs[-a]}
-(( ${${(k)paargs}[(I)--account]} )) && o_account=${paargs[--account]}
-(( ${${(k)paargs}[(I)-i]} )) && o_instance=${paargs[-i]}
-(( ${${(k)paargs}[(I)--instance]} )) && o_instance=${paargs[--instance]}
-(( ${pargs[(I)-p]} )) && o_primary=true
-(( ${pargs[(I)--primary]} )) && o_primary=true
+has_opt -e && o_exec=true
+has_opt --exec && o_exec=true
+has_opt -a && o_account=${paargs[-a]}
+has_opt --account && o_account=${paargs[--account]}
+has_opt -i && o_instance=${paargs[-i]}
+has_opt --instance && o_instance=${paargs[--instance]}
+has_opt -p && o_primary=true
+has_opt --primary && o_primary=true
 { [[ -n ${o_instance} ]] || $o_primary } && o_workdir=false || o_workdir=true
 
 root=$(git rev-parse --show-toplevel 2>/dev/null || true)
