@@ -15,6 +15,7 @@ has_opt -G && args+=( -G ${paargs[-G]} --no-graph )
 has_opt -h && args+=( --pretty=format:"%H" --no-graph )
 
 cur=$(git branch --show-current)
+def=$(git config get --default main init.defaultBranch )
 ref="refs/heads/$cur"
 # cases:
 # --grep <s>
@@ -26,7 +27,6 @@ ref="refs/heads/$cur"
 # FIXME: There is no way to parse out rev-range while letting opts passthrough
 # generically bc we don't know if <arg> is opt-val or narg.
 if ! (( $# )); then
-  def=$(git config get --default main init.defaultBranch )
   if [[ $def != $cur ]]; then
     # include the tip of $def for context
     args+=( "${def}~1.." )
@@ -42,7 +42,14 @@ fi
 args+=( --no-abbrev-commit )
 
 ps_size=$(( 4 + 1 ))
+if [[ $def == $cur ]]; then
+  # add buffer for --graph merge lines
+  # FIXME: midden ablaze
+  ps_size=$(( ps_size + 14 ))
+fi
 lines=$(( $LINES - $ps_size ))
+(( lines > 10 )) || lines=10
+
 [[ -t 1 ]] && args+=( --color=always -$lines )
 
 git log --color=auto $args $@ \
