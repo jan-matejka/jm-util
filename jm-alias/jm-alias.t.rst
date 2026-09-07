@@ -40,6 +40,12 @@ test additional argv::
   $ grr bar
   foo/bar:bar
 
+l and ll pass --color=auto to ls::
+
+  $ jm-alias --show-aliases | grep -E '^(l|ll) '
+  l _ls ls --color=auto
+  ll _ls ls -l --color=auto
+
 test alias list::
 
   $ jm-alias
