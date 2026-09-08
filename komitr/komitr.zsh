@@ -60,8 +60,8 @@ fi
 # printf "leftovers: %s\n" $leftovers >&2
 # printf "pathspec: %s\n" $pathspec >&2
 
-c_lcpp_trim_file_name=$(jm toml-get tool.jmutil.gitcif.lcpp-trim-file-name false)
-c_lcpp_trim_file_ext=$(jm toml-get tool.jmutil.gitcif.lcpp-trim-file-ext true)
+c_lcpp_trim_file_name=$(jm toml-get tool.komitr.lcpp-trim-file-name false)
+c_lcpp_trim_file_ext=$(jm toml-get tool.komitr.lcpp-trim-file-ext true)
 
 status() {
   git -C $root status --porcelain=v2 "$@"
@@ -122,11 +122,11 @@ if ! $o_discrete; then
   fi
 
   # apply configured scope-rewrite rules (sed s/// expressions), in the
-  # order they appear in the [tool.jmutil.gitcif] scope-rewrite array of
+  # order they appear in the [tool.komitr] scope-rewrite array of
   # project.toml / pyproject.toml, e.g.:
   #   scope-rewrite = ["s/^foo\\/src\\//foo\\//"]
   local -a scope_rewrite_rules sed_args
-  scope_rewrite_rules=(${(f)"$(jm toml-get 'tool.jmutil.gitcif.scope-rewrite[]' '')"})
+  scope_rewrite_rules=(${(f)"$(jm toml-get 'tool.komitr.scope-rewrite[]' '')"})
   (( ${#scope_rewrite_rules} )) && {
     for r in "${scope_rewrite_rules[@]}"; do
       sed_args+=(-e "$r")
@@ -214,5 +214,5 @@ else
   # the git-status(1)
   status | \
     status_to_filenames 'print $10 " " $11;' | \
-    xargs -r -L 1 git -C $root cif "$@" --
+    (cd $root && xargs -r -L 1 komitr "$@" --)
 fi

@@ -10,7 +10,7 @@ The more interesting ones are:
 
     Runs fully isolated Claude Code.
 
-- git-cif
+- komitr
 
     Git commit helper to pre-fill commit message with longest common prefix
     path of the files being committed.

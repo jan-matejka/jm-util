@@ -1,8 +1,8 @@
-git-cif todo
-############
+komitr todo
+###########
 
-git-cif todo
-------------
+komitr todo
+-----------
 
 :Manual section: 1
 :Date: 2026-09-03
@@ -23,7 +23,7 @@ TODO
   proper commit subject and then amend the commit with the rest of changes that
   should've been part of the commit.
 
-- git-cif config subcommand.
+- komitr config subcommand.
 
   - this needs an actually usable toml tool.
 

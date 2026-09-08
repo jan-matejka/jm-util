@@ -7,31 +7,31 @@ initialize a repository with a root commit::
   $ git add a
   $ git commit -qam 'setup'
 
-git-cif reads jmutil.gitcif.lcpp-trim-file-ext from the
-[tool.jmutil.gitcif] table of project.toml::
+komitr reads komitr.lcpp-trim-file-ext from the
+[tool.komitr] table of project.toml::
 
   $ mkdir tomlcfg
   $ echo x > tomlcfg/thing.txt
   $ git add tomlcfg
   $ git commit -qam 'setup tomlcfg'
-  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > project.toml
+  $ printf '[tool.komitr]\nlcpp-trim-file-ext = false\n' > project.toml
   $ echo >> tomlcfg/thing.txt
   $ git add tomlcfg/thing.txt
-  $ EDITOR=: git cif -q
+  $ EDITOR=: komitr -q
   $ git log -1 --pretty=%s
   tomlcfg/thing.txt
 
 pyproject.toml is used as a fallback when project.toml doesn't exist::
 
   $ rm project.toml
-  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > pyproject.toml
+  $ printf '[tool.komitr]\nlcpp-trim-file-ext = false\n' > pyproject.toml
   $ echo >> tomlcfg/thing.txt
   $ git add tomlcfg/thing.txt
-  $ EDITOR=: git cif -q
+  $ EDITOR=: komitr -q
   $ git log -1 --pretty=%s
   tomlcfg/thing.txt
 
-git-cif falls back to the hardcoded default -- with a warning, not an
+komitr falls back to the hardcoded default -- with a warning, not an
 error -- when project.toml is syntactically invalid TOML::
 
   $ rm -f pyproject.toml
@@ -42,7 +42,7 @@ error -- when project.toml is syntactically invalid TOML::
   $ printf 'this is not valid [[[ toml' > project.toml
   $ echo >> badcfg/thing.txt
   $ git add badcfg/thing.txt
-  $ EDITOR=: git cif -q
+  $ EDITOR=: komitr -q
   Error: bad file '*project.toml': expected character = (glob)
   Error: bad file '*project.toml': expected character = (glob)
   Error: bad file '*project.toml': expected character = (glob)
@@ -52,10 +52,10 @@ error -- when project.toml is syntactically invalid TOML::
 an invalid project.toml still falls through to a valid pyproject.toml,
 rather than aborting outright::
 
-  $ printf '[tool.jmutil.gitcif]\nlcpp-trim-file-ext = false\n' > pyproject.toml
+  $ printf '[tool.komitr]\nlcpp-trim-file-ext = false\n' > pyproject.toml
   $ echo >> badcfg/thing.txt
   $ git add badcfg/thing.txt
-  $ EDITOR=: git cif -q
+  $ EDITOR=: komitr -q
   Error: bad file '*project.toml': expected character = (glob)
   Error: bad file '*project.toml': expected character = (glob)
   Error: bad file '*project.toml': expected character = (glob)

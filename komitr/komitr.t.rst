@@ -11,10 +11,10 @@ initialize a repository with a root commit::
   $ git add a
   $ git commit -qam 'setup'
 
-git-cif does nothing if there is no index::
+komitr does nothing if there is no index::
 
   $ echo x >> a
-  $ git cif
+  $ komitr
   On branch master
   Changes not staged for commit:
     (use "git add <file>..." to update what will be committed)
@@ -24,19 +24,19 @@ git-cif does nothing if there is no index::
   no changes added to commit (use "git add" and/or "git commit -a")
   [1]
 
-git cif commits changes in index::
+komitr commits changes in index::
 
   $ git add a
-  $ git cif -qm ""
+  $ komitr -qm ""
   $ git lg -1
   a
   
   M	a
 
-git cif -a commits all changes::
+komitr -a commits all changes::
 
   $ echo x >> a
-  $ git cif -aqm ""
+  $ komitr -aqm ""
   $ git lg -1
   a
   
@@ -51,12 +51,12 @@ initialize subdirs in the git repository::
   $ git add foo/bar/b c
   $ git commit -qam 'setup'
 
-git-cif commits changed files in subdirs::
+komitr commits changed files in subdirs::
 
   $ echo x >> foo/bar/b
   $ echo x >> c
 
-  $ cd foo && git cif -dqam ""
+  $ cd foo && komitr -dqam ""
   $ git lg -2
   foo/bar/b
   
@@ -66,11 +66,11 @@ git-cif commits changed files in subdirs::
   
   M	c
 
-git-cif -a does not add untracked files by default::
+komitr -a does not add untracked files by default::
 
   $ touch d
-  $ git cif -dam ""
-  $ git cif -am ""
+  $ komitr -dam ""
+  $ komitr -am ""
   On branch master
   Untracked files:
     (use "git add <file>..." to include in what will be committed)
@@ -90,28 +90,28 @@ Finally, check the messages of created commits::
   a
   setup
 
-git-cif -aw creates wip commits::
+komitr -aw creates wip commits::
 
   $ echo bar > bar/b
   $ git add bar/b
-  $ git cif -dqam "" -w
+  $ komitr -dqam "" -w
   $ git lg -1
   wip:foo/bar/b
   
   M	foo/bar/b
 
-git-cif prefixes the file with "add " if a file becomes tracked::
+komitr prefixes the file with "add " if a file becomes tracked::
 
   $ ! test -e c
   $ echo x > c
   $ git add c
-  $ git cif -qm ""
+  $ komitr -qm ""
   $ git lg -1
   ft:foo/c: add
   
   A	foo/c
 
-setup for git cif::
+setup for komitr::
 
   $ mkdir -p bar
   $ mkdir -p qux
@@ -139,22 +139,22 @@ But the -C flag handles it as well, regardless of relativePaths::
   foo/bar/a
   foo/qux/b
 
-git-cif::
+komitr::
 
-  $ git cif -qm ""
+  $ komitr -qm ""
   $ git lg -1
   foo
   
   A	foo/bar/a
   A	foo/qux/b
 
-git-cif on staged changes::
+komitr on staged changes::
 
   $ echo a >> bar/a
   $ echo a >> bar/c
   $ echo b >> bar/b
   $ git add bar/a bar/c
-  $ git cif -qm ""
+  $ komitr -qm ""
   $ git lg -1
   foo/bar
   
@@ -167,11 +167,11 @@ git-cif on staged changes::
   $ git clean -fdxq
   $ git reset --hard -q
 
-git-cif -m::
+komitr -m::
 
   $ echo a >> bar/a
   $ git add bar
-  $ git cif -qm "foom"
+  $ komitr -qm "foom"
   $ git lg -1
   foo/bar/a: foom
   
@@ -181,22 +181,22 @@ get back to GIT_WORK_TREE root::
 
   $ cd ..
 
-git-cif aborts when there is no lcpp and no editor::
+komitr aborts when there is no lcpp and no editor::
 
   $ echo a >> a
   $ echo a >> c
   $ git add a c
-  $ git cif
+  $ komitr
   error: Terminal is dumb, but EDITOR unset
   Please supply the message using either -m or -F option.
   [1]
 
-git-cif aborts when there is no lcpp and editor does not edit the message::
+komitr aborts when there is no lcpp and editor does not edit the message::
 
   $ echo a >> a
   $ echo a >> c
   $ git add a c
-  $ EDITOR=cat git cif -q
+  $ EDITOR=cat komitr -q
   
   # Please enter the commit message for your changes. Lines starting
   # with '#' will be ignored, and an empty message aborts the commit.
@@ -215,44 +215,44 @@ git commit -m but no value given::
   error: switch `m' requires a value
   [129]
 
-git cif -m but no value given::
+komitr -m but no value given::
 
-  $ git cif -m
-  */build/bin/git-cif:zparseopts:*: missing argument for option: -m (glob)
+  $ komitr -m
+  */build/bin/komitr:zparseopts:*: missing argument for option: -m (glob)
   [1]
 
   
-git-cif aborts when there is no lcpp and -m is given but empty::
+komitr aborts when there is no lcpp and -m is given but empty::
 
   $ echo a >> a
   $ echo a >> c
   $ git add a c
-  $ git cif -q -m ''
+  $ komitr -q -m ''
   Aborting commit due to empty commit message.
   [1]
 
-git-cif commits as usual when there is no lcpp but -m is given::
+komitr commits as usual when there is no lcpp but -m is given::
 
   $ echo a >> a
   $ echo a >> c
   $ git add a c
-  $ EDITOR=cat git cif -q -m 'foo'
+  $ EDITOR=cat komitr -q -m 'foo'
   $ git log -1 --pretty=format:%s%n
   : foo
 
-git-cif commits as usual when there is no lcpp and no -m but editor supplies
+komitr commits as usual when there is no lcpp and no -m but editor supplies
 the message::
 
   $ echo a >> a
   $ echo a >> c
   $ git add a c
-  $ EDITOR='bash -c "echo bar >>$1" "echo"'  git cif -q
+  $ EDITOR='bash -c "echo bar >>$1" "echo"'  komitr -q
   $ git log -1 --pretty=format:%s%n
   bar
 
-git-cif -d does --no-edit by default::
+komitr -d does --no-edit by default::
 
   $ echo a >> a
-  $ EDITOR=false git cif -adq
+  $ EDITOR=false komitr -adq
 
 

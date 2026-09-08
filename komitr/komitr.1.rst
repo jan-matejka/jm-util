@@ -1,5 +1,5 @@
-git-cif
-#######
+komitr
+######
 
 Commit Files
 ------------
@@ -12,7 +12,7 @@ Commit Files
 SYNOPSIS
 ========
 
-git cif [opts]
+komitr [opts]
 
 DESCRIPTION
 ===========
@@ -96,7 +96,7 @@ commit, squash everything, reset and do new clean commits. This has the issue
 that it is easy to get it mixed up with other changes that should be its own
 final commit.
 
-For this use case, there is ``$ git cif -ad`` to commit each file separately
+For this use case, there is ``$ komitr -ad`` to commit each file separately
 with the file name in commit subject. This way it is easy to review the changes
 individually (if you need to go back to something during development) and
 squash the commits by their file or file system scope.
@@ -104,10 +104,10 @@ squash the commits by their file or file system scope.
 CONFIGURATION
 =============
 
-Settings are read from the ``[tool.jmutil.gitcif]`` table of a
+Settings are read from the ``[tool.komitr]`` table of a
 ``project.toml`` or ``pyproject.toml`` respectively in the git work tree root.
 
-jmutil.gitcif.lcpp-trim-file-name
+komitr.lcpp-trim-file-name
   Strip the file name from the lcpp if true. Default: false.
 
   Trimming the filename is typically desired when
@@ -122,7 +122,7 @@ jmutil.gitcif.lcpp-trim-file-name
   FIXME: since a repository may contain both code and documentation it is clear
   a more nuanced approach is required for full resolution.
 
-jmutil.gitcif.lcpp-trim-file-ext
+komitr.lcpp-trim-file-ext
   Strip the file extension from the lcpp if true. Default: true.
 
   If lcpp-trim-file-name is not active, it is typically desired to trim the
@@ -132,17 +132,17 @@ jmutil.gitcif.lcpp-trim-file-ext
   FIXME: Perhaps we could also look for files with the same base name but
   different extension to decide automatically if we should keep it or not.
 
-jmutil.gitcif.scope-rewrite
+komitr.scope-rewrite
   A list of ``sed`` expressions, applied in order to the lcpp path before
   it becomes the commit subject.
 
   Example, stripping a ``src/`` prefix from the lcpp::
 
-    [tool.jmutil.gitcif]
+    [tool.komitr]
     scope-rewrite = ["s#^src/##"]
 
   Applied after the lcpp is computed but before
-  ``jmutil.gitcif.lcpp-trim-file-name`` / ``jmutil.gitcif.lcpp-trim-file-ext``,
+  ``komitr.lcpp-trim-file-name`` / ``komitr.lcpp-trim-file-ext``,
   so a rule that changes whether the result still refers to an actual file
   on disk affects whether those two settings trigger.
 

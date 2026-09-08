@@ -14,7 +14,7 @@ no -q::
 
   $ echo a >> a
   $ git add a
-  $ git cif -m ''
+  $ komitr -m ''
   \[master [0-9a-f]{7}\] a (re)
    1 file changed, 1 insertion(+)
 
@@ -22,10 +22,10 @@ with -q::
 
   $ echo a >> a
   $ git add a
-  $ git cif -m '' -q
+  $ komitr -m '' -q
 
 with -aq::
 
   $ echo a >> a
   $ git add a
-  $ git cif -aq -m ''
+  $ komitr -aq -m ''
