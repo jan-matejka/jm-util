@@ -57,50 +57,11 @@ if $o_all && ! $o_discrete; then
   leftovers+=( -a )
 fi
 
-if [[ -z ${JM_UTIL_YQ:=} ]]; then
-  if command -v yq-go >/dev/null; then
-    JM_UTIL_YQ=yq-go
-  else
-    if command -v yq >/dev/null; then
-      JM_UTIL_YQ=yq
-    fi
-  fi
-fi
-
-if [[ -z ${JM_UTIL_YQ} ]]; then
-  warning "command not found: yq-go"
-  warning "command not found: yq"
-fi
-
 # printf "leftovers: %s\n" $leftovers >&2
 # printf "pathspec: %s\n" $pathspec >&2
 
-# FIXME: midden ablaze
-# It is mind boggling how many tools for manipulating toml from cli there are,
-# yet none are usable. I'm planck length away of sticking envdir in here.
-toml_get() {
-  local key="$1" default="$2"
-  if [[ -n ${JM_UTIL_YQ} ]]; then
-    local base="${key%\[\]}"
-    local section="tool.jmutil.gitcif"
-    local -a candidates=( "$root/project.toml" "$root/pyproject.toml" )
-    local f present
-    for f in "${candidates[@]}"; do
-      [[ -f $f ]] || continue
-      present=$(yq -p toml -o toml ".$section | has(\"$base\")" "$f") || present=false
-      if [[ $present == true ]]; then
-        yq -p toml -o toml ".tool.jmutil.gitcif.$key" "$f"
-        return 0
-      fi
-    done
-  fi
-
-  [[ -n $default ]] && print -r -- "$default"
-  return 0
-}
-
-c_lcpp_trim_file_name=$(toml_get lcpp-trim-file-name false)
-c_lcpp_trim_file_ext=$(toml_get lcpp-trim-file-ext true)
+c_lcpp_trim_file_name=$(jm toml-get tool.jmutil.gitcif.lcpp-trim-file-name false)
+c_lcpp_trim_file_ext=$(jm toml-get tool.jmutil.gitcif.lcpp-trim-file-ext true)
 
 status() {
   git -C $root status --porcelain=v2 "$@"
@@ -165,7 +126,7 @@ if ! $o_discrete; then
   # project.toml / pyproject.toml, e.g.:
   #   scope-rewrite = ["s/^foo\\/src\\//foo\\//"]
   local -a scope_rewrite_rules sed_args
-  scope_rewrite_rules=(${(f)"$(toml_get 'scope-rewrite[]' '')"})
+  scope_rewrite_rules=(${(f)"$(jm toml-get 'tool.jmutil.gitcif.scope-rewrite[]' '')"})
   (( ${#scope_rewrite_rules} )) && {
     for r in "${scope_rewrite_rules[@]}"; do
       sed_args+=(-e "$r")
