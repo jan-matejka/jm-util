@@ -54,6 +54,9 @@ TODO
   read-only for the container's lifetime -- blocks local writes, checkout
   included, at the index-lock step, cleanly. Not implemented.
 
+- Might requires relative .git link files. (>=git-2.48).
+  Unclear if is still true in current implementation.
+
 SEE ALSO
 ========
 
