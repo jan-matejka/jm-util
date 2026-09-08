@@ -36,13 +36,18 @@ function _mkdir() {
 (( ${pargs[(I)--primary]} )) && o_primary=true
 { [[ -n ${o_instance} ]] || $o_primary } && o_workdir=false || o_workdir=true
 
+root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+
 if $o_workdir; then
-  root=$(git rev-parse --show-toplevel)
   dotgit=$root/.git
   [[ -f $dotgit ]] || fatal "not a worktree"
 
   main=$(grep '^gitdir: ' $dotgit | head -n1 | sed 's#^gitdir: ../\(.*\)/.git/.*$#../\1#' || true)
   [[ -n $main ]] || fatal "failed to read gitdir"
+
+  if ! { has_opt -a || has_opt --account }; then
+    o_account=$(jm toml-get tool.jmutil.claude.account)
+  fi
 
   branch=$(git branch --show-current)
 

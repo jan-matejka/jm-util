@@ -26,6 +26,9 @@ OPTIONS
 
   Used for distinguishing between different claude accounts.
 
+  Defaults to config key tool.jmutil.claude.account (`FILES`_) if it exists,
+  otherwise ``default``.
+
 -i <instance>, --instance <instance>
   Instance name for the container.
   Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
@@ -164,6 +167,17 @@ JM_CLAUDE_CONTAINER_SSHKEY
   This is instance specific but intended to be shared.
 
   FIXME: unclear how to resolve with different --acount.
+
+FILES
+=====
+
+jm-claude reads files ``project.toml``, and ``pyproject.toml`` in work tree
+root, respectively; for the following keys:
+
+tool.jmutil.claude.account
+  see -a `OPTIONS`_.
+
+Key value is served from whichever file is the value found first.
 
 DEPENDENCIES
 ============

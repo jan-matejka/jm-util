@@ -45,6 +45,94 @@ worktree with compose.yaml::
   /tmp/dramtests-(.*)/home/user/src/jm-claude/jm-claude.t.rst/tmp/bin/podman run -it --rm --name jm_claude_p_foo_wip --userns=keep-id:uid=1000,gid=1000 --cap-drop=ALL --security-opt=no-new-privileges --read-only -e DISABLE_DOCTOR_COMMAND=1 -v ./:/src/wip -v ../master:/src/master:ro -v jm-claude-local:/home/user/.local -v jm-claude-config:/home/user/.config -v /.*/.config/jm-util/claude/conf:/home/user/.config/claude -v /.*/.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude -v /.*/primary/default/settings.json:/home/user/.local/share/claude/settings.json -v /.*/primary/default/.credentials.json:/home/user/.local/share/claude/.credentials.json ghcr.io/jan-matejka/claude:latest (re)
 
 
+account is read from project.toml's tool.jmutil.claude.account by default::
+
+  $ printf '[tool.jmutil.claude]\naccount = "cfgacct"\n' > project.toml
+  $ jm claude
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_p_foo_wip
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  ./:/src
+  -v
+  */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
+  -v
+  */gitdir/wip:/run/jm-claude/git-local (glob)
+  -v
+  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  -v
+  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  -v
+  jm-claude-local:/home/user/.local
+  -v
+  jm-claude-config:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  -v
+  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  -v
+  */primary/cfgacct/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/cfgacct/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/cfgacct/.credentials.json:/home/user/.local/share/claude/.credentials.json (glob)
+  ghcr.io/jan-matejka/claude:latest
+
+an explicit -a/--account wins over project.toml's configured account::
+
+  $ jm claude -a explicit
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_p_foo_wip
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  ./:/src
+  -v
+  */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
+  -v
+  */gitdir/wip:/run/jm-claude/git-local (glob)
+  -v
+  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  -v
+  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  -v
+  jm-claude-local:/home/user/.local
+  -v
+  jm-claude-config:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  -v
+  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  -v
+  */primary/explicit/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/explicit/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/explicit/.credentials.json:/home/user/.local/share/claude/.credentials.json (glob)
+  ghcr.io/jan-matejka/claude:latest
+  $ rm -f project.toml
+
 worktree with a VM::
 
   $ export JM_CLAUDE_CONTAINER_HOST=foo.example.com
