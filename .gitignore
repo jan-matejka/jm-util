@@ -3,7 +3,17 @@ core/jm_version.zsh
 cram/*.t.err
 .cargo_build
 Cargo.lock
+debian/tmp
 debian/jm-util
+debian/jm-util-core
+debian/jm-util-git-lint
+debian/jm-util-alias
+debian/jm-util-claude
+debian/jm-util-p
+debian/jm-util-toml
+debian/jm-util-versionator
+debian/komitr
+debian/gytter
 debian/*.substvars
 debian/.debhelper
 debian/debhelper-build-stamp

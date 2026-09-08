@@ -7,6 +7,73 @@ Build-Depends: debhelper-compat (= 13), python3-docutils, g++, libfmt-dev,
   xdgenv, dram
 
 Package: jm-util
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, zsh, xdgenv, yq-go
+Architecture: all
+Depends: ${misc:Depends},
+  jm-util-core (= ${binary:Version}),
+  jm-util-git-lint (= ${binary:Version}),
+  jm-util-alias (= ${binary:Version}),
+  jm-util-claude (= ${binary:Version}),
+  jm-util-p (= ${binary:Version}),
+  jm-util-toml (= ${binary:Version}),
+  jm-util-versionator (= ${binary:Version}),
+  komitr (= ${binary:Version}),
+  gytter (= ${binary:Version})
 Description: jm-util
+ Metapackage pulling in the full jm-util collection of personal utilities.
+
+Package: jm-util-core
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, zsh, xdgenv
+Description: jm-util core utilities and dispatcher
+ The jm dispatcher, jm_prelude, and the miscellaneous single-purpose
+ utilities shared by the rest of the jm-util collection.
+
+Package: jm-util-git-lint
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: jm-util git-lint
+ git-lint - lint a git repository/commits.
+
+Package: jm-util-alias
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, jm-util-core (>= ${source:Version})
+Description: jm-util shell aliases as real commands
+ Shell aliases exposed as real commands so they can be passed to xargs,
+ exec, etc.
+
+Package: jm-util-claude
+Architecture: all
+Depends: ${misc:Depends}, zsh, jm-util-core (>= ${source:Version})
+Description: jm-util fully isolated Claude Code runner
+ Runs Claude Code fully isolated from the host git-dir.
+
+Package: jm-util-p
+Architecture: all
+Depends: ${misc:Depends}, zsh, jm-util-core (>= ${source:Version})
+Description: jm-util podman project helpers
+ Helpers for naming and debugging podman-based project containers.
+
+Package: jm-util-toml
+Architecture: all
+Depends: ${misc:Depends}, zsh, yq-go, jm-util-core (>= ${source:Version})
+Description: jm-util toml reader
+ jm-toml-get - read values out of a TOML file.
+
+Package: jm-util-versionator
+Architecture: all
+Depends: ${misc:Depends}, zsh
+Description: jm-util Debian version generator
+ Generates a Debian compatible version from a git repository.
+
+Package: komitr
+Architecture: all
+Depends: ${misc:Depends}, zsh, jm-util-core (>= ${source:Version}), jm-util-toml (>= ${source:Version})
+Description: git commit helper
+ Git commit helper to pre-fill the commit message with the longest common
+ prefix path of the files being committed.
+
+Package: gytter
+Architecture: all
+Depends: ${misc:Depends}, zsh, jm-util-core (>= ${source:Version})
+Description: jm-util git helpers
+ gytr-cl, gytr-l - assorted git helpers.

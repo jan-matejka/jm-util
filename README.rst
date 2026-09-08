@@ -40,6 +40,11 @@ Available through my PPA https://github.com/jan-matejka/debian-ppa::
   # curl -fsSL https://jan-matejka.github.io/debian-ppa/install | sh
   # apt install jm-util
 
+``jm-util`` is a metapackage pulling in every module below. Install a module
+directly (e.g. ``apt install komitr``) to skip the rest: jm-util-core,
+jm-util-git-lint, jm-util-alias, jm-util-claude, jm-util-p, jm-util-toml,
+jm-util-versionator, komitr, gytter.
+
 From source
 ===========
 
