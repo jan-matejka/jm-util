@@ -2,11 +2,11 @@
 jm-claude
 #########
 
-Run safe claude code
-####################
+Run Claude Code, safe-ishly
+###########################
 
 :Manual section: 1
-:Date: 2026-08-22
+:Date: 2026-09-07
 :Author: Jan Matějka jan@matejka.ninja
 :Manual group: jm-util manual
 
@@ -14,6 +14,28 @@ SYNOPSIS
 ========
 
   jm claude [opts] <args>
+
+DESCRIPTION
+===========
+
+Runs claude in a hardened ephemeral container with authentication persistence
+and git discovery.
+
+If running inside a git repository:
+
+- the current working directory is bind-mounted into /src (claude's working
+  directory), and
+
+- claude's repository is added as a ``claude-<work-tree-name>`` git-remote in
+  the host repository, and
+
+- the current branch is set up to track claude's branch, unless in a
+  git-worktree whose name does not match the current branch.
+
+``<work-tree-name>`` = the git-worktree name, if currently in one.
+``<work-tree-name>`` = basename <work-tree-root>, otherwise.
+
+See `SAFETY`_ and `EXAMPLES`_ for more.
 
 OPTIONS
 =======
@@ -39,65 +61,39 @@ OPTIONS
 <args>
   Passed to podman-run <image> <args...> so you can run e.g. ``jm claude zsh``.
 
-DESCRIPTION
-===========
+EXAMPLES
+========
 
-Runs claude isolated to CWD that should be a git-worktree in a hardened
-container with read only access to GIT_DIR and read-write access to
-the CWD git-worktree sharing authentication with primary claude (``jm claude
--p``) but no other data.
+Initialization
+--------------
 
-Claude can still build and run containers if configured to use an isolated VM.
+1. ``jm claude -p``, log into claude, and exit.
 
-Threat Model
-------------
+Standard operation
+------------------
 
-Claude Code can run arbitrary commands with a pinky promise it will not do
-harm.
+- ``jm claude -i <instance>`` for claude without working directory.
 
-But for Claude Code to be useful it has to:
+- ``jm claude`` within a git repository for claude with the repository and work
+  tree context.
 
-1. Have ability to write in the project source code.
+- You can monitor the progress claude is making by observing the working
+  directory.
 
-2. Read git history for context and for awareness of manual changes made during
-   a session.
+- Once claude finishes, you can commit yourself on the host or git-pull if you
+  let claude commit.
 
-3. Have ability to build and run containers for validation.
+  Known issues:
 
-Therefore it is neccessary:
+  - You need to do git reset --hard && git clean -fd or clean the working
+    directory manually before git-pull, otherwise git-pull refuses to operate.
 
-- Claude to run in hardened container to eliminate risk to the host system
-  (in absence of namespace breakout exploits)
+  - When you make changes on the host, the working directory contents are
+    transparently visible to claude but not the commits you make. Claude needs
+    to explicitly pull them.
 
-- Give claude RW access to a worktree via volume mount.
-
-  Giving access to work tree for claude to autonomously make changes to the
-  source. Also gives us the ability to run multiple claude instances for
-  multiple worktrees in parallel without conflicts.
-
-  This is safe in absence of namespace breakout exploits.
-
-- Give Claude RO access to GIT_DIR via volume.
-
-  This is safe in absence of namespace breakout exploits.
-
-- Give Claude an isolated VM to build and run containers on its own.
-
-  Theoretically there is a way to do this with podman-in-podman but it requires
-  a decent amount of privileges to be given to the claude container, increasing
-  the attack surface for namespace breakout exploits.
-
-  Therefore an isolated VM is preferred, which is safe in the absence of vm
-  breakout exploits and identical method can be used to isolate to a real
-  machine for further isolation.
-
-Usage
-=====
-
-1. Run ``jm claude -p`` and login into claude.
-
-2. ``cd`` into a git-worktree working dir and run ``jm claude`` for isolated
-   claude instance.
+    This will likely cause issues for claude when you restart it without
+    continuing the previous session.
 
 ENVIRONMENT
 ===========
@@ -171,20 +167,81 @@ JM_CLAUDE_CONTAINER_SSHKEY
 FILES
 =====
 
-jm-claude reads files ``project.toml``, and ``pyproject.toml`` in work tree
-root, respectively; for the following keys:
+jm-claude reads the following keys from ``project.toml`` or
+``pyproject.toml`` in the work tree root, whichever is found first:
 
 tool.jmutil.claude.account
   see -a `OPTIONS`_.
 
-Key value is served from whichever file is the value found first.
+The key's value is read from whichever file has it first.
+
+SAFETY
+======
+
+Motivation
+----------
+
+Claude Code can run arbitrary commands with a pinky promise it will be useful
+and not delete or exfiltrate your secrets and other data.
+
+Therefore we want to execute it only in a sandboxed, isolated environment.
+Containers are used because they are lightweight and easy to create and dispose
+of.
+
+For Claude Code to be actually useful to its full potential, it typically
+needs to have access to the working directory to inspect and modify files
+there.
+
+If the working directory is a git repository, it needs to be able to read the
+repository history for context and it needs to be able to modify the working
+directory.
+
+Ideally, it also needs to be able to author commits.
+
+Furthermore, it is essential for it to be able to run containers itself,
+safely (sus, WIP).
+
+Constraints
+-----------
+
+Claude has RW access to the working directory (FIXME: this is a footgun and
+shall not be the default).
+
+Claude has RW access to a git-dir on the host.
+
+Claude has RO access only to the git-dir backing the working directory's work
+tree.
+
+Known hazards
+-------------
+
+- It is not safe for the user to modify the working directory on the host
+  (including switching branches) while claude is actively working on it.
+
+- Claude has access to the network, including private networks.
+
+- The volume shadowing in security sensitive contexts is sus.
+
+Container hardening
+-------------------
+
+Techniques applied:
+
+- podman
+
+  - ``--read-only``
+  - ``--cap-drop=ALL``
+  - ``--security-opt=no-new-privileges``
+
+Would you like to know more?
+----------------------------
+
+- ``jm-claude-design(7)`` for the git isolation mechanism in detail.
+
+- ``jm-claude-todo(7)`` for known limitations and planned work.
 
 DEPENDENCIES
 ============
-
-Your git repository structure is ``<name>/{master|main,<branch-name>}``.
-
-``<branch-name>`` does not contain slash characters ``/``.
 
 - docker-compose and podman on the host.
 
@@ -196,6 +253,8 @@ Your git repository structure is ``<name>/{master|main,<branch-name>}``.
   ${XDG_CONFIG_HOME}/containers/containers.conf to take effect.
 
 - If you want claude to build and run containers:
+
+  - WIP: Doesn't work right yet.
 
   - You have to set following variables for jm-claude:
 
