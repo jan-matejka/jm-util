@@ -111,6 +111,8 @@ Standard operation
   - See ``jm-claude-design(7)`` for the shared-repository/live-sync
     mechanism in detail.
 
+  - Requires relative .git link files. (>=git-2.48).
+
 ENVIRONMENT
 ===========
 
