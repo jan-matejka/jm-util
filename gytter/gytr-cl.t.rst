@@ -24,21 +24,21 @@ directory, reachable via SCP-like host:org/repo.git syntax::
   > EOF
   $ chmod +x fake-ssh.sh
 
-git-cl clones the SCP-like URL::
+gytr-cl clones the SCP-like URL::
 
   $ export GIT_SSH_COMMAND="$PWD/fake-ssh.sh"
   $ mkdir dest
-  $ git-cl fakehost:myorg/myrepo.git "$PWD/dest"
+  $ gytr-cl fakehost:myorg/myrepo.git "$PWD/dest"
   Cloning into '*dest/myorg/myrepo/master'... (glob)
   $ test -d dest/myorg/myrepo/myrepo.git
   $ test -f dest/myorg/myrepo/master/a
   $ git -C dest/myorg/myrepo/master rev-parse --abbrev-ref HEAD
   master
 
-git-cl defaults <dir> to $GIT_ORG_HOME when no <dir> is given::
+gytr-cl defaults <dir> to $GIT_ORG_HOME when no <dir> is given::
 
   $ export GIT_ORG_HOME="$PWD/orghome"
-  $ git-cl fakehost:myorg/myrepo.git
+  $ gytr-cl fakehost:myorg/myrepo.git
   Cloning into '*orghome/myorg/myrepo/master'... (glob)
   $ test -d "$GIT_ORG_HOME/myorg/myrepo/myrepo.git"
   $ test -f "$GIT_ORG_HOME/myorg/myrepo/master/a"
@@ -48,7 +48,7 @@ and falls back to ~/git when $GIT_ORG_HOME is unset::
   $ unset GIT_ORG_HOME
   $ mkdir fakehome
   $ export HOME="$PWD/fakehome"
-  $ git-cl fakehost:myorg/myrepo.git
+  $ gytr-cl fakehost:myorg/myrepo.git
   Cloning into '*fakehome/git/myorg/myrepo/master'... (glob)
   $ test -d "$HOME/git/myorg/myrepo/myrepo.git"
   $ test -f "$HOME/git/myorg/myrepo/master/a"

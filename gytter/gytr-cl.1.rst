@@ -1,5 +1,5 @@
-git-cl
-######
+gytr-cl
+#######
 
 Clone Into An Org/Repo Layout
 -----------------------------
@@ -12,7 +12,7 @@ Clone Into An Org/Repo Layout
 SYNOPSIS
 ========
 
-git cl <url> [<dir>]
+gytr-cl <url> [<dir>]
 
 DESCRIPTION
 ===========
