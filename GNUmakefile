@@ -20,6 +20,7 @@ sources   = GNUmakefile $(mods) README.rst
 i_deps    =
 i_deps   += $(i_bin_dir)/
 i_deps   += $(i_man_dir)/
+i_deps   += $(i_man7_dir)/
 i_deps   += $(bash_comp_dir)/ $(zsh_comp_dir)/
 i_deps   += $(bash_comp_dir)/jm
 i_deps   += $(zsh_comp_dir)/_jm
