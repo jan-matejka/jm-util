@@ -157,7 +157,7 @@ JM_CONFIG_KNOWN_HOSTS
 
   This is instance specific but intended to be shared.
 
-  FIXME: unclear how to resolve with different --acount.
+  FIXME: unclear how to resolve with different --account.
 
 JM_CLAUDE_CONTAINER_HOST
   URL to podman socket on the isolated VM for claude.
@@ -165,14 +165,14 @@ JM_CLAUDE_CONTAINER_HOST
 
   This is instance specific but intended to be shared.
 
-  FIXME: unclear how to resolve with different --acount.
+  FIXME: unclear how to resolve with different --account.
 
 JM_CLAUDE_CONTAINER_SSHKEY
   ssh key for claude to use to connect to the isolated VM.
 
   This is instance specific but intended to be shared.
 
-  FIXME: unclear how to resolve with different --acount.
+  FIXME: unclear how to resolve with different --account.
 
 FILES
 =====
