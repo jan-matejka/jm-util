@@ -20,6 +20,7 @@ zparseopts -K -D -A paargs $opts
 o_primary=false
 o_instance=
 o_exec=false
+o_account=default
 
 function _mkdir() {
   mkdir --mode=0750 -p $@
@@ -35,15 +36,14 @@ has_opt -p && o_primary=true
 has_opt --primary && o_primary=true
 { [[ -n ${o_instance} ]] || $o_primary } && o_workdir=false || o_workdir=true
 
-if ! { has_opt -a || has_opt --account }; then
-  o_account=$(jm toml-get tool.jmutil.claude.account default)
-fi
-
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 
 root=$(git rev-parse --show-toplevel 2>/dev/null || true)
 
 if $o_workdir; then
+  if ! { has_opt -a || has_opt --account }; then
+    o_account=$(jm toml-get tool.jmutil.claude.account $o_account)
+  fi
   # Determine project and branch
   # Needed to define base paths
   branch=$(git branch --show-current)

@@ -13,6 +13,40 @@ setup podman::
   > EOF
   $ chmod +x $TMPDIR/bin/podman
 
+-i works from outside a git repository (no git context is needed for an
+instance-keyed container)::
+
+  $ jm claude -i myinstance
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_i_myinstance
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  */data/i_myinstance:/src (glob)
+  -v
+  jm-claude-local:/home/user/.local
+  -v
+  jm-claude-config:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  -v
+  */.local/share/jm-util/claude/home/i/myinstance:/home/user/.local/share/claude (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/.credentials.json:/home/user/.local/share/claude/.credentials.json (glob)
+  ghcr.io/jan-matejka/claude:latest
+
 setup git::
 
   $ git init -q master
