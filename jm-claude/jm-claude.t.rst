@@ -32,11 +32,11 @@ instance-keyed container)::
   -v
   */data/i_myinstance:/src (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/i/myinstance:/home/user/.local/share/claude (glob)
   -v
@@ -82,11 +82,11 @@ default topology (no worktree)::
   -v
   */gitdir/*/master.alternates:/src/.git/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/work/master:/home/user/.local/share/claude (glob)
   -v
@@ -128,11 +128,11 @@ worktree no compose.yaml::
   -v
   */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/work/wip:/home/user/.local/share/claude (glob)
   -v
@@ -182,11 +182,11 @@ worktree with compose.yaml::
   -v
   */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
   -v
@@ -227,11 +227,11 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   -v
   */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-cfgacct:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-cfgacct:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/cfgacct:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
   -v
@@ -270,11 +270,11 @@ an explicit -a/--account wins over project.toml's configured account::
   -v
   */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-explicit:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-explicit:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/explicit:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
   -v
@@ -317,11 +317,11 @@ worktree with a VM::
   -v
   */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
   -v
@@ -342,7 +342,7 @@ worktree with a VM::
 
 chmod::
 
-  $ stat -c '%a %A' $HOME/.config/jm-util/claude/conf
+  $ stat -c '%a %A' $HOME/.config/jm-util/claude/conf/account/default
   750 drwxr-x---
   $ stat -c '%a %A' $HOME/.local/share/jm-util/claude/home/p/foo/wip
   750 drwxr-x---
@@ -375,11 +375,11 @@ command::
   -v
   */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
   -v
@@ -417,13 +417,81 @@ primary::
   -v
   */data/primary:/src (glob)
   -v
-  jm-claude-local:/home/user/.local
+  jm-claude-local-a-default:/home/user/.local
   -v
-  jm-claude-config:/home/user/.config
+  jm-claude-config-a-default:/home/user/.config
   -v
-  */.config/jm-util/claude/conf:/home/user/.config/claude (glob)
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
   */primary/default:/home/user/.local/share/claude (glob)
+  -e
+  CONTAINER_HOST=foo.example.com
+  -e
+  CONTAINER_SSHKEY=/home/user/.ssh/id_ed25519
+  -v
+  */hosts:/home/user/.ssh/known_hosts:ro (glob)
+  -v
+  */key:/home/user/.ssh/id_ed25519:ro (glob)
+  ghcr.io/jan-matejka/claude:latest
+
+distinct accounts use distinct config dirs::
+
+  $ jm claude -p -a acct1
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_primary
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  */data/primary:/src (glob)
+  -v
+  jm-claude-local-a-acct1:/home/user/.local
+  -v
+  jm-claude-config-a-acct1:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf/account/acct1:/home/user/.config/claude (glob)
+  -v
+  */primary/acct1:/home/user/.local/share/claude (glob)
+  -e
+  CONTAINER_HOST=foo.example.com
+  -e
+  CONTAINER_SSHKEY=/home/user/.ssh/id_ed25519
+  -v
+  */hosts:/home/user/.ssh/known_hosts:ro (glob)
+  -v
+  */key:/home/user/.ssh/id_ed25519:ro (glob)
+  ghcr.io/jan-matejka/claude:latest
+
+  $ jm claude -p -a acct2
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_primary
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  */data/primary:/src (glob)
+  -v
+  jm-claude-local-a-acct2:/home/user/.local
+  -v
+  jm-claude-config-a-acct2:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf/account/acct2:/home/user/.config/claude (glob)
+  -v
+  */primary/acct2:/home/user/.local/share/claude (glob)
   -e
   CONTAINER_HOST=foo.example.com
   -e

@@ -51,6 +51,10 @@ OPTIONS
   Defaults to config key tool.jmutil.claude.account (`FILES`_) if it exists,
   otherwise ``default``.
 
+  Scopes persistent state to the account: ``JM_CLAUDE_CONFIG_HOME_ACCOUNT``,
+  ``JM_CLAUDE_DATA_PRIMARY_HOME``, and the volumes for XDG_CONFIG_HOME, and
+  XDG_DATA_HOME inside the container are both keyed by ``<account>``.
+
 -i <instance>, --instance <instance>
   Instance name for the container.
   Mounts ``JM_CLAUDE_DATA_INSTANCE_SRC`` into /src.
@@ -105,9 +109,15 @@ JM_CLAUDE_IMAGE
   Image to run claude in.
 
 JM_CLAUDE_CONFIG_HOME
-  Config home directory for claude.
+  Config home directory for claude, parent of the per-account config
+  directory (``JM_CLAUDE_CONFIG_HOME_ACCOUNT``).
 
-  Shared across all instances.
+JM_CLAUDE_CONFIG_HOME_ACCOUNT
+  Config directory for claude, mounted into ``~/.config/claude`` in the
+  container.
+
+  Account specific (-a `OPTIONS`_). Parented to ``JM_CLAUDE_CONFIG_HOME`` by
+  default.
 
 JM_CLAUDE_CONFIG_SKILLS
 

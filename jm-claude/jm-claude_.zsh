@@ -70,6 +70,7 @@ else
   fi
 fi
 
+: ${JM_CLAUDE_CONFIG_HOME_ACCOUNT:=${JM_CLAUDE_CONFIG_HOME}/account/$o_account}
 : ${JM_CLAUDE_CONFIG_SKILLS:=${JM_CLAUDE_CONFIG_HOME}/skills}
 
 : ${JM_CLAUDE_DATA_INSTANCE_HOME:=${JM_CLAUDE_DATA_HOME}/home/${instance_fs}}
@@ -184,12 +185,12 @@ fi
 
 args+=(
   # volumes runtime for podman
-  -v jm-claude-local:/home/user/.local
-  -v jm-claude-config:/home/user/.config
+  -v jm-claude-local-a-${o_account}:/home/user/.local
+  -v jm-claude-config-a-${o_account}:/home/user/.config
   # volumes - config
-  -v ${JM_CLAUDE_CONFIG_HOME}:/home/user/.config/claude
+  -v ${JM_CLAUDE_CONFIG_HOME_ACCOUNT}:/home/user/.config/claude
 )
-_mkdir ${JM_CLAUDE_CONFIG_HOME}
+_mkdir ${JM_CLAUDE_CONFIG_HOME_ACCOUNT}
 
 if $o_primary ; then
   args+=(
@@ -212,9 +213,9 @@ if test -d ${JM_CLAUDE_CONFIG_SKILLS}; then
   )
 fi
 
-if test -f ${JM_CLAUDE_CONFIG_HOME}/CLAUDE.md; then
+if test -f ${JM_CLAUDE_CONFIG_HOME_ACCOUNT}/CLAUDE.md; then
   args+=(
-    -v ${JM_CLAUDE_CONFIG_HOME}/CLAUDE.md:/home/user/.local/share/claude/CLAUDE.md
+    -v ${JM_CLAUDE_CONFIG_HOME_ACCOUNT}/CLAUDE.md:/home/user/.local/share/claude/CLAUDE.md
   )
 fi
 
