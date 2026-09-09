@@ -78,9 +78,9 @@ default topology (no worktree)::
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
   -v
-  */gitdir/master:/src/.git (glob)
+  */gitdir/*/master:/src/.git (glob)
   -v
-  */gitdir/master.alternates:/src/.git/objects/info/alternates:ro (glob)
+  */gitdir/*/master.alternates:/src/.git/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v
@@ -122,11 +122,11 @@ worktree no compose.yaml::
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
-  */gitdir/wip:/run/jm-claude/git-local (glob)
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
   -v
-  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
   -v
-  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v
@@ -148,8 +148,9 @@ a cp -r bug that silently dropped every branch ref: git init already creates
 an empty refs/{heads,tags} skeleton, and `cp -r src dst` nests src *inside*
 an already-existing dst instead of merging into it)::
 
-  $ test -f "$HOME/.local/share/jm-util/claude/gitdir/wip/refs/heads/wip"
-  $ test ! -e "$HOME/.local/share/jm-util/claude/gitdir/wip/refs/refs"
+  $ find $HOME/.local/share/jm-util/claude/gitdir -type f -path '*/wip/refs/heads/wip'
+  */wip/refs/heads/wip (glob)
+  $ find $HOME/.local/share/jm-util/claude/gitdir -type d -path '*/wip/refs/refs'
 
 
 worktree with compose.yaml::
@@ -175,11 +176,11 @@ worktree with compose.yaml::
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
-  */gitdir/wip:/run/jm-claude/git-local (glob)
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
   -v
-  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
   -v
-  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v
@@ -220,11 +221,11 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
-  */gitdir/wip:/run/jm-claude/git-local (glob)
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
   -v
-  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
   -v
-  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v
@@ -263,11 +264,11 @@ an explicit -a/--account wins over project.toml's configured account::
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
-  */gitdir/wip:/run/jm-claude/git-local (glob)
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
   -v
-  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
   -v
-  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v
@@ -310,11 +311,11 @@ worktree with a VM::
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
-  */gitdir/wip:/run/jm-claude/git-local (glob)
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
   -v
-  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
   -v
-  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v
@@ -368,11 +369,11 @@ command::
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
-  */gitdir/wip:/run/jm-claude/git-local (glob)
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
   -v
-  */gitdir/wip.gitlink:/src/.git:ro (glob)
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
   -v
-  */gitdir/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
   -v
   jm-claude-local:/home/user/.local
   -v

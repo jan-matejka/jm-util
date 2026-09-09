@@ -110,13 +110,12 @@ if $o_workdir; then
   else
     worktree_name=$(basename $root)
   fi
-
   # Mounts: container-side paths and LOCAL_GITDIR's host path
   ct_common=/run/jm-claude/git-common-ro
   ct_work=$ct_common
   [[ $work_git_dir != $common_dir ]] && ct_work=/run/jm-claude/git-work-ro
   ct_local=/run/jm-claude/git-local
-  local_gitdir=${JM_CLAUDE_DATA_HOME}/gitdir/${worktree_name}
+  local_gitdir=${JM_CLAUDE_DATA_HOME}/gitdir/${common_dir}/${worktree_name}
   _mkdir $(dirname $local_gitdir)
 
   # Container-local git-dir seeding

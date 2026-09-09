@@ -105,9 +105,15 @@ Container-side paths, fixed for the life of the container:
   e.g. ``/run/jm-claude/git-local`` -- where ``LOCAL_GITDIR`` is mounted,
   needed only for the gitlink case below.
 
-``LOCAL_GITDIR`` is a plain host directory keyed by ``WORKTREE_NAME``
-(Instance keying, above), so host-side fetching is possible and it survives the
-container's ``--rm``. Seeded host-side (Seeding, below), before ``podman run``.
+``LOCAL_GITDIR`` is a plain host directory keyed by
+``COMMON_DIR/WORKTREE_NAME`` (Instance keying, above), so host-side fetching
+is possible and it survives the container's ``--rm``. Seeded host-side
+(Seeding, below), before ``podman run``.
+
+note: Keying to ``realpath --relative-to $HOME $COMMON_DIR`` is tempting.
+Unfortunately its more trouble than worth when considering paths outside
+``HOME``.
+
 
 Mounts:
 
