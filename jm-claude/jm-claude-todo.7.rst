@@ -14,6 +14,8 @@ jm-claude TODO
 TODO
 ====
 
+- The automatic branch tracking is a footgun.
+
 - It is also becoming clear I will need to run multiple wip branches.
   Too easy with worktrees but the design would likely involve wip/main and then
   wip/1, wip/2, ... . wip/main being for integrating passing changes.
