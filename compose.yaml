@@ -39,6 +39,7 @@ services:
       - *vol-config
       - *vol-local
       - ../main:/home/user/main
+      - ../jm-util.git:/home/user/jm-util.git
       # master needs RW because git checkout makes a lock inside
       # .git/worktrees/<name>/
       - ${HOME}/.gnupg/pubring.gpg:/home/user/.gnupg/pubring.gpg:ro
