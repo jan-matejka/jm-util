@@ -163,6 +163,18 @@ EOF
     git --git-dir=$local_gitdir config core.bare false
     git --git-dir=$local_gitdir config core.logAllRefUpdates true
 
+    # Carry over the host's committer identity -- without this, a
+    # commit made in the container fails with "Author identity
+    # unknown" since local_gitdir starts with no config of its own.
+    # Fall back to the current user / user@hostname if the host repo
+    # has none configured either.
+    : ${name:=$(id -un)}
+    : ${email:=$(id -un)@$(hostname)}
+    name=$(git -C $root config get --default $name user.name)
+    email=$(git -C $root config get --default $email user.email)
+    git --git-dir=$local_gitdir config user.name $name
+    git --git-dir=$local_gitdir config user.email $email
+
     # Also alternate to the shared repo's objects: the post-receive
     # hook resets this gitdir straight to whatever was just pushed
     # there, which may only exist in the shared repo's object store.
