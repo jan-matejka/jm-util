@@ -128,9 +128,13 @@ if $o_workdir; then
     print -r -- "${common_dir}/objects" > $local_gitdir/objects/info/alternates
     cp $work_git_dir/HEAD $local_gitdir/HEAD
     [[ -f $work_git_dir/index ]] && cp $work_git_dir/index $local_gitdir/index
-    # cp ``foo/.`` copies correctly into an existing destination, instead of under it
-    cp -r $common_dir/refs/. $local_gitdir/refs/
-    [[ -f $common_dir/packed-refs ]] && cp $common_dir/packed-refs $local_gitdir/packed-refs
+
+    # Seed only the ref HEAD resolves through, not the whole refs tree
+    # -- avoids leaking every branch/tag/remote-tracking ref from the
+    # host repo into the container-local gitdir.
+    if [[ -n $branch && -f $common_dir/refs/heads/$branch ]]; then
+      install -D $common_dir/refs/heads/$branch $local_gitdir/refs/heads/$branch
+    fi
   fi
   git --git-dir=$local_gitdir config core.worktree /src
 
