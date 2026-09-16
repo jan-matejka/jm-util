@@ -21,6 +21,17 @@ TODO
   wip/1, wip/2, ... . wip/main being for integrating passing changes.
   Which might get hairy.
 
+  One shared repository per common_dir + live sync (``jm-claude-design(7)``,
+  Shared repo and live sync) gives every worktree's branch a common
+  integration point and a single ``claude`` remote, which this needs. Still
+  missing: jm-claude itself doesn't create the worktrees/branches, that's
+  still manual.
+
+- Possible mitigation for the live-sync ``reset --hard`` hazard
+  (``jm-claude-design(7)``, Known hazards): ``git stash`` the target work
+  tree before resetting it, instead of discarding uncommitted changes
+  outright. Not implemented.
+
 - Claude Code makes a distinction between the interactive session (the default
   prompt upon starting claude), and background agents (other tasks started via
   the left-arrow prompt for new session).

@@ -73,15 +73,18 @@ INSTANCE KEYING
 ``instance_fs``, e.g. ``p_${project}_${branch}``) is branch-keyed --
 switching branches in the same worktree gets a distinct instance.
 
-``LOCAL_GITDIR`` and the ``claude-$WORKTREE_NAME`` remote (Git Remote setup,
-below) are deliberately worktree-keyed instead:
+``LOCAL_GITDIR`` (Mounts, below) is deliberately worktree-keyed instead:
 
 ``WORKTREE_NAME``
   See `<work-tree-name>` `jm-claude(1)`.
 
-Worktree-keying gives one ``LOCAL_GITDIR``/remote per worktree, reused
-across branch switches to indicate work tree boundness because of the work tree
+Worktree-keying gives one ``LOCAL_GITDIR`` per worktree, reused across
+branch switches to indicate work tree boundness because of the work tree
 mount liveness.
+
+``SHARED_GITDIR`` (Shared repo and live sync, below) is keyed to
+``COMMON_DIR`` alone -- one shared bare repository per repository, shared by
+every one of its worktrees, not per worktree.
 
 MOUNTS
 ======
@@ -105,10 +108,18 @@ Container-side paths, fixed for the life of the container:
   e.g. ``/run/jm-claude/git-local`` -- where ``LOCAL_GITDIR`` is mounted,
   needed only for the gitlink case below.
 
+``CT_SHARED``
+  e.g. ``/run/jm-claude/git-shared`` -- where ``SHARED_GITDIR`` is mounted,
+  read-write.
+
 ``LOCAL_GITDIR`` is a plain host directory keyed by
 ``COMMON_DIR/WORKTREE_NAME`` (Instance keying, above), so host-side fetching
 is possible and it survives the container's ``--rm``. Seeded host-side
 (Seeding, below), before ``podman run``.
+
+``SHARED_GITDIR`` is a plain host directory too, a sibling of every
+``LOCAL_GITDIR`` under the same ``COMMON_DIR`` (Shared repo and live sync,
+below).
 
 note: Keying to ``realpath --relative-to $HOME $COMMON_DIR`` is tempting.
 Unfortunately its more trouble than worth when considering paths outside
@@ -119,6 +130,7 @@ Mounts:
 
 - ``ROOT`` is bind-mounted read-write at ``/src``.
 - ``COMMON_DIR`` is bind-mounted read-only at ``CT_COMMON``.
+- ``SHARED_GITDIR`` is bind-mounted read-write at ``CT_SHARED``.
 - ``WORK_GIT_DIR`` is bind-mounted read-only at ``CT_WORK``, only as a
   distinct mount when it differs from ``COMMON_DIR``.
 - ``/src/.git`` is shadowed with a mount pointing at ``LOCAL_GITDIR``,
@@ -137,44 +149,64 @@ Mounts:
     already exist as real content at mount time.
 
 - ``LOCAL_GITDIR/objects/info/alternates`` is itself shadowed the same
-  way, regardless of topology: a container-valid file
-  (``$CT_COMMON/objects``) is bind-mounted read-only over the real,
-  on-disk ``objects/info/alternates``, wherever ``LOCAL_GITDIR`` lands
-  (see Host fetchability, below, for why this file has two versions at
-  all).
+  way, regardless of topology: a container-valid file, listing
+  ``$CT_COMMON/objects`` and ``$CT_SHARED/objects``, is bind-mounted
+  read-only over the real, on-disk ``objects/info/alternates``, wherever
+  ``LOCAL_GITDIR`` lands (see Host fetchability, below, for why this file
+  has two versions at all, and Shared repo and live sync, below, for why
+  it needs the second line).
 
 CONTAINER-LOCAL GIT-DIR SEEDING
 =================================
 
 Runs once, host-side in ``jm-claude_.zsh``, before ``podman run``.
 
-Once, the first time a work tree is seeded:
+Once, the first time a work tree is seeded (``$LOCAL_GITDIR/HEAD`` does not
+exist yet):
 
-1. ``git init --separate-git-dir=$LOCAL_GITDIR``
-2. Write ``$LOCAL_GITDIR/objects/info/alternates`` with one line,
-   ``$COMMON_DIR/objects`` -- the host-valid path, permanent. Read access
-   to all existing history, without copying it. A host's ``git fetch``'s
+1. ``git init --bare $LOCAL_GITDIR``, then ``git config core.bare false`` --
+   a plain ``git init`` would also create a work tree at ``$LOCAL_GITDIR``
+   itself, which is never used and would be wrong once ``core.worktree`` is
+   pointed at ``/src`` (step 4, below).
+2. Carry over the host's committer identity, so a commit made in the
+   container doesn't fail with "Author identity unknown": read
+   ``user.name``/``user.email`` from ``$ROOT``'s own git config (which
+   already resolves through to the global config if the repository has
+   none of its own), falling back to the current user / ``user@hostname``
+   if neither is set anywhere, and write both into ``$LOCAL_GITDIR``.
+3. Write ``$LOCAL_GITDIR/objects/info/alternates`` with two lines,
+   ``$COMMON_DIR/objects`` and ``$SHARED_GITDIR/objects`` -- host-valid
+   paths, permanent. Read access to all existing history and to anything
+   pushed to the shared repo, without copying it. A host's ``git fetch``'s
    ``git-upload-pack`` reads this file directly, from a process running
-   entirely on the host with no access to ``CT_COMMON`` -- it does not
-   inherit alternate resolution from the fetching command's own
+   entirely on the host with no access to ``CT_COMMON``/``CT_SHARED`` -- it
+   does not inherit alternate resolution from the fetching command's own
    environment. The container-valid version lives in a separate file,
    shadowed over this one instead (Mounts, above).
-3. Copy the per-worktree state, so the container starts where the host
+4. Copy the per-worktree state, so the container starts where the host
    currently is, reading from the host paths directly. These are copies,
    not links: they diverge independently from the host from here on.
 
    - ``$LOCAL_GITDIR/HEAD``  <- ``$WORK_GIT_DIR/HEAD``
    - ``$LOCAL_GITDIR/index`` <- ``$WORK_GIT_DIR/index``, if present
-   - ``$LOCAL_GITDIR/refs``  <- ``$COMMON_DIR/refs`` (and/or
-     ``packed-refs``)
+   - ``$LOCAL_GITDIR/refs/heads/$BRANCH`` <- ``$COMMON_DIR/refs/heads/$BRANCH``,
+     if ``$BRANCH`` is non-empty and that loose ref exists -- only the one
+     ref ``HEAD`` resolves through, not the whole ``refs`` tree, so no other
+     branch/tag/remote-tracking ref leaks from the host repo into
+     ``LOCAL_GITDIR``. A detached ``HEAD`` needs no ref at all.
 
 Every invocation, whether or not seeding above ran:
 
-4. ``git --git-dir=$LOCAL_GITDIR config core.worktree /src``
-5. If ``$ROOT/.git`` is a file (any work tree topology): write the gitlink
+5. ``git --git-dir=$LOCAL_GITDIR config core.worktree /src``
+6. Point (or re-point) a ``claude`` remote in ``$LOCAL_GITDIR`` at
+   ``$CT_SHARED``, and set ``branch.$BRANCH.remote``/``.merge`` to track it
+   -- see `SHARED REPO AND LIVE SYNC`_.
+7. Write ``$LOCAL_GITDIR.worktree`` with ``$ROOT`` -- see `SHARED REPO AND
+   LIVE SYNC`_.
+8. If ``$ROOT/.git`` is a file (any work tree topology): write the gitlink
    file containing ``gitdir: CT_LOCAL``.
-6. Write ``$LOCAL_GITDIR.alternates`` with ``$CT_COMMON/objects`` -- the
-   container-valid shadow for step 2.
+9. Write ``$LOCAL_GITDIR.alternates`` with ``$CT_COMMON/objects`` and
+   ``$CT_SHARED/objects`` -- the container-valid shadow for step 3.
 
 ISOLATION GUARANTEE
 =====================
@@ -205,7 +237,7 @@ HOST FETCHABILITY
 ``LOCAL_GITDIR`` is an ordinary host directory (Mounts, above), so
 ``git fetch $LOCAL_GITDIR`` works directly, any time, even while the
 container is running and writing to it -- because
-``objects/info/alternates`` is host-valid on disk (Seeding step 2, above),
+``objects/info/alternates`` is host-valid on disk (Seeding step 3, above),
 the same file a fetch's ``git-upload-pack`` reads directly.
 
 "There is no shortcut that lets fetch avoid needing this: the server process
@@ -214,25 +246,75 @@ negotiation, regardless of whether the client already has them by hash, so any
 alternate-only object anywhere in the walk -- not just an immediate parent --
 would break it." -- Claude Sonnet 5, seems reasonable tho.
 
-Git Remote setup
-----------------
+SHARED REPO AND LIVE SYNC
+===========================
+
+Fetching straight out of ``LOCAL_GITDIR`` (above) is host-initiated and
+pull-only. This is the other direction: a way for a push -- from the host,
+from claude itself, or from a user ``jm claude -e``'d into the running
+container -- to reach the owning work tree immediately, without the
+container needing to be involved or even still running.
 
 One more host-side lookup, used only here:
 
 ``BRANCH``
   ``git symbolic-ref --short HEAD`` (current branch name).
 
-``jm-claude_.zsh`` configures a remote in the host's repo (``COMMON_DIR``),
-named ``claude-$WORKTREE_NAME``, pointing at ``LOCAL_GITDIR``, since the
-claude instance is work tree bound (Instance keying, above).
+``SHARED_GITDIR``
+  ``git init --bare``, created once per ``COMMON_DIR`` if it doesn't exist
+  yet (Instance keying, above).
+
+Remotes, both pointing at ``SHARED_GITDIR``, both named ``claude``:
+
+- Host-side, in ``$ROOT`` (``COMMON_DIR``): points at ``SHARED_GITDIR``'s
+  host path directly.
+- Container-side, in ``LOCAL_GITDIR`` (Seeding step 6, above): points at
+  ``CT_SHARED``, so it only ever resolves from inside a container that has
+  it mounted.
 
 Branch tracking (``branch.$BRANCH.remote``/``branch.$BRANCH.merge``,
-enabling plain ``git pull``/``git status`` ahead-behind reporting) is
-configured only when ``BRANCH`` equals ``WORKTREE_NAME`` -- the signal
-this worktree durably owns that branch. Otherwise the branch is sus.
+enabling plain ``git pull``/``git status``/``git push`` with no arguments)
+is set unconditionally in ``LOCAL_GITDIR`` -- it only ever has the one
+branch it was seeded with. Host-side, it's set only when ``BRANCH`` equals
+``WORKTREE_NAME`` -- the signal this worktree durably owns that branch.
+Otherwise the branch is sus, and the host remote is still added and
+fetchable by name, just not wired into ``pull``/``status``.
 
-Without the match, the remote is still added and fetchable by name, just not
-wired into ``pull``/``status``.
+Live sync (post-receive hook)
+------------------------------
+
+``SHARED_GITDIR/hooks/post-receive`` is (re)written on every invocation, so
+it always matches the currently running ``jm-claude_.zsh``. It runs,
+as usual for a git hook, wherever the push landed -- inside a container's
+mount namespace for a push that went through ``CT_SHARED``, as a genuine
+host process for a push straight at ``SHARED_GITDIR``'s host path.
+
+For each updated ``refs/heads/<branch>``, it needs the owning work tree's
+``LOCAL_GITDIR``/work-tree pair:
+
+- ``LOCAL_GITDIR`` is found by relative path, ``../<branch>`` from
+  ``SHARED_GITDIR`` -- both are siblings under
+  ``$JM_CLAUDE_DATA_HOME/gitdir/$COMMON_DIR`` (Instance keying, above), and
+  a git hook runs with its cwd set to the (bare) repo it fired in. This
+  also makes a push landing inside a container harmless on its own: only
+  the container's own fixed ``/run/jm-claude/git-{local,shared,...}``
+  mounts exist there, not a path named after the branch, so the lookup
+  simply finds nothing and no-ops.
+- The work tree path is read from ``LOCAL_GITDIR.worktree`` (Seeding step
+  7, above) -- ``LOCAL_GITDIR``'s own ``core.worktree`` is set to the
+  container-only ``/src`` (Seeding step 5), unusable from the host.
+
+If that work tree is already sitting at the pushed revision -- always true
+for a push that just came from claude's own checked-out branch, since you
+can't push a commit you don't already have -- the hook no-ops. Otherwise:
+``git --git-dir=$LOCAL_GITDIR --work-tree=<worktree> reset --hard
+<pushed-revision>``, straight onto the real, bind-mounted work tree. A
+running container's ``/src`` is that same bind mount, so it sees the
+change immediately -- no restart needed.
+
+This is also why ``LOCAL_GITDIR``'s alternates need ``SHARED_GITDIR/objects``
+(Mounts, above): the reset target may only exist there, never copied into
+``LOCAL_GITDIR``'s own object store.
 
 KNOWN HAZARDS
 ==============
@@ -243,6 +325,10 @@ tree updates immediately (a live bind mount), but ``LOCAL_GITDIR``'s
 ``HEAD``/index were only ever a one-time copy taken when the container
 started, so the two diverge silently. See ``jm-claude-todo(7)`` for a
 possible mitigation.
+
+The live-sync ``reset --hard`` (Shared repo and live sync, above) does not
+stash first: a push landing on a branch while its work tree has uncommitted
+changes -- claude's own in-progress edits included -- discards them.
 
 SEE ALSO
 ========

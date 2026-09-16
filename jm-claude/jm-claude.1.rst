@@ -26,11 +26,16 @@ If running inside a git repository:
 - the current working directory is bind-mounted into /src (claude's working
   directory), and
 
-- claude's repository is added as a ``claude-<work-tree-name>`` git-remote in
-  the host repository, and
+- one shared bare repository per repository (not per work tree) is added as
+  a ``claude`` git-remote in the host repository, and
 
-- the current branch is set up to track claude's branch, unless in a
-  git-worktree whose name does not match the current branch.
+- the current branch is set up to track it, unless in a git-worktree whose
+  name does not match the current branch.
+
+- claude's own git-dir also has a ``claude`` remote, pointing at the same
+  shared repository from inside the container, and tracks its branch there
+  too -- so a plain ``git push``/``git pull`` works from either side without
+  naming the remote.
 
 ``<work-tree-name>`` = the git-worktree name, if currently in one.
 ``<work-tree-name>`` = basename <work-tree-root>, otherwise.
@@ -93,11 +98,18 @@ Standard operation
     directory manually before git-pull, otherwise git-pull refuses to operate.
 
   - When you make changes on the host, the working directory contents are
-    transparently visible to claude but not the commits you make. Claude needs
-    to explicitly pull them.
+    transparently visible to claude, but a *commit* is not, until it is
+    *pushed* to the ``claude`` remote (by you, or by claude, or by a user
+    ``jm claude -e``'d into the running container). Once pushed, it is
+    applied live: the shared repository's ``post-receive`` hook resets the
+    owning work tree straight to what was just pushed, so claude sees it
+    immediately without restarting.
 
-    This will likely cause issues for claude when you restart it without
-    continuing the previous session.
+    A push landing while claude has uncommitted work in progress in that
+    work tree will discard it -- ``reset --hard`` does not stash first.
+
+  - See ``jm-claude-design(7)`` for the shared-repository/live-sync
+    mechanism in detail.
 
 ENVIRONMENT
 ===========
@@ -217,7 +229,9 @@ Constraints
 Claude has RW access to the working directory (FIXME: this is a footgun and
 shall not be the default).
 
-Claude has RW access to a git-dir on the host.
+Claude has RW access to its own git-dir on the host, and to a shared bare
+repository (also on the host) that every work tree of the same repository
+pushes to and is live-synced from.
 
 Claude has RO access only to the git-dir backing the working directory's work
 tree.
@@ -227,6 +241,10 @@ Known hazards
 
 - It is not safe for the user to modify the working directory on the host
   (including switching branches) while claude is actively working on it.
+
+- A push to the shared repository's branch (by anyone: the host, another
+  exec'd shell, claude itself) hard-resets the owning work tree to it. Any
+  uncommitted work sitting there at that moment is discarded, not stashed.
 
 - Claude has access to the network, including private networks.
 
