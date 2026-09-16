@@ -43,7 +43,7 @@ Description: jm-util shell aliases as real commands
 
 Package: jm-util-claude
 Architecture: all
-Depends: ${misc:Depends}, zsh, jm-util-core (>= ${source:Version})
+Depends: ${misc:Depends}, zsh, jm-util-core (>= ${source:Version}), jm-util-toml (>= ${source:Version})
 Description: jm-util fully isolated Claude Code runner
  Runs Claude Code fully isolated from the host git-dir.
 
