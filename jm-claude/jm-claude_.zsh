@@ -133,6 +133,12 @@ if $o_workdir; then
   # container) shows up immediately without restarting the container.
   cat > $shared_gitdir/hooks/post-receive <<'EOF'
 #!/bin/sh
+# A push from a claude container's own worktree is always already
+# reflected there (you can't push a commit you haven't got), so it
+# needs no reset -- and indeed there's nothing here to derive it from:
+# only the fixed /run/jm-claude/git-{local,shared,...} mounts exist
+# inside a container, not a path named after the branch, so the
+# sibling lookup below simply finds nothing and no-ops.
 while read -r oldrev newrev refname; do
   case $refname in
     refs/heads/*) ;;
@@ -140,17 +146,10 @@ while read -r oldrev newrev refname; do
   esac
   branch=${refname#refs/heads/}
 
-  if [ -d /run/jm-claude/git-local ]; then
-    # Inside a claude container: this container IS the worktree the
-    # push belongs to.
-    git_dir=/run/jm-claude/git-local
-    work_tree=/src
-  else
-    # On the host: the worktree lives next to us, keyed by branch name.
-    git_dir=../$branch
-    [ -f "$git_dir.worktree" ] || continue
-    work_tree=$(cat "$git_dir.worktree")
-  fi
+  # The worktree lives next to us, keyed by branch name.
+  git_dir=../$branch
+  [ -f "$git_dir.worktree" ] || continue
+  work_tree=$(cat "$git_dir.worktree")
 
   [ "$(git --git-dir=$git_dir rev-parse -q --verify HEAD)" = "$newrev" ] && continue
   git --git-dir=$git_dir --work-tree=$work_tree reset --hard $newrev
