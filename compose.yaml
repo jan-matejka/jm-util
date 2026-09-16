@@ -32,8 +32,6 @@ services:
   debuild:
     <<: *hardening
     image: localhost/${COMPOSE_PROJECT_NAME}_build
-    depends_on:
-      - build
     volumes:
       - *vol-src
       - *vol-config
