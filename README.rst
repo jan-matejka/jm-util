@@ -15,6 +15,10 @@ The more interesting ones are:
     Git commit helper to pre-fill commit message with longest common prefix
     path of the files being committed.
 
+- gytter
+
+    Interface superset over git integrating komitr.
+
 - jm-alias
 
     Shell aliases but as real commands so they can be passed to xargs,
