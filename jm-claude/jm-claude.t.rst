@@ -78,6 +78,8 @@ default topology (no worktree)::
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
   -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
+  -v
   */gitdir/*/master:/src/.git (glob)
   -v
   */gitdir/*/master.alternates:/src/.git/objects/info/alternates:ro (glob)
@@ -120,6 +122,8 @@ worktree no compose.yaml::
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
   -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
+  -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
   */gitdir/*/wip:/run/jm-claude/git-local (glob)
@@ -152,6 +156,32 @@ an already-existing dst instead of merging into it)::
   */wip/refs/heads/wip (glob)
   $ find $HOME/.local/share/jm-util/claude/gitdir -type d -path '*/wip/refs/refs'
 
+git-local is seeded with the host's committer identity (so a commit made in
+the container doesn't fail with "Author identity unknown"), tracks the
+shared repo's wip branch, and has a claude remote pointing at its
+container-side mount::
+
+  $ local_gitdir=$(find $HOME/.local/share/jm-util/claude/gitdir -type d -name wip)
+  $ git --git-dir=$local_gitdir config user.name
+  Foo
+  $ git --git-dir=$local_gitdir config user.email
+  foo@example.com
+  $ git --git-dir=$local_gitdir config branch.wip.remote
+  claude
+  $ git --git-dir=$local_gitdir config branch.wip.merge
+  refs/heads/wip
+  $ git --git-dir=$local_gitdir remote get-url claude
+  /run/jm-claude/git-shared
+
+there is one shared bare repo per common_dir (not per worktree), with an
+executable post-receive hook installed::
+
+  $ shared_gitdir=$(find $HOME/.local/share/jm-util/claude/gitdir -type d -name shared)
+  $ git --git-dir=$shared_gitdir rev-parse --is-bare-repository
+  true
+  $ test -x $shared_gitdir/hooks/post-receive && echo yes
+  yes
+
 
 worktree with compose.yaml::
 
@@ -173,6 +203,8 @@ worktree with compose.yaml::
   ./:/src
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
@@ -219,6 +251,8 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
   -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
+  -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
   */gitdir/*/wip:/run/jm-claude/git-local (glob)
@@ -261,6 +295,8 @@ an explicit -a/--account wins over project.toml's configured account::
   ./:/src
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
@@ -308,6 +344,8 @@ worktree with a VM::
   ./:/src
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
@@ -366,6 +404,8 @@ command::
   ./:/src
   -v
   */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
   -v
   */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
   -v
