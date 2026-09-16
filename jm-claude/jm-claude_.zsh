@@ -201,6 +201,10 @@ EOF
   else
     git --git-dir=$local_gitdir remote add claude $ct_shared
   fi
+  # Track it, so a plain `git push`/`git pull` inside the container
+  # (by claude, or a user exec'd in) targets it without arguments.
+  git --git-dir=$local_gitdir config branch.${branch}.remote claude
+  git --git-dir=$local_gitdir config branch.${branch}.merge refs/heads/${branch}
 
   # Host-valid work tree path, read by the shared repo's post-receive
   # hook when it runs on the host (it can't derive this from
