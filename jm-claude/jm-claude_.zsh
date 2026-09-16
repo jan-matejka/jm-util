@@ -116,8 +116,47 @@ if $o_workdir; then
   ct_work=$ct_common
   [[ $work_git_dir != $common_dir ]] && ct_work=/run/jm-claude/git-work-ro
   ct_local=/run/jm-claude/git-local
+  ct_shared=/run/jm-claude/git-shared
   local_gitdir=${JM_CLAUDE_DATA_HOME}/gitdir/${common_dir}/${worktree_name}
+  # One shared bare repo per common_dir (not per worktree): every
+  # worktree's container pushes its branch here, so the host only
+  # needs a single "claude" remote instead of one per worktree.
+  shared_gitdir=${JM_CLAUDE_DATA_HOME}/gitdir/${common_dir}/shared
   _mkdir $(dirname $local_gitdir)
+  [[ -d $shared_gitdir ]] || git init -q --bare $shared_gitdir
+
+  # (Re)install the post-receive hook every run so it always matches
+  # this script's version. On a push it mirrors the branch into
+  # whichever worktree owns it -- live, via reset --hard on the real
+  # (bind-mounted) work tree -- so a push landing here (from the host,
+  # or from a `git push` run inside another exec'd shell in the same
+  # container) shows up immediately without restarting the container.
+  cat > $shared_gitdir/hooks/post-receive <<'EOF'
+#!/bin/sh
+while read -r oldrev newrev refname; do
+  case $refname in
+    refs/heads/*) ;;
+    *) continue ;;
+  esac
+  branch=${refname#refs/heads/}
+
+  if [ -d /run/jm-claude/git-local ]; then
+    # Inside a claude container: this container IS the worktree the
+    # push belongs to.
+    git_dir=/run/jm-claude/git-local
+    work_tree=/src
+  else
+    # On the host: the worktree lives next to us, keyed by branch name.
+    git_dir=../$branch
+    [ -f "$git_dir.worktree" ] || continue
+    work_tree=$(cat "$git_dir.worktree")
+  fi
+
+  [ "$(git --git-dir=$git_dir rev-parse -q --verify HEAD)" = "$newrev" ] && continue
+  git --git-dir=$git_dir --work-tree=$work_tree reset --hard $newrev
+done
+EOF
+  chmod +x $shared_gitdir/hooks/post-receive
 
   # Container-local git-dir seeding
   if [[ ! -f $local_gitdir/HEAD ]]; then
@@ -125,7 +164,11 @@ if $o_workdir; then
     git --git-dir=$local_gitdir config core.bare false
     git --git-dir=$local_gitdir config core.logAllRefUpdates true
 
-    print -r -- "${common_dir}/objects" > $local_gitdir/objects/info/alternates
+    # Also alternate to the shared repo's objects: the post-receive
+    # hook resets this gitdir straight to whatever was just pushed
+    # there, which may only exist in the shared repo's object store.
+    print -l -- "${common_dir}/objects" "${shared_gitdir}/objects" \
+      > $local_gitdir/objects/info/alternates
     cp $work_git_dir/HEAD $local_gitdir/HEAD
     [[ -f $work_git_dir/index ]] && cp $work_git_dir/index $local_gitdir/index
 
@@ -138,6 +181,22 @@ if $o_workdir; then
   fi
   git --git-dir=$local_gitdir config core.worktree /src
 
+  # Remote the container pushes to (claude itself, or a user exec'd
+  # into the container running git push by hand) -- points at the
+  # shared repo's container-side mount, so it only ever gets used from
+  # inside the container.
+  if git --git-dir=$local_gitdir remote get-url claude >/dev/null 2>&1; then
+    git --git-dir=$local_gitdir remote set-url claude $ct_shared
+  else
+    git --git-dir=$local_gitdir remote add claude $ct_shared
+  fi
+
+  # Host-valid work tree path, read by the shared repo's post-receive
+  # hook when it runs on the host (it can't derive this from
+  # local_gitdir's own core.worktree, which is set to the
+  # container-valid /src above).
+  print -r -- "$root" > ${local_gitdir}.worktree
+
   # gitlink file for the worktree-topology mount case
   if $dotgit_is_file; then
     gitlink_file=${local_gitdir}.gitlink
@@ -148,14 +207,16 @@ if $o_workdir; then
   # local_gitdir itself above (Mounts, below) -- same shadow-mount
   # principle as the gitlink file.
   alternates_shadow_file=${local_gitdir}.alternates
-  print -r -- "${ct_common}/objects" > $alternates_shadow_file
+  print -l -- "${ct_common}/objects" "${ct_shared}/objects" > $alternates_shadow_file
 
-  # git-remote setup
-  remote_name=claude-${worktree_name}
+  # git-remote setup: one shared remote for every branch/worktree of
+  # this common_dir, backed by the shared bare repo the container(s)
+  # push into.
+  remote_name=claude
   if git -C $root remote get-url $remote_name >/dev/null 2>&1; then
-    git -C $root remote set-url $remote_name $local_gitdir
+    git -C $root remote set-url $remote_name $shared_gitdir
   else
-    git -C $root remote add $remote_name $local_gitdir
+    git -C $root remote add $remote_name $shared_gitdir
   fi
   if [[ $branch == $worktree_name ]]; then
     git -C $root config branch.${branch}.remote $remote_name
@@ -166,6 +227,7 @@ if $o_workdir; then
     # volumes - app
     -v ./:/src
     -v ${common_dir}:${ct_common}:ro
+    -v ${shared_gitdir}:${ct_shared}
   )
   [[ $ct_work != $ct_common ]] && args+=( -v ${work_git_dir}:${ct_work}:ro )
   if $dotgit_is_file; then
