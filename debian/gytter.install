@@ -1,3 +1,8 @@
-usr/bin/gytr-cl
+usr/bin/gytr
+usr/bin/gytr-fx
+usr/bin/gytr-ft
+usr/bin/gytr-td
+usr/bin/gytr-rf
+usr/bin/gytr-rm
 usr/bin/gytr-l
 usr/man/man1/gytr-cl.1
