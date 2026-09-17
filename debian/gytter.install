@@ -1,8 +1,10 @@
 usr/bin/gytr
-usr/bin/gytr-fx
+usr/bin/gytr-cl
 usr/bin/gytr-ft
-usr/bin/gytr-td
+usr/bin/gytr-fx
+usr/bin/gytr-l
 usr/bin/gytr-rf
 usr/bin/gytr-rm
-usr/bin/gytr-l
+usr/bin/gytr-td
 usr/man/man1/gytr-cl.1
+usr/share/zsh/vendor-completions/_gytr

@@ -1,0 +1,21 @@
+#compdef gytr
+
+# gytr <cmd> [<args>] execs gytr-<cmd> if that's on PATH, else falls
+# through to `git <cmd>`, so it completes like git (subcommand names,
+# their arguments, refs, paths, ...) via _dispatch -- calling _git
+# directly instead recurses (its own internal dispatch re-enters
+# whatever completer is registered for $service, which stays "gytr"
+# for as long as _git's own body is running, unlike _dispatch, which
+# sets $service to "git" for the nested call) -- plus gytr's own
+# subcommands, added through _git_commands' own documented
+# user-commands extension point (see _git's top-of-file comment).
+zstyle ':completion:*:*:gytr:*' user-commands \
+  cl:'clone into $GIT_ORG_HOME, keyed by org/repo/branch' \
+  l:'pretty git log bounded to init.defaultBranch, -S/-G/-h shortcuts' \
+  rm:'git rm' \
+  ft:'komitr -t ft (commit with a ft: prefix)' \
+  fx:'komitr -t fx (commit with a fx: prefix)' \
+  rf:'komitr -t rf (commit with a rf: prefix)' \
+  td:'komitr -t td (commit with a td: prefix)'
+
+_dispatch gytr git
