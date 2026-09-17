@@ -17,6 +17,7 @@ TODO
 - Need a better mechanism to push/pull to/from upstream and claude.
 
   - Running multiple instance on multiple worktrees is fine.
+
   - jm-claude now switches the current branch into the ``claude/`` namespace
     automatically (creating ``claude/<branch>``, or fast-forwarding onto an
     existing one), so integrating back into the original branch for
