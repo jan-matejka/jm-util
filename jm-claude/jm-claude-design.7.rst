@@ -274,11 +274,9 @@ Remotes, both pointing at ``SHARED_GITDIR``, both named ``claude``:
 
 Branch tracking (``branch.$BRANCH.remote``/``branch.$BRANCH.merge``,
 enabling plain ``git pull``/``git status``/``git push`` with no arguments)
-is set unconditionally in ``LOCAL_GITDIR`` -- it only ever has the one
-branch it was seeded with. Host-side, it's set only when ``BRANCH`` equals
-``WORKTREE_NAME`` -- the signal this worktree durably owns that branch.
-Otherwise the branch is sus, and the host remote is still added and
-fetchable by name, just not wired into ``pull``/``status``.
+is set unconditionally, both in ``LOCAL_GITDIR`` -- it only ever has the
+one branch it was seeded with -- and host-side, regardless of whether
+``BRANCH`` equals ``WORKTREE_NAME``.
 
 Live sync (post-receive hook)
 ------------------------------

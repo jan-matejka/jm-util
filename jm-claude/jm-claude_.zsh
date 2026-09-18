@@ -248,10 +248,8 @@ EOF
   else
     git -C $root remote add $remote_name $shared_gitdir
   fi
-  if true || [[ $branch == $worktree_name ]]; then
-    git -C $root config branch.${branch}.remote $remote_name
-    git -C $root config branch.${branch}.merge refs/heads/${branch}
-  fi
+  git -C $root config branch.${branch}.remote $remote_name
+  git -C $root config branch.${branch}.merge refs/heads/${branch}
 
   args+=(
     # volumes - app

@@ -37,8 +37,7 @@ If running inside a git repository:
 - one shared bare repository per repository (not per work tree) is added as
   a ``claude`` git-remote in the host repository, and
 
-- the current branch is set up to track it, unless in a git-worktree whose
-  name does not match the current branch.
+- the current branch is set up to track it, and
 
 - claude's own git-dir also has a ``claude`` remote, pointing at the same
   shared repository from inside the container, and tracks its branch there
