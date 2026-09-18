@@ -60,8 +60,8 @@ setup git::
 default topology (no worktree)::
 
   $ jm claude
-  no configuration file provided: not found
   Switched to a new branch 'claude/master'
+  no configuration file provided: not found
   */bin/podman (glob)
   run
   -it
@@ -105,8 +105,8 @@ worktree no compose.yaml::
   $ git worktree add -q ../wip
   $ cd ../wip
   $ jm claude
-  no configuration file provided: not found
   Switched to a new branch 'claude/wip'
+  no configuration file provided: not found
   */bin/podman (glob)
   run
   -it
