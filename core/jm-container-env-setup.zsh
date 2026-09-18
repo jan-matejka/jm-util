@@ -26,7 +26,7 @@ function export_tag {
   local b=$(git branch --show-current)
   declare -g TAG=latest
   if [[ $b != "master" ]] && [[ $b != "main" ]]; then
-    TAG=$b
+    TAG=${b//\//-}
   fi
   export TAG
 }

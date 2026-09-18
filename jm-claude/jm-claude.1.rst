@@ -23,6 +23,14 @@ and git discovery.
 
 If running inside a git repository:
 
+- HEAD must be on a branch (fails otherwise), and
+
+- the current branch is switched into the ``claude/`` namespace first,
+  unless it is already there: ``claude/<branch>`` is created fresh off it,
+  or an existing ``claude/<branch>`` is fast-forwarded onto it (failing if
+  that isn't a fast-forward) -- so the branch you keep upstreaming from is
+  never the one claude commits to directly, and
+
 - the current working directory is bind-mounted into /src (claude's working
   directory), and
 
@@ -241,6 +249,11 @@ tree.
 Known hazards
 -------------
 
+- Every invocation switches the host's checked-out branch to
+  ``claude/<branch>`` (creating it, or fast-forwarding an existing one --
+  failing if that isn't possible) before doing anything else, even without a
+  worktree, on whatever branch was checked out.
+
 - It is not safe for the user to modify the working directory on the host
   (including switching branches) while claude is actively working on it.
 
@@ -284,8 +297,6 @@ DEPENDENCIES
 
 - If you want claude to build and run containers:
 
-  - WIP: Doesn't work right yet.
-
   - You have to set following variables for jm-claude:
 
     - JM_CLAUDE_KNOWN_HOSTS
@@ -296,20 +307,18 @@ DEPENDENCIES
     i.e. jm-claude can not create, manage, or isolate the VM for you. Its just
     using it.
 
-
   - The isolated VM should have
 
     - podman and docker-compose.
 
     - The same user and user's home as in the claude container for volumes to
-      (somewhat) work.
+      (somewhat) work (TBD: unclear yet if same user is needed. The paths are
+      not aligned yet anyway so rel path volumes dont work anyway but claude
+      can just rsync his tree over there and run podman-compose over there).
 
     - Enabled the user's podman.socket and `# loginctl enable-linger <user>`.
 
     - An authorized_keys entry for the JM_CLAUDE_CONTAINER_SSHKEY.
-      The entry can have options:
-      ``restrict,port-forwarding,command="/bin/false"`` for _some_ additional
-      safety. It does nothing for security tho.
 
     - If using libvirt:
 

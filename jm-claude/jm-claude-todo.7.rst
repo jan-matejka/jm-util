@@ -14,44 +14,21 @@ jm-claude TODO
 TODO
 ====
 
-- The automatic branch tracking is a footgun.
+- Need a better mechanism to push/pull to/from upstream and claude.
 
-- It is also becoming clear I will need to run multiple wip branches.
-  Too easy with worktrees but the design would likely involve wip/main and then
-  wip/1, wip/2, ... . wip/main being for integrating passing changes.
-  Which might get hairy.
+  - Running multiple instance on multiple worktrees is fine.
+  - jm-claude now switches the current branch into the ``claude/`` namespace
+    automatically (creating ``claude/<branch>``, or fast-forwarding onto an
+    existing one), so integrating back into the original branch for
+    upstreaming is still a manual step.
 
-  One shared repository per common_dir + live sync (``jm-claude-design(7)``,
-  Shared repo and live sync) gives every worktree's branch a common
-  integration point and a single ``claude`` remote, which this needs. Still
-  missing: jm-claude itself doesn't create the worktrees/branches, that's
-  still manual.
+- The automatic branch tracking is a bit sus but unlikely a footgun. At worst
+  you just push into a local repo. The hard reset is somewhat unsafe tho.
 
-- Possible mitigation for the live-sync ``reset --hard`` hazard
-  (``jm-claude-design(7)``, Known hazards): ``git stash`` the target work
-  tree before resetting it, instead of discarding uncommitted changes
-  outright. Not implemented.
-
-- Claude Code makes a distinction between the interactive session (the default
-  prompt upon starting claude), and background agents (other tasks started via
-  the left-arrow prompt for new session).
-
-  When in the background agent, it automatically tries to use EnterWorktree to
-  prevent data races.
-
-  This can be prevented with ``settings.json`` entry::
-
-    "permissions": {"deny": ["EnterWorktree"]}
-
-  Which is useful for claude to not go into rabbit holes on why he can not
-  create worktrees.
-
-  But that seems to hard-block the agent from writing (even though there is no
-  security guarantee). It can be unblocked with::
-
-    "worktree": {"bgIsolation": "none"},
-
-  But then it is on you not to cause data races.
+  - Possible mitigation for the live-sync ``reset --hard`` hazard
+    (``jm-claude-design(7)``, Known hazards): ``git stash`` the target work
+    tree before resetting it, instead of discarding uncommitted changes
+    outright. Not implemented.
 
 - Changes to skills on the host should be visible to the running containers.
 
@@ -62,13 +39,8 @@ TODO
 
 - option to wipe session data
 
-- Possible mitigation for the branch-switch hazard
-  (``jm-claude-design(7)``, Known hazards): chmod ``WORK_GIT_DIR``
-  read-only for the container's lifetime -- blocks local writes, checkout
-  included, at the index-lock step, cleanly. Not implemented.
-
 - Might requires relative .git link files. (>=git-2.48).
-  Unclear if is still true in current implementation.
+  Unclear if is still true in current implementation. Probably not.
 
 SEE ALSO
 ========

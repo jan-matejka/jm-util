@@ -47,6 +47,20 @@ if $o_workdir; then
   # Determine project and branch
   # Needed to define base paths
   branch=$(git branch --show-current)
+  [[ -n $branch ]] || fatal "HEAD is not a branch"
+
+  # Work in the claude/ namespace, so the branch the user upstreams from
+  # is never the one claude commits to directly.
+  if [[ $branch != claude/* ]]; then
+    orig_branch=$branch
+    branch=claude/$branch
+    if git -C $root show-ref --verify --quiet refs/heads/$branch; then
+      git -C $root checkout $branch
+      git -C $root merge --ff-only $orig_branch
+    else
+      git -C $root checkout -b $branch
+    fi
+  fi
 
   # get project name from docker-compose
   # run docker-compose directly because podman-compose requires working uidmap.
@@ -56,8 +70,9 @@ if $o_workdir; then
     project=$(basename $(dirname $root))
   fi
 
-  instance_name=p_${project}_${branch}
-  instance_fs=p/${project}/${branch}
+  branch_noslash=${branch//\//-}
+  instance_name=p_${project}_${branch_noslash}
+  instance_fs=p/${project}/${branch_noslash}
 else
   if [[ -n $o_instance ]]; then
     instance_name=i_${o_instance}
@@ -233,7 +248,7 @@ EOF
   else
     git -C $root remote add $remote_name $shared_gitdir
   fi
-  if [[ $branch == $worktree_name ]]; then
+  if true || [[ $branch == $worktree_name ]]; then
     git -C $root config branch.${branch}.remote $remote_name
     git -C $root config branch.${branch}.merge refs/heads/${branch}
   fi

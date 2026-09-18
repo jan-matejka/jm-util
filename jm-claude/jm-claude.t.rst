@@ -61,12 +61,13 @@ default topology (no worktree)::
 
   $ jm claude
   no configuration file provided: not found
+  Switched to a new branch 'claude/master'
   */bin/podman (glob)
   run
   -it
   --rm
   --name
-  jm_claude_p_work_master
+  jm_claude_p_work_claude-master
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -90,7 +91,7 @@ default topology (no worktree)::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/work/master:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/work/claude-master:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -105,12 +106,13 @@ worktree no compose.yaml::
   $ cd ../wip
   $ jm claude
   no configuration file provided: not found
+  Switched to a new branch 'claude/wip'
   */bin/podman (glob)
   run
   -it
   --rm
   --name
-  jm_claude_p_work_wip
+  jm_claude_p_work_claude-wip
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -138,7 +140,7 @@ worktree no compose.yaml::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/work/wip:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/work/claude-wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -152,13 +154,13 @@ a cp -r bug that silently dropped every branch ref: git init already creates
 an empty refs/{heads,tags} skeleton, and `cp -r src dst` nests src *inside*
 an already-existing dst instead of merging into it)::
 
-  $ find $HOME/.local/share/jm-util/claude/gitdir -type f -path '*/wip/refs/heads/wip'
-  */wip/refs/heads/wip (glob)
+  $ find $HOME/.local/share/jm-util/claude/gitdir -type f -path '*/wip/refs/heads/claude/wip'
+  */wip/refs/heads/claude/wip (glob)
   $ find $HOME/.local/share/jm-util/claude/gitdir -type d -path '*/wip/refs/refs'
 
 git-local is seeded with the host's committer identity (so a commit made in
 the container doesn't fail with "Author identity unknown"), tracks the
-shared repo's wip branch, and has a claude remote pointing at its
+shared repo's claude/wip branch, and has a claude remote pointing at its
 container-side mount::
 
   $ local_gitdir=$(find $HOME/.local/share/jm-util/claude/gitdir -type d -name wip)
@@ -166,10 +168,10 @@ container-side mount::
   Foo
   $ git --git-dir=$local_gitdir config user.email
   foo@example.com
-  $ git --git-dir=$local_gitdir config branch.wip.remote
+  $ git --git-dir=$local_gitdir config branch.claude/wip.remote
   claude
-  $ git --git-dir=$local_gitdir config branch.wip.merge
-  refs/heads/wip
+  $ git --git-dir=$local_gitdir config branch.claude/wip.merge
+  refs/heads/claude/wip
   $ git --git-dir=$local_gitdir remote get-url claude
   /run/jm-claude/git-shared
 
@@ -192,7 +194,7 @@ worktree with compose.yaml::
   -it
   --rm
   --name
-  jm_claude_p_foo_wip
+  jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -220,7 +222,7 @@ worktree with compose.yaml::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -239,7 +241,7 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   -it
   --rm
   --name
-  jm_claude_p_foo_wip
+  jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -267,7 +269,7 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   -v
   */.config/jm-util/claude/conf/account/cfgacct:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
   -v
   */primary/cfgacct/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -284,7 +286,7 @@ an explicit -a/--account wins over project.toml's configured account::
   -it
   --rm
   --name
-  jm_claude_p_foo_wip
+  jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -312,7 +314,7 @@ an explicit -a/--account wins over project.toml's configured account::
   -v
   */.config/jm-util/claude/conf/account/explicit:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
   -v
   */primary/explicit/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -333,7 +335,7 @@ worktree with a VM::
   -it
   --rm
   --name
-  jm_claude_p_foo_wip
+  jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -361,7 +363,7 @@ worktree with a VM::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -382,7 +384,7 @@ chmod::
 
   $ stat -c '%a %A' $HOME/.config/jm-util/claude/conf/account/default
   750 drwxr-x---
-  $ stat -c '%a %A' $HOME/.local/share/jm-util/claude/home/p/foo/wip
+  $ stat -c '%a %A' $HOME/.local/share/jm-util/claude/home/p/foo/claude-wip
   750 drwxr-x---
 
 command::
@@ -393,7 +395,7 @@ command::
   -it
   --rm
   --name
-  jm_claude_p_foo_wip
+  jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -421,7 +423,7 @@ command::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/wip:/home/user/.local/share/claude (glob)
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -438,6 +440,42 @@ command::
   */key:/home/user/.ssh/id_ed25519:ro (glob)
   ghcr.io/jan-matejka/claude:latest
   zsh
+
+claude/ namespace: HEAD must be on a branch::
+
+  $ git checkout -q --detach
+  $ jm claude
+  jm-claude_: fatal: HEAD is not a branch
+  [1]
+  $ git checkout -q claude/wip
+
+claude/ namespace: an existing claude/<branch> is fast-forwarded onto the
+current branch instead of being recreated::
+
+  $ git checkout -q -b feature
+  $ git checkout -q -b claude/feature
+  $ git checkout -q feature
+  $ echo x > f; git add f; git commit -qam 'on feature'
+  $ jm claude >/dev/null 2>&1; true
+  $ git branch --show-current
+  claude/feature
+  $ [[ $(git rev-parse claude/feature) == $(git rev-parse feature) ]] && echo fast-forwarded
+  fast-forwarded
+
+claude/ namespace: a diverged claude/<branch> fails the switch instead of
+being overwritten::
+
+  $ git checkout -q -b diverge
+  $ git checkout -q -b claude/diverge
+  $ echo a > d1; git add d1; git commit -qam 'claude side'
+  $ git checkout -q diverge
+  $ echo b > d2; git add d2; git commit -qam 'diverge side'
+  $ jm claude >/dev/null 2>&1
+  [128]
+  $ git branch --show-current
+  claude/diverge
+  $ [[ $(git rev-parse claude/diverge) != $(git rev-parse diverge) ]] && echo not-merged
+  not-merged
 
 primary::
 
