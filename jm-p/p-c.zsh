@@ -14,9 +14,5 @@ typeset -A subcmds=(
 subcmd=${subcmds[$SELF]:-}
 [[ -n $subcmd ]] || fatal "unrecognized alias"
 
-if [[ ${1:-} == prune ]]; then
-  shift
-  exec ${PODMAN} $subcmd prune -f "$@"
-else
-  exec ${PODMAN} $subcmd "$@"
-fi
+[[ ${1:-} == prune ]] && set -- prune -f "${@:2}"
+exec ${PODMAN} $subcmd "$@"
