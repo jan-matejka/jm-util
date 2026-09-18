@@ -324,6 +324,102 @@ an explicit -a/--account wins over project.toml's configured account::
   ghcr.io/jan-matejka/claude:latest
   $ rm -f project.toml
 
+extra podman-run args come from project.toml's tool.jmutil.claude.podman_args,
+appended right before the image, after every automatic flag::
+
+  $ printf '[tool.jmutil.claude]\npodman_args = ["--memory=4g", "-v", "/extra/host:/extra/container"]\n' > project.toml
+  $ jm claude
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_p_foo_claude-wip
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  ./:/src
+  -v
+  */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
+  -v
+  */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
+  -v
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
+  -v
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
+  -v
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  -v
+  jm-claude-local-a-default:/home/user/.local
+  -v
+  jm-claude-config-a-default:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
+  -v
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/.credentials.json:/home/user/.local/share/claude/.credentials.json (glob)
+  --memory=4g
+  -v
+  /extra/host:/extra/container
+  ghcr.io/jan-matejka/claude:latest
+  $ rm -f project.toml
+
+no podman_args key means no extra args::
+
+  $ jm claude
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --name
+  jm_claude_p_foo_claude-wip
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  ./:/src
+  -v
+  */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
+  -v
+  */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
+  -v
+  */gitdir/*/wip:/run/jm-claude/git-local (glob)
+  -v
+  */gitdir/*/wip.gitlink:/src/.git:ro (glob)
+  -v
+  */gitdir/*/wip.alternates:/run/jm-claude/git-local/objects/info/alternates:ro (glob)
+  -v
+  jm-claude-local-a-default:/home/user/.local
+  -v
+  jm-claude-config-a-default:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
+  -v
+  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/.credentials.json:/home/user/.local/share/claude/.credentials.json (glob)
+  ghcr.io/jan-matejka/claude:latest
+
 worktree with a VM::
 
   $ export JM_CLAUDE_CONTAINER_HOST=foo.example.com

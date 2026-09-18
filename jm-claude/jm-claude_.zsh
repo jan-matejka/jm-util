@@ -21,6 +21,7 @@ o_primary=false
 o_instance=
 o_exec=false
 o_account=default
+podman_args=()
 
 function _mkdir() {
   mkdir --mode=0750 -p $@
@@ -44,6 +45,10 @@ if $o_workdir; then
   if ! { has_opt -a || has_opt --account }; then
     o_account=$(jm toml-get tool.jmutil.claude.account $o_account)
   fi
+  # Extra podman-run args from project.toml/pyproject.toml, appended after
+  # every automatically-set flag (see below) so they can override any of
+  # them.
+  podman_args=( ${(f)"$(jm toml-get 'tool.jmutil.claude.podman_args[]')"} ) || podman_args=()
   # Determine project and branch
   # Needed to define base paths
   branch=$(git branch --show-current)
@@ -329,6 +334,7 @@ function add_vm_args {
 }
 
 add_vm_args
+args+=( $podman_args )
 args+=( ${JM_CLAUDE_IMAGE} )
 
 podman run $args $@

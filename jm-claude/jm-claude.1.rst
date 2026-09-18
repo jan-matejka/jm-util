@@ -204,6 +204,16 @@ jm-claude reads the following keys from ``project.toml`` or
 tool.jmutil.claude.account
   see -a `OPTIONS`_.
 
+tool.jmutil.claude.podman_args
+  Array of extra ``podman run`` arguments, e.g.::
+
+    [tool.jmutil.claude]
+    podman_args = ["--memory=4g", "-v", "/extra/host:/extra/container"]
+
+  Appended after every flag jm-claude sets itself, right before the image
+  name -- so an entry here can override anything jm-claude sets, hardening
+  included (`Known hazards`_).
+
 The key's value is read from whichever file has it first.
 
 SAFETY
@@ -252,6 +262,12 @@ Known hazards
   ``claude/<branch>`` (creating it, or fast-forwarding an existing one --
   failing if that isn't possible) before doing anything else, even without a
   worktree, on whatever branch was checked out.
+
+- ``tool.jmutil.claude.podman_args`` (`FILES`_) is appended last, after
+  every hardening flag jm-claude itself sets -- so a ``project.toml`` in a
+  repository you don't fully trust can silently disable the sandboxing
+  (``--read-only``, ``--cap-drop=ALL``, extra mounts, etc.) for anyone who
+  runs jm-claude there.
 
 - It is not safe for the user to modify the working directory on the host
   (including switching branches) while claude is actively working on it.
