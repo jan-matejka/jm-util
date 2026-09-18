@@ -7,11 +7,12 @@ set -eu
 
 PODMAN=${JM_P_PODMAN:-podman}
 
-case $SELF in
-  p-c|pc-c|pc-container) subcmd=container ;;
-  p-n|pc-n|pc-network) subcmd=network ;;
-  *) fatal "unrecognized alias" ;;
-esac
+typeset -A subcmds=(
+  p-c container  pc-c container  pc-container container
+  p-n network    pc-n network    pc-network   network
+)
+subcmd=${subcmds[$SELF]:-}
+[[ -n $subcmd ]] || fatal "unrecognized alias"
 
 if [[ ${1:-} == prune ]]; then
   shift
