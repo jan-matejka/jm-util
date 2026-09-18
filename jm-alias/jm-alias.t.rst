@@ -62,7 +62,15 @@ test alias list::
   l
   ll
   p
+  p-c
+  p-c-prune
+  p-n
+  p-n-prune
   pc
+  pc-c
+  pc-container
+  pc-n
+  pc-network
   s
   t
   x
