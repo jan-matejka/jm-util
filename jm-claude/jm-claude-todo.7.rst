@@ -64,6 +64,25 @@ TODO
   worktree-based at all, or should go back to branch-based -- separate
   question from the naming-string format above.
 
+- Container entrypoint should refuse to start if the image's build info
+  (read from an env var baked in at build time) is older than a week,
+  unless ``-f``/``--force`` is given -- a staleness guard against running
+  claude in a container built against a now-outdated base image/toolchain
+  without noticing. Not designed or implemented yet.
+
+- Reconsider whether the container-first model (claude runs inside the
+  hardened container; the host only ever bind-mounts/pushes/pulls) is
+  still the right shape, versus a harness (possibly MCP-based) on the
+  host that connects to and drives a containerized claude instance. The
+  container-first model is what gives claude no path out of the sandbox
+  by construction; a driving harness would need some privileged channel
+  back into the container, which is the opposite boundary, so this isn't
+  a drop-in swap. If the actual complaint turns out to be about
+  observability (watching progress, a UI) rather than the sandboxing
+  itself, a read-only status/log-reading MCP server (or similar) that
+  doesn't drive the container might get the wanted benefit without
+  touching the security model. Not explored yet.
+
 SEE ALSO
 ========
 
