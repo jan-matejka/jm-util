@@ -314,6 +314,46 @@ This is also why ``LOCAL_GITDIR``'s alternates need ``SHARED_GITDIR/objects``
 (Mounts, above): the reset target may only exist there, never copied into
 ``LOCAL_GITDIR``'s own object store.
 
+ISOLATED WORKDIR (-w/--isolated-workdir)
+==========================================
+
+``jm-claude(1)``'s ``-w``/``--isolated-workdir`` backs ``/src`` with a
+container-owned checkout instead of ``ROOT`` itself, so no host directory
+is ever bind-mounted read-write into the container. Everything else in
+`TOPOLOGY RESOLUTION`_, `INSTANCE KEYING`_, `CONTAINER-LOCAL GIT-DIR
+SEEDING`_, and `SHARED REPO AND LIVE SYNC`_ is unchanged.
+
+``ISOLATED_SRC``
+  ``$JM_CLAUDE_DATA_HOME/src/$COMMON_DIR/$WORKTREE_NAME`` -- a plain host
+  directory, keyed identically to ``LOCAL_GITDIR`` (Instance keying,
+  above) so it persists across runs the same way.
+
+Differences from the default mode:
+
+- ``ROOT`` is not mounted at all. ``ISOLATED_SRC`` is bind-mounted
+  read-write at ``/src`` in its place.
+- The first time ``ISOLATED_SRC`` doesn't exist yet, it's populated by
+  ``git --git-dir=$LOCAL_GITDIR --work-tree=$ISOLATED_SRC checkout -f
+  $BRANCH``, run right after Container-local git-dir seeding step 4 (so
+  ``$LOCAL_GITDIR`` already has the branch's ``HEAD``/ref). This
+  overwrites the index copied in step 4 with one matching the checked-out
+  tree -- deliberately: only committed content, never the host's
+  dirty/staged state, ever lands in ``ISOLATED_SRC``.
+- Because ``ISOLATED_SRC`` is always a fresh, jm-claude-owned directory
+  (never a pre-existing ``ROOT`` with its own ``.git``), ``/src/.git`` is
+  always shadowed by the direct ``LOCAL_GITDIR`` bind-mount form (Mounts,
+  above) -- the gitlink-file branch, needed only to match an existing
+  ``$ROOT/.git``'s file-vs-directory type, never applies here.
+- ``LOCAL_GITDIR.worktree`` (Seeding step 7) is written as ``ISOLATED_SRC``
+  instead of ``ROOT``. This is what keeps the post-receive live-sync
+  working unmodified: a push still ``reset --hard``s "the work tree that
+  owns this branch", it's just that the owning work tree is now
+  ``ISOLATED_SRC``, never ``ROOT`` -- so a push can no longer race the
+  host's own edits or discard host-side uncommitted work.
+
+Getting claude's work onto the host is unchanged: an explicit ``git
+pull``/``git fetch`` against the ``claude`` remote in ``ROOT``.
+
 KNOWN HAZARDS
 ==============
 

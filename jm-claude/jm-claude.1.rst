@@ -74,6 +74,28 @@ OPTIONS
 -e --exec
   Exec run zsh inside the running container instance.
 
+-w --isolated-workdir
+  Only valid in git-context (workdir) mode (i.e. without ``-p``/``-i``).
+
+  ``/src`` is backed by a container-owned checkout of the current branch
+  tip instead of the host's live work tree -- no bind mount of the host
+  work tree at all. Persists across runs, keyed the same as the
+  per-worktree container-local git-dir.
+
+  Only committed content is ever checked out into it; uncommitted host
+  changes are never visible inside the container.
+
+  A ``git push`` (by claude, the host, or a user ``-e``'d in) still live-
+  syncs it via the shared repository's ``post-receive`` hook -- see
+  `SAFETY`_ -- but that reset now lands on the isolated checkout, never on
+  the host's own work tree. This sidesteps the two host-facing hazards of
+  the default work-tree-sharing mode: the host is free to edit or switch
+  branches while claude runs, and a push can never discard host-side
+  uncommitted work.
+
+  Getting claude's work back onto the host is a plain ``git pull`` from
+  the ``claude`` remote, same as the default mode.
+
 <args>
   Passed to podman-run <image> <args...> so you can run e.g. ``jm claude zsh``.
 
@@ -271,10 +293,15 @@ Known hazards
 
 - It is not safe for the user to modify the working directory on the host
   (including switching branches) while claude is actively working on it.
+  Does not apply under ``-w``/``--isolated-workdir`` (`OPTIONS`_): there,
+  the host's own work tree is never touched.
 
 - A push to the shared repository's branch (by anyone: the host, another
   exec'd shell, claude itself) hard-resets the owning work tree to it. Any
   uncommitted work sitting there at that moment is discarded, not stashed.
+  Under ``-w``/``--isolated-workdir``, the work tree being reset is the
+  isolated checkout, not the host's -- so this can no longer discard
+  anything on the host.
 
 - Claude has access to the network, including private networks.
 

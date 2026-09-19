@@ -13,6 +13,7 @@ opts=(
   a: -account:
   i: -instance:
   e -exec
+  w -isolated-workdir
 )
 declare -A paargs
 zparseopts -K -D -A paargs $opts
@@ -21,6 +22,7 @@ o_primary=false
 o_instance=
 o_exec=false
 o_account=default
+o_isolated=false
 podman_args=()
 
 function _mkdir() {
@@ -35,7 +37,10 @@ has_opt -i && o_instance=${paargs[-i]}
 has_opt --instance && o_instance=${paargs[--instance]}
 has_opt -p && o_primary=true
 has_opt --primary && o_primary=true
+has_opt -w && o_isolated=true
+has_opt --isolated-workdir && o_isolated=true
 { [[ -n ${o_instance} ]] || $o_primary } && o_workdir=false || o_workdir=true
+$o_isolated && ! $o_workdir && fatal "-w/--isolated-workdir requires git-context (workdir) mode: drop -p/-i"
 
 : ${JM_CLAUDE_DATA_HOME:=${JM_DATA_HOME}/claude}
 
@@ -150,6 +155,17 @@ if $o_workdir; then
   _mkdir $(dirname $local_gitdir)
   [[ -d $shared_gitdir ]] || git init -q --bare $shared_gitdir
 
+  # -w/--isolated-workdir: /src is backed by a container-owned checkout
+  # instead of the host's live work tree, keyed the same way as
+  # local_gitdir so it persists across runs. It's always a plain
+  # directory jm-claude fully owns, so the gitlink-shadow dance below
+  # (needed only to match an existing host $ROOT/.git's file-vs-dir
+  # type) never applies to it.
+  if $o_isolated; then
+    isolated_src=${JM_CLAUDE_DATA_HOME}/src/${common_dir}/${worktree_name}
+    dotgit_is_file=false
+  fi
+
   # (Re)install the post-receive hook every run so it always matches
   # this script's version. On a push it mirrors the branch into
   # whichever worktree owns it -- live, via reset --hard on the real
@@ -215,6 +231,18 @@ EOF
       install -D $common_dir/refs/heads/$branch $local_gitdir/refs/heads/$branch
     fi
   fi
+
+  # -w/--isolated-workdir: materialize the container-owned checkout the
+  # first time it's needed. Only committed content -- the branch tip
+  # local_gitdir was just seeded to above -- ever lands here, never the
+  # host's dirty/staged state, so the isolation boundary is unambiguous.
+  # Persists across runs (not re-seeded once it exists), same as
+  # local_gitdir itself.
+  if $o_isolated && [[ ! -d $isolated_src ]]; then
+    _mkdir $isolated_src
+    git --git-dir=$local_gitdir --work-tree=$isolated_src checkout -q -f $branch
+  fi
+
   git --git-dir=$local_gitdir config core.worktree /src
 
   # Remote the container pushes to (claude itself, or a user exec'd
@@ -234,8 +262,14 @@ EOF
   # Host-valid work tree path, read by the shared repo's post-receive
   # hook when it runs on the host (it can't derive this from
   # local_gitdir's own core.worktree, which is set to the
-  # container-valid /src above).
-  print -r -- "$root" > ${local_gitdir}.worktree
+  # container-valid /src above). Isolated mode points this at the
+  # container-owned checkout instead of the host's own work tree, so a
+  # push still live-syncs -- just onto isolated_src, never onto $root.
+  if $o_isolated; then
+    print -r -- "$isolated_src" > ${local_gitdir}.worktree
+  else
+    print -r -- "$root" > ${local_gitdir}.worktree
+  fi
 
   # gitlink file for the worktree-topology mount case
   if $dotgit_is_file; then
@@ -261,9 +295,11 @@ EOF
   git -C $root config branch.${branch}.remote $remote_name
   git -C $root config branch.${branch}.merge refs/heads/${branch}
 
+  src_mount=./
+  $o_isolated && src_mount=$isolated_src
   args+=(
     # volumes - app
-    -v ./:/src
+    -v ${src_mount}:/src
     -v ${common_dir}:${ct_common}:ro
     -v ${shared_gitdir}:${ct_shared}
   )

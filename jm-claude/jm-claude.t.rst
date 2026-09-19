@@ -187,6 +187,70 @@ executable post-receive hook installed::
   $ test -x $shared_gitdir/hooks/post-receive && echo yes
   yes
 
+-w/--isolated-workdir backs /src with a container-owned checkout instead
+of bind-mounting the host work tree, and never uses the gitlink-shadow
+form since it never has a pre-existing .git of its own::
+
+  $ echo dirty > untracked-w
+  $ jm claude -w
+  */bin/podman (glob)
+  run
+  -it
+  --rm
+  --init
+  --name
+  jm_claude_p_work_claude-wip
+  --userns=keep-id:uid=1000,gid=1000
+  --cap-drop=ALL
+  --security-opt=no-new-privileges
+  --read-only
+  -e
+  DISABLE_DOCTOR_COMMAND=1
+  -v
+  */src/*/wip:/src (glob)
+  -v
+  */master/.git:/run/jm-claude/git-common-ro:ro (glob)
+  -v
+  */gitdir/*/shared:/run/jm-claude/git-shared (glob)
+  -v
+  */master/.git/worktrees/wip:/run/jm-claude/git-work-ro:ro (glob)
+  -v
+  */gitdir/*/wip:/src/.git (glob)
+  -v
+  */gitdir/*/wip.alternates:/src/.git/objects/info/alternates:ro (glob)
+  -v
+  jm-claude-local-a-default:/home/user/.local
+  -v
+  jm-claude-config-a-default:/home/user/.config
+  -v
+  */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
+  -v
+  */.local/share/jm-util/claude/home/p/work/claude-wip:/home/user/.local/share/claude (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
+  -v
+  */primary/default/.credentials.json:/home/user/.local/share/claude/.credentials.json (glob)
+  ghcr.io/jan-matejka/claude:latest
+  $ rm -f untracked-w
+
+the isolated checkout holds the committed content but not the host's
+untracked work -- only committed state ever crosses the isolation
+boundary::
+
+  $ isolated_src=$(find $HOME/.local/share/jm-util/claude/src -type d -name wip)
+  $ test -f $isolated_src/a && echo committed-file-present
+  committed-file-present
+  $ test -f $isolated_src/untracked-w && echo dirty-file-present || echo dirty-file-absent
+  dirty-file-absent
+
+-w requires git-context mode: it's rejected together with -i/-p::
+
+  $ jm claude -w -i foo
+  jm-claude_: fatal: -w/--isolated-workdir requires git-context (workdir) mode: drop -p/-i
+  [1]
+
 
 worktree with compose.yaml::
 
