@@ -18,12 +18,9 @@ TODO
 
   - Running multiple instance on multiple worktrees is fine.
 
-  - Running multiple instances against the same worktree and branch isn't
-    guarded: the second one just collides -- on the podman container name,
-    or on the ``claude/<branch>`` switch if launched close enough together.
-    Not unsafe, just unsupported (``jm-claude(1)``, Known limitations).
-    Might be worth an explicit check (or lock) with a clearer error instead
-    of relying on the incidental podman name collision. Not implemented.
+  - Running multiple instances against the same worktree and branch is
+    unsupported and uncoordinated. An explicit check/lock instead of
+    relying on the incidental podman name collision: not implemented.
 
   - jm-claude now switches the current branch into the ``claude/`` namespace
     automatically (creating ``claude/<branch>``, or fast-forwarding onto an
@@ -46,6 +43,10 @@ TODO
   Could also form a basis for more automation.
 
 - option to wipe session data
+
+- Confirm claude's auto-created memory dir persists (rides the
+  ``~/.claude`` -> mounted data-home symlink today; not verified
+  elsewhere).
 
 - Might requires relative .git link files. (>=git-2.48).
   Unclear if is still true in current implementation. Probably not.
