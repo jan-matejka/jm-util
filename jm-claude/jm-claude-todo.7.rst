@@ -95,20 +95,56 @@ TODO
     essential for it to be able to run containers itself, safely (sus,
     WIP)") and partially addressed today by the Remote VM mechanism
     (``JM_CLAUDE_CONTAINER_HOST``/``CONTAINER_SSHKEY``/etc. --
-    ``jm-claude(1)``, ENVIRONMENT and DEPENDENCIES) -- claude gets direct
-    ssh/podman-socket access to an externally-managed, externally-isolated
-    VM. Same shape of problem as the git one: claude needs a genuinely
-    privileged capability (build/run a container) exposed through some
-    channel; today that channel is raw socket/ssh access to a whole VM,
-    which is coarse. An MCP-mediated "build/run a container" tool that the
-    host implementation can scope, log, and rate-limit is the same kind of
-    mediated-protocol-instead-of-raw-access move as the git one.
+    ``jm-claude(1)``, ENVIRONMENT and DEPENDENCIES). See the next TODO
+    item below for the current best fix direction -- it turns out to be
+    largely orthogonal to whether a driving harness exists at all.
 
   Deliberately parked, not spec'd: revisit once ``-w`` has seen enough
   real use to know whether the remaining git-dir machinery is still the
   pain point once the host-work-tree-sharing hazard it addresses is gone,
   or whether it's fine as-is. More pain points may still surface before
   this is worth spec'ing.
+
+- Claude's containers must never be able to start **sibling** containers
+  (i.e. anything reachable via a shared podman/docker socket, including
+  today's Remote-VM mechanism above): a shared daemon socket has no
+  confinement relationship between what's holding the socket and what it
+  can ask the daemon to start, so it's a de facto path to host-level
+  privilege escalation (trivially: ask the daemon for a container with
+  ``-v /:/host`` and every user-namespace/cap-drop/read-only restriction
+  on the *asking* container is irrelevant). Not acceptable, full stop.
+
+  The fix is genuine nested (child, not sibling) rootless containers:
+  recursive user-namespace delegation, where the container claude runs in
+  gets its own ``/etc/subuid``/``/etc/subgid`` range to further hand out,
+  so anything *it* starts is a real child confined within claude's own
+  already-restricted uid/gid range -- not a peer of it on a shared
+  daemon. Intuition (unverified): doubling the host's per-user
+  subuid/subgid range might be enough to cover one level of nesting.
+  Needs testing, specifically:
+
+  - Whether doubling the range is actually sufficient sizing, or the
+    right number is something else.
+  - Whether the (dynamic, per-invocation) subuid/subgid allocation
+    scales cleanly to an arbitrary number of concurrently running
+    instances -- the actual requirement -- rather than just to one.
+  - Whether nested rootless podman's storage driver needs ``/dev/fuse``
+    (fuse-overlayfs) passed into the outer container, which today's
+    hardening flags (``jm-claude(1)``, Container hardening) don't grant.
+
+  If this works it also fully eliminates the Docker-outside-of-Docker
+  host-path-mismatch problem (nested-container volumes resolve against
+  the *outer* container's own filesystem, so ordinary relative-path
+  volumes in a compose file just work -- no host-path-exposing env var,
+  and none of the compose-file maintainability cost that workaround has)
+  -- and it removes the *security* justification for the separate
+  isolated VM specifically, since that VM's only job today is being a
+  safe place to hold the shared socket. Worth keeping the VM around
+  regardless for defense-in-depth and for hardware/architecture
+  flexibility (big machines, specific archs) -- just no longer load
+  bearing for containers-running-containers. Also stops the mechanism
+  being ssh/external-VM-socket-specific, which is a step toward it
+  working the same way under docker, not just podman.
 
 SEE ALSO
 ========
