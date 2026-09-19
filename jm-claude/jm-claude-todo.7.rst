@@ -19,8 +19,7 @@ TODO
   - Running multiple instance on multiple worktrees is fine.
 
   - Running multiple instances against the same worktree and branch is
-    unsupported and uncoordinated. An explicit check/lock instead of
-    relying on the incidental podman name collision: not implemented.
+    unsupported and uncoordinated.
 
   - jm-claude now switches the current branch into the ``claude/`` namespace
     automatically (creating ``claude/<branch>``, or fast-forwarding onto an
