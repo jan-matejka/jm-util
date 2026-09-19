@@ -54,8 +54,29 @@ if $o_workdir; then
   # every automatically-set flag (see below) so they can override any of
   # them.
   podman_args=( ${(f)"$(jm toml-get 'tool.jmutil.claude.podman_args[]')"} ) || podman_args=()
-  # Determine project and branch
-  # Needed to define base paths
+
+  # Topology resolution
+  common_dir=$(realpath $(git rev-parse --git-common-dir))
+  work_git_dir=$(realpath $(git rev-parse --git-dir))
+  dotgit_is_file=false
+  [[ -f $root/.git ]] && dotgit_is_file=true
+
+  # Instance keying: worktree-keyed on common_dir/worktree_name, same as
+  # LOCAL_GITDIR (jm-claude-design(7), Instance keying) -- one instance
+  # per worktree, independent of whichever branch happens to be checked
+  # out there. common_dir is the repository's unique, absolute
+  # git-common-dir, so -- unlike a project-name guess (e.g. a
+  # docker-compose project name, or a parent-directory basename) -- this
+  # can't collide across unrelated repositories.
+  if [[ $work_git_dir != $common_dir ]]; then
+    worktree_name=$(basename $work_git_dir)
+  else
+    worktree_name=$(basename $root)
+  fi
+  instance_name=p${common_dir//\//_}_${worktree_name}
+  instance_fs=p/${common_dir}/${worktree_name}
+
+  # Determine branch
   branch=$(git branch --show-current)
   [[ -n $branch ]] || fatal "HEAD is not a branch"
 
@@ -71,18 +92,6 @@ if $o_workdir; then
       git -C $root checkout -b $branch
     fi
   fi
-
-  # get project name from docker-compose
-  # run docker-compose directly because podman-compose requires working uidmap.
-  project=$(docker-compose config --format=json | jq -Mr .name || true)
-  if [[ -z $project ]]; then
-    # fall back to parent dir name
-    project=$(basename $(dirname $root))
-  fi
-
-  branch_noslash=${branch//\//-}
-  instance_name=p_${project}_${branch_noslash}
-  instance_fs=p/${project}/${branch_noslash}
 else
   if [[ -n $o_instance ]]; then
     instance_name=i_${o_instance}
@@ -129,18 +138,6 @@ args=(
 )
 
 if $o_workdir; then
-  # Topology resolution
-  common_dir=$(realpath $(git rev-parse --git-common-dir))
-  work_git_dir=$(realpath $(git rev-parse --git-dir))
-  dotgit_is_file=false
-  [[ -f $root/.git ]] && dotgit_is_file=true
-
-  # Instance keying
-  if [[ $work_git_dir != $common_dir ]]; then
-    worktree_name=$(basename $work_git_dir)
-  else
-    worktree_name=$(basename $root)
-  fi
   # Mounts: container-side paths and LOCAL_GITDIR's host path
   ct_common=/run/jm-claude/git-common-ro
   ct_work=$ct_common

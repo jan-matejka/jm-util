@@ -69,18 +69,25 @@ topology-agnostic.
 INSTANCE KEYING
 ================
 
-``jm-claude_.zsh``'s existing instance naming (``instance_name``/
-``instance_fs``, e.g. ``p_${project}_${branch}``) is branch-keyed --
-switching branches in the same worktree gets a distinct instance.
-
-``LOCAL_GITDIR`` (Mounts, below) is deliberately worktree-keyed instead:
+``instance_name``/``instance_fs`` and ``LOCAL_GITDIR`` (Mounts, below) are
+keyed the same way: worktree-keyed, by ``COMMON_DIR``/``WORKTREE_NAME`` --
+one instance, and one ``LOCAL_GITDIR``, per worktree, reused across branch
+switches (work-tree boundness, tracking the work tree mount's own
+liveness), never per branch.
 
 ``WORKTREE_NAME``
   See `<work-tree-name>` `jm-claude(1)`.
 
-Worktree-keying gives one ``LOCAL_GITDIR`` per worktree, reused across
-branch switches to indicate work tree boundness because of the work tree
-mount liveness.
+``instance_name`` (e.g. ``p${COMMON_DIR//\//_}_${WORKTREE_NAME}``)
+flattens ``COMMON_DIR`` -- every ``/`` becomes a ``_`` -- since it also has
+to be a valid podman container name; ``instance_fs`` and ``LOCAL_GITDIR``
+use it as a literal nested path instead. Keying on the absolute path
+rather than on a guessed name (a docker-compose project name, or a
+parent-directory basename, both tried and dropped -- ``jm-claude-todo(7)``)
+is what makes this collision-free across repositories that happen to
+share a name or parent directory; the resulting names are long and not
+especially readable in return. ``jm-claude-todo(7)`` notes a possible
+topology-aware alternative.
 
 ``SHARED_GITDIR`` (Shared repo and live sync, below) is keyed to
 ``COMMON_DIR`` alone -- one shared bare repository per repository, shared by

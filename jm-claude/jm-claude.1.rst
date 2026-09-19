@@ -339,7 +339,7 @@ Would you like to know more?
 DEPENDENCIES
 ============
 
-- docker-compose and podman on the host.
+- podman on the host.
 
 - Activated user socket for podman:
 

@@ -58,18 +58,20 @@ setup git::
   $ export GIT_AUTHOR_DATE='1970-01-01T00:00:00'
   $ touch a; git add a; git commit -qam 'init'
 
-default topology (no worktree)::
+default topology (no worktree). instance_name/instance_fs are keyed on
+common_dir/worktree_name (jm-claude-design(7), Instance keying), not on a
+docker-compose/parent-dir project guess, so no docker-compose lookup runs
+at all::
 
   $ jm claude
   Switched to a new branch 'claude/master'
-  no configuration file provided: not found
   */bin/podman (glob)
   run
   -it
   --rm
   --init
   --name
-  jm_claude_p_work_claude-master
+  jm_claude_p_*_master (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -93,7 +95,7 @@ default topology (no worktree)::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/work/claude-master:/home/user/.local/share/claude (glob)
+  */home/p/*/master:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -108,14 +110,13 @@ worktree no compose.yaml::
   $ cd ../wip
   $ jm claude
   Switched to a new branch 'claude/wip'
-  no configuration file provided: not found
   */bin/podman (glob)
   run
   -it
   --rm
   --init
   --name
-  jm_claude_p_work_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -143,7 +144,7 @@ worktree no compose.yaml::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/work/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -199,7 +200,7 @@ form since it never has a pre-existing .git of its own::
   --rm
   --init
   --name
-  jm_claude_p_work_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -225,7 +226,7 @@ form since it never has a pre-existing .git of its own::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/work/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -252,7 +253,10 @@ boundary::
   [1]
 
 
-worktree with compose.yaml::
+compose.yaml no longer affects instance naming -- the docker-compose/jq
+project-name lookup was removed; instance_name/instance_fs are keyed on
+common_dir/worktree_name only (jm-claude-design(7), Instance keying), same
+name as the compose.yaml-less run above::
 
   $ echo 'name: foo' >compose.yaml
   $ jm claude
@@ -262,7 +266,7 @@ worktree with compose.yaml::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -290,7 +294,7 @@ worktree with compose.yaml::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -310,7 +314,7 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -338,7 +342,7 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   -v
   */.config/jm-util/claude/conf/account/cfgacct:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/cfgacct/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -356,7 +360,7 @@ an explicit -a/--account wins over project.toml's configured account::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -384,7 +388,7 @@ an explicit -a/--account wins over project.toml's configured account::
   -v
   */.config/jm-util/claude/conf/account/explicit:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/explicit/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -405,7 +409,7 @@ appended right before the image, after every automatic flag::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -433,7 +437,7 @@ appended right before the image, after every automatic flag::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -455,7 +459,7 @@ no podman_args key means no extra args::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -483,7 +487,7 @@ no podman_args key means no extra args::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -504,7 +508,7 @@ worktree with a VM::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -532,7 +536,7 @@ worktree with a VM::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v
@@ -553,7 +557,8 @@ chmod::
 
   $ stat -c '%a %A' $HOME/.config/jm-util/claude/conf/account/default
   750 drwxr-x---
-  $ stat -c '%a %A' $HOME/.local/share/jm-util/claude/home/p/foo/claude-wip
+  $ instance_home=$(find $HOME/.local/share/jm-util/claude/home/p -type d -name wip)
+  $ stat -c '%a %A' $instance_home
   750 drwxr-x---
 
 command::
@@ -565,7 +570,7 @@ command::
   --rm
   --init
   --name
-  jm_claude_p_foo_claude-wip
+  jm_claude_p_*_wip (glob)
   --userns=keep-id:uid=1000,gid=1000
   --cap-drop=ALL
   --security-opt=no-new-privileges
@@ -593,7 +598,7 @@ command::
   -v
   */.config/jm-util/claude/conf/account/default:/home/user/.config/claude (glob)
   -v
-  */.local/share/jm-util/claude/home/p/foo/claude-wip:/home/user/.local/share/claude (glob)
+  */home/p/*/wip:/home/user/.local/share/claude (glob)
   -v
   */primary/default/settings.json:/home/user/.local/share/claude/settings.json (glob)
   -v

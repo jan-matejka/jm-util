@@ -50,6 +50,20 @@ TODO
 - Might requires relative .git link files. (>=git-2.48).
   Unclear if is still true in current implementation. Probably not.
 
+- ``instance_name``/``instance_fs`` are now keyed on the repository's
+  absolute ``COMMON_DIR`` (``jm-claude-design(7)``, Instance keying) --
+  collision-free regardless of directory naming, but the resulting names
+  are long and unreadable, and give no hint of which project/worktree
+  they belong to at a glance. A topology-aware naming strategy (one that
+  picks a short, readable name while staying aware of what actually
+  disambiguates repositories/worktrees on this host, instead of guessing
+  from a directory or compose-project name) would be preferable, but
+  isn't designed yet.
+
+  Also unresolved from before this: whether keying should really be
+  worktree-based at all, or should go back to branch-based -- separate
+  question from the naming-string format above.
+
 SEE ALSO
 ========
 
