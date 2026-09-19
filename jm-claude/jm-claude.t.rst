@@ -21,6 +21,7 @@ instance-keyed container)::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_i_myinstance
   --userns=keep-id:uid=1000,gid=1000
@@ -66,6 +67,7 @@ default topology (no worktree)::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_work_claude-master
   --userns=keep-id:uid=1000,gid=1000
@@ -111,6 +113,7 @@ worktree no compose.yaml::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_work_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -193,6 +196,7 @@ worktree with compose.yaml::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -240,6 +244,7 @@ account is read from project.toml's tool.jmutil.claude.account by default::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -285,6 +290,7 @@ an explicit -a/--account wins over project.toml's configured account::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -333,6 +339,7 @@ appended right before the image, after every automatic flag::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -382,6 +389,7 @@ no podman_args key means no extra args::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -430,6 +438,7 @@ worktree with a VM::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -490,6 +499,7 @@ command::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_p_foo_claude-wip
   --userns=keep-id:uid=1000,gid=1000
@@ -580,6 +590,7 @@ primary::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_primary
   --userns=keep-id:uid=1000,gid=1000
@@ -615,6 +626,7 @@ distinct accounts use distinct config dirs::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_primary
   --userns=keep-id:uid=1000,gid=1000
@@ -648,6 +660,7 @@ distinct accounts use distinct config dirs::
   run
   -it
   --rm
+  --init
   --name
   jm_claude_primary
   --userns=keep-id:uid=1000,gid=1000

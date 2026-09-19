@@ -106,6 +106,11 @@ fi
 args=(
   # standard flags
   -it --rm
+  # claude (PID 1 in the container) never reaps children, so any orphaned
+  # subprocess -- git-hook-spawned or otherwise -- would sit as a zombie
+  # for the container's whole lifetime. --init gives it a real PID 1
+  # (tini) that does.
+  --init
   --name jm_claude_${instance_name}
   # user mapping
   --userns="keep-id:uid=$(id -u),gid=$(id -g)"

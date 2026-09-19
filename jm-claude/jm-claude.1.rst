@@ -291,6 +291,11 @@ Techniques applied:
   - ``--cap-drop=ALL``
   - ``--security-opt=no-new-privileges``
 
+``--init`` is also set, though it isn't a hardening measure: claude runs as
+PID 1 in the container and never reaps children, so without it any orphaned
+subprocess (a git hook's, or otherwise) sits as a zombie for the container's
+whole lifetime.
+
 Would you like to know more?
 ----------------------------
 
