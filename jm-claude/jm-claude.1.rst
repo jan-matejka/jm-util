@@ -280,6 +280,16 @@ Known hazards
 
 - The volume shadowing in security sensitive contexts is sus.
 
+Known limitations
+-----------------
+
+- Running two jm-claude instances against the same worktree and branch
+  isn't supported: nothing guards against it explicitly, so the second
+  invocation just collides with the first, either on the podman container
+  name (both derive it from project+branch alone) or, if launched close
+  enough together, on the ``claude/<branch>`` namespace switch itself. Not
+  a safety issue -- see ``jm-claude-todo(7)``.
+
 Container hardening
 -------------------
 

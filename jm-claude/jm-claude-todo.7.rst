@@ -18,6 +18,13 @@ TODO
 
   - Running multiple instance on multiple worktrees is fine.
 
+  - Running multiple instances against the same worktree and branch isn't
+    guarded: the second one just collides -- on the podman container name,
+    or on the ``claude/<branch>`` switch if launched close enough together.
+    Not unsafe, just unsupported (``jm-claude(1)``, Known limitations).
+    Might be worth an explicit check (or lock) with a clearer error instead
+    of relying on the incidental podman name collision. Not implemented.
+
   - jm-claude now switches the current branch into the ``claude/`` namespace
     automatically (creating ``claude/<branch>``, or fast-forwarding onto an
     existing one), so integrating back into the original branch for
