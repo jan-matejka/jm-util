@@ -60,9 +60,17 @@ TODO
   from a directory or compose-project name) would be preferable, but
   isn't designed yet.
 
-  Also unresolved from before this: whether keying should really be
-  worktree-based at all, or should go back to branch-based -- separate
-  question from the naming-string format above.
+  Resolved (was previously unresolved here): keying should be
+  branch-based, not worktree-based -- separate from the naming-string
+  format above, which is still open. Worktree-keying was only ever
+  correct because ``/src`` was a live bind-mount of one specific
+  worktree's on-disk files, so the instance had to be tied to whichever
+  worktree it was mounted from. Once that live-mount requirement is gone
+  (``-w``/``--isolated-workdir`` and beyond), there's no structural
+  reason left to tie an instance to a worktree at all -- a branch name is
+  sufficient, and it's what actually lets N agents run concurrently
+  without needing N host worktrees. Not yet implemented: today's code
+  still keys on ``worktree_name``, not branch.
 
 - Container entrypoint should refuse to start if the image's build info
   (read from an env var baked in at build time) is older than a week,
