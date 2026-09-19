@@ -77,11 +77,21 @@ TODO
   container-first model is what gives claude no path out of the sandbox
   by construction; a driving harness would need some privileged channel
   back into the container, which is the opposite boundary, so this isn't
-  a drop-in swap. If the actual complaint turns out to be about
-  observability (watching progress, a UI) rather than the sandboxing
-  itself, a read-only status/log-reading MCP server (or similar) that
-  doesn't drive the container might get the wanted benefit without
-  touching the security model. Not explored yet.
+  a drop-in swap.
+
+  The stated pain point is specifically git repository management -- the
+  ``LOCAL_GITDIR`` seeding/shadowing/live-sync machinery
+  (``jm-claude-design(7)``) is nearly all of the current design's
+  complexity; the container hardening flags themselves are simple and not
+  the issue. Note that ``-w``/``--isolated-workdir`` does *not* touch any
+  of that machinery -- it only changes what backs ``/src``, so it's not
+  evidence either way on whether an MCP-mediated file/git protocol would
+  actually be simpler to manage than the current mount/shadow approach.
+
+  Deliberately parked, not spec'd: revisit once ``-w`` has seen enough
+  real use to know whether the remaining git-dir machinery is still the
+  pain point once the host-work-tree-sharing hazard it addresses is gone,
+  or whether it's fine as-is.
 
 SEE ALSO
 ========
