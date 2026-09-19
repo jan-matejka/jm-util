@@ -79,19 +79,36 @@ TODO
   back into the container, which is the opposite boundary, so this isn't
   a drop-in swap.
 
-  The stated pain point is specifically git repository management -- the
-  ``LOCAL_GITDIR`` seeding/shadowing/live-sync machinery
-  (``jm-claude-design(7)``) is nearly all of the current design's
-  complexity; the container hardening flags themselves are simple and not
-  the issue. Note that ``-w``/``--isolated-workdir`` does *not* touch any
-  of that machinery -- it only changes what backs ``/src``, so it's not
-  evidence either way on whether an MCP-mediated file/git protocol would
-  actually be simpler to manage than the current mount/shadow approach.
+  Two stated pain points so far:
+
+  - Git repository management -- the ``LOCAL_GITDIR``
+    seeding/shadowing/live-sync machinery (``jm-claude-design(7)``) is
+    nearly all of the current design's complexity; the container
+    hardening flags themselves are simple and not the issue. Note that
+    ``-w``/``--isolated-workdir`` does *not* touch any of that machinery
+    -- it only changes what backs ``/src``, so it's not evidence either
+    way on whether an MCP-mediated file/git protocol would actually be
+    simpler to manage than the current mount/shadow approach.
+
+  - Letting claude run containers of its own, safely. Already flagged as
+    unfinished in ``jm-claude(1)`` (``SAFETY``, Motivation: "it is
+    essential for it to be able to run containers itself, safely (sus,
+    WIP)") and partially addressed today by the Remote VM mechanism
+    (``JM_CLAUDE_CONTAINER_HOST``/``CONTAINER_SSHKEY``/etc. --
+    ``jm-claude(1)``, ENVIRONMENT and DEPENDENCIES) -- claude gets direct
+    ssh/podman-socket access to an externally-managed, externally-isolated
+    VM. Same shape of problem as the git one: claude needs a genuinely
+    privileged capability (build/run a container) exposed through some
+    channel; today that channel is raw socket/ssh access to a whole VM,
+    which is coarse. An MCP-mediated "build/run a container" tool that the
+    host implementation can scope, log, and rate-limit is the same kind of
+    mediated-protocol-instead-of-raw-access move as the git one.
 
   Deliberately parked, not spec'd: revisit once ``-w`` has seen enough
   real use to know whether the remaining git-dir machinery is still the
   pain point once the host-work-tree-sharing hazard it addresses is gone,
-  or whether it's fine as-is.
+  or whether it's fine as-is. More pain points may still surface before
+  this is worth spec'ing.
 
 SEE ALSO
 ========
