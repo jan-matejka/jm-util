@@ -165,16 +165,77 @@ defense-in-depth/hardware-flexibility above -- and drops the
 ssh/external-VM-socket specifics, a step toward the mechanism working the
 same way under docker, not just podman.
 
-Unverified, needs testing (not yet started):
+``--privileged`` NOT required for Container_1 (researched, secondary source)
+--------------------------------------------------------------------------------
+
+Question raised: does the outer container (Container_1, holding Claude)
+need ``--privileged`` to run nested rootless containers (Container_2)
+inside it -- which would defeat Container_1's own userns/cap-drop/
+read-only isolation from the Host, and would be a real reason to keep the
+isolated VM load-bearing after all?
+
+Researched. Finding: **no, a documented recipe avoids ``--privileged``
+entirely**::
+
+  podman run --rm -it \
+    --security-opt label=disable \
+    --user podman \
+    --device /dev/fuse \
+    quay.io/podman/stable \
+    podman run --rm docker.io/library/alpine echo "Hello from nested Podman"
+
+Rootless podman avoids the kernel overlay filesystem's ``CAP_SYS_ADMIN``
+requirement by using fuse-overlayfs (a userspace FUSE filesystem
+implementation) for the nested storage driver instead -- so nesting needs
+``/dev/fuse`` device access, not a capability grant. This confirms the
+``/dev/fuse`` item below as the actual mechanism, not just a plausible
+guess.
+
+Nuances, not a clean "case closed":
+
+- If ``CAP_SYS_ADMIN`` is granted anyway (e.g. to use the kernel overlay
+  driver instead of fuse-overlayfs), a podman maintainer's own assessment
+  (`containers/podman discussion #23558
+  <https://github.com/containers/podman/discussions/23558>`_) is that
+  it's real, reduced-but-nonzero risk in a rootless container -- it can
+  still unmount the filesystems that block host access. The safe path is
+  to avoid that capability, not merely to tolerate it.
+- Separately confirmed: in *rootless* mode, ``--privileged`` does **not**
+  grant ``CAP_SYS_ADMIN`` unless the containerized process runs as UID 0
+  inside the container -- so even if ``--privileged`` genuinely was used
+  in some prior working setup ("IIRC ... needed a ``--privileged`` flag
+  for Container_1"), it may not have been buying what the flag's
+  reputation implies.
+- ``--security-opt unmask=/proc/*`` is a real, documented flag for
+  exactly this scenario (podman-in-podman/CI), replacing an older
+  ``/proc``-bind-mount-over-``/proc`` workaround (`containers/buildah#5881
+  <https://github.com/containers/buildah/issues/5881>`_, referencing
+  ``containers/podman#8408``).
+- The clearest source found (`oneuptime.com
+  <https://oneuptime.com/blog/post/2026-03-18-run-podman-inside-podman-nested-containers/view>`_)
+  is credible but secondary, not an official upstream podman doc. No
+  official GitHub Actions/GitLab CI podman-in-podman runner doc with a
+  canonical capability list was found either. Treat as strong evidence
+  the non-``--privileged`` path is real and worth prototyping directly --
+  not as a substitute for actually testing it against jm-claude's own
+  hardening flags.
+
+Net effect on the VM's role: this removes the specific worry that nesting
+would force ``--privileged`` and defeat Container_1's own isolation --
+supporting (not yet proving) the earlier conclusion that the isolated VM
+is no longer load-bearing for containers-running-containers specifically.
+
+Still unverified, needs testing (not yet started):
 
 - Intuition: doubling the host's per-user subuid/subgid range might be
   enough to cover one level of nesting. Unconfirmed.
 - Whether the (dynamic, per-invocation) subuid/subgid allocation scales
   cleanly to an arbitrary number of *concurrently running* instances --
   the actual requirement -- rather than just to one nested level.
-- Whether nested rootless podman's storage driver needs ``/dev/fuse``
-  (fuse-overlayfs) passed into the outer container, which today's
-  hardening flags don't grant.
+- Confirming the ``/dev/fuse`` + ``--security-opt`` recipe above actually
+  works end-to-end against jm-claude's own existing hardening flags
+  (``--cap-drop=ALL``/``--read-only``/``--security-opt=no-new-privileges``
+  /userns) rather than taken on the strength of a secondary source alone.
 
 EXISTING-TOOLING RESEARCH (done)
 ===================================
