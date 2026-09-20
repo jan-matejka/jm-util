@@ -211,6 +211,25 @@ Nuances, not a clean "case closed":
   ``/proc``-bind-mount-over-``/proc`` workaround (`containers/buildah#5881
   <https://github.com/containers/buildah/issues/5881>`_, referencing
   ``containers/podman#8408``).
+- The recipe's ``--security-opt label=disable`` turns off SELinux label
+  confinement for Container_1 specifically -- a real, independent loss of
+  defense-in-depth (SELinux's per-container MAC/MCS separation is
+  orthogonal to, and normally an extra backstop behind, the
+  capability/namespace/DAC hardening that stays in effect either way). A
+  narrower alternative used by some recipes,
+  ``--security-opt label=type:container_runtime_t``, relabels to a type
+  built for exactly this container-managing-containers case instead of
+  dropping confinement outright, and is worth trying first.
+
+  Unverified gap specific to jm-claude's own environment: this flag only
+  does anything on an SELinux-enabled distro (Fedora/RHEL/CentOS family).
+  jm-claude's image is Debian trixie (``Containerfile``), which uses
+  AppArmor, not SELinux -- ``label=disable`` is likely a no-op there. The
+  oneuptime.com recipe below was almost certainly written/tested on a
+  Fedora-family host. What (if anything) AppArmor's default rootless-
+  podman profile on Debian actually restricts for this nested-container
+  scenario, and what the Debian-equivalent flag/workaround would be, has
+  not been researched.
 - The clearest source found (`oneuptime.com
   <https://oneuptime.com/blog/post/2026-03-18-run-podman-inside-podman-nested-containers/view>`_)
   is credible but secondary, not an official upstream podman doc. No
