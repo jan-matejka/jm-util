@@ -52,5 +52,8 @@ lines=$(( $LINES - $ps_size ))
 
 [[ -t 1 ]] && args+=( --color=always -$lines )
 
+[[ -z ${PAGER:-} ]] && PAGER=cat
+
 git log --color=auto $args $@ \
-  | git name-rev --annotate-stdin --name-only --refs $ref --always
+  | git name-rev --annotate-stdin --name-only --refs $ref --always \
+  | $PAGER
