@@ -1,0 +1,4 @@
+TODO
+####
+
+- make install should not attempt to build if dependency is unsatisfied.
